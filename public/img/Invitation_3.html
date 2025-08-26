@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benie & Gloire - Notre Mariage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .romantic-font {
+      font-family: 'Alex Brush', cursive;
+    }
+    
+    .elegant-font {
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .floral-corner {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M90,0 Q50,0 50,50 Q50,100 0,90' stroke='%23FFB6C1' fill='none' stroke-width='0.5'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.6;
+    }
+
+    .animate-fade-in {
+      animation: fadeInUp 1s ease forwards;
+      opacity: 0;
+    }
+
+    .card-shadow {
+      box-shadow: 0 0 30px rgba(219, 112, 147, 0.1);
+    }
+
+    .section-visible {
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    /* Nouveaux styles */
+    .bg-overlay {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+    }
+    
+    .image-frame {
+      position: relative;
+      overflow: hidden;
+      border-radius: 1rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .image-frame:hover {
+      transform: scale(1.02);
+    }
+    
+    .parallax {
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .glass-effect {
+      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .break-inside-avoid {
+      break-inside: avoid;
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .columns-1 > div {
+      animation: floatIn 0.8s ease-out forwards;
+      animation-delay: calc(var(--order) * 0.1s);
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<body class="bg-pink-50">
+  <!-- Hero Section -->
+  <!-- Hero Section alternatif -->
+<section class="relative min-h-screen flex items-center justify-center bg-cover bg-center" 
+         style="background-image: url('wed_2.jpg');">
+  
+  <!-- Overlay dégradé -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
+  
+  <!-- Contenu -->
+  <div class="relative z-10 text-center px-6 max-w-3xl">
+    <!-- Petit texte décoratif -->
+    <p class="uppercase tracking-[0.4em] text-sm text-rose-200 mb-6 elegant-font">Le grand jour arrive</p>
+    
+    <!-- Noms -->
+    <h1 class="romantic-font text-6xl md:text-8xl text-white drop-shadow-lg mb-6">Benie & Gloire</h1>
+    
+    <!-- Date -->
+    <p class="elegant-font text-2xl text-white/90 mb-10">30 Août 2025</p>
+    
+    <!-- Bouton Call to Action -->
+    
+  </div>
+  
+  <!-- Éléments décoratifs (coins floraux en SVG) -->
+  <div class="absolute top-0 left-0 w-40 h-40 opacity-30">
+    <img src="https://www.svgrepo.com/show/532444/flower.svg" class="w-full h-full" alt="Décor floral">
+  </div>
+  <div class="absolute bottom-0 right-0 w-40 h-40 opacity-30 rotate-180">
+    <img src="https://www.svgrepo.com/show/532444/flower.svg" class="w-full h-full" alt="Décor floral">
+  </div>
+</section>
+
+
+  <!-- Nouvelle section Notre Histoire style Pinterest -->
+  <!-- Section Invitation -->
+<section class="relative py-20 bg-gradient-to-b from-rose-50 via-white to-rose-100">
+  <div class="max-w-3xl mx-auto text-center px-6">
+    
+    <!-- Petit texte décoratif -->
+    <p class="uppercase tracking-[0.3em] text-rose-400 mb-4 text-sm elegant-font">
+      Invitation
+    </p>
+    
+    <!-- Texte principal -->
+    <h2 class="romantic-font text-5xl md:text-6xl text-rose-600 mb-8">
+      Vous êtes conviés
+    </h2>
+    
+    <!-- Corps du texte -->
+    <p class="text-gray-700 text-lg leading-relaxed mb-6">
+      C’est avec une immense joie et beaucoup d’amour que nous vous invitons 
+      à célébrer notre union sacrée. 
+    </p>
+    
+    <p class="text-gray-700 text-lg leading-relaxed mb-6">
+      Rejoignez-nous pour partager ce moment unique de bonheur, d’émotion et de fête,
+      entourés de ceux qui nous sont chers.
+    </p>
+    
+    <!-- Noms + Date -->
+    <div class="mt-10">
+      <p class="romantic-font text-3xl text-rose-500">Benie & Gloire</p>
+      <p class="elegant-font text-xl text-gray-600 mt-2">Le Samedi 30 Août 2025</p>
+      <p class="text-gray-500 mt-1">Kinshasa, République Démocratique du Congo</p>
+    </div>
+    
+    <!-- Bouton RSVP -->
+    <div class="mt-12">
+      <a href="#rsvp" 
+         class="inline-block px-10 py-4 bg-rose-500 hover:bg-rose-600 text-white text-lg font-semibold rounded-full shadow-lg transition transform hover:scale-105">
+        Confirmer ma présence 💌
+      </a>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Section Livre d'Or -->
+<!-- Section Livre d'Or -->
+<!-- Section Livre d'Or -->
+<section class="relative py-20 bg-white">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-4xl font-bold text-gray-800 mb-6">Livre d'or</h2>
+    <p class="text-lg text-gray-600 mb-10">
+      Laissez-nous un mot, une pensée ou une bénédiction pour marquer ce moment unique.
+    </p>
+
+    <!-- Formulaire d'ajout -->
+    <div class="mt-12 text-left bg-gray-50 border border-gray-200 rounded-2xl shadow-sm p-8">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4">Écrire un message</h3>
+      <form action="#" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-gray-600 mb-1">Votre nom</label>
+          <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-600 mb-1">Votre message</label>
+          <textarea rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:outline-none"></textarea>
+        </div>
+        <button type="submit" class="px-6 py-3 bg-pink-500 text-white font-medium rounded-xl shadow hover:bg-pink-600 transition">
+          Envoyer
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- Section Préférences -->
+  <section class="relative py-24 bg-gradient-to-b from-rose-50 via-white to-rose-100">
+  <!-- Décoration de vague -->
+  <div class="absolute top-0 left-0 w-full overflow-hidden leading-none rotate-180">
+    <svg class="relative block w-full h-20 text-rose-100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1200 120">
+      <path d="M321.39 56.44C228.11 34 114.05 17 0 0v120h1200V0c-114.1 17-228.2 34-321.4 56.44-93.2 22.43-185.6 49.06-278.8 61.49-93.2 12.38-186.2 10.45-278.9-2.94-93-13.49-185.5-38.95-278.5-58.55z" fill="currentColor"></path>
+    </svg>
+  </div>
+
+  <div class="max-w-4xl mx-auto relative z-10">
+    <h2 class="romantic-font text-5xl text-rose-600 text-center mb-12">Vos Préférences</h2>
+
+    <div class="glass-effect rounded-3xl shadow-xl p-10 md:p-14">
+      <!-- Boissons alcoolisées -->
+      <div class="mb-12">
+        <h3 class="elegant-font text-2xl text-rose-500 mb-6 text-center">Boissons alcoolisées</h3>
+        <div class="flex flex-wrap justify-center gap-4">
+          <label class="cursor-pointer">
+            <input type="checkbox" class="hidden peer">
+            <span class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-gray-700 shadow-sm peer-checked:bg-rose-500 peer-checked:text-white transition transform peer-checked:scale-105 hover:shadow-lg">
+              🍾 Champagne
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" class="hidden peer">
+            <span class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-gray-700 shadow-sm peer-checked:bg-rose-500 peer-checked:text-white transition transform peer-checked:scale-105 hover:shadow-lg">
+              🍷 Vin
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" class="hidden peer">
+            <span class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-gray-700 shadow-sm peer-checked:bg-rose-500 peer-checked:text-white transition transform peer-checked:scale-105 hover:shadow-lg">
+              🍺 Bière
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Boissons non alcoolisées -->
+      <div>
+        <h3 class="elegant-font text-2xl text-rose-500 mb-6 text-center">Boissons non alcoolisées</h3>
+        <div class="flex flex-wrap justify-center gap-4">
+          <label class="cursor-pointer">
+            <input type="checkbox" class="hidden peer">
+            <span class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-gray-700 shadow-sm peer-checked:bg-rose-500 peer-checked:text-white transition transform peer-checked:scale-105 hover:shadow-lg">
+              🥤 Coca-Cola
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" class="hidden peer">
+            <span class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-gray-700 shadow-sm peer-checked:bg-rose-500 peer-checked:text-white transition transform peer-checked:scale-105 hover:shadow-lg">
+              🧃 Jus
+            </span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" class="hidden peer">
+            <span class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-gray-700 shadow-sm peer-checked:bg-rose-500 peer-checked:text-white transition transform peer-checked:scale-105 hover:shadow-lg">
+              💧 Eau
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Bouton -->
+      <div class="text-center mt-10">
+        <button class="px-8 py-3 bg-rose-500 text-white font-semibold rounded-full shadow-md hover:bg-rose-600 transition transform hover:scale-105">
+          Envoyer mes choix ✨
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Footer -->
+  <footer class="py-12 bg-rose-600 text-white">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="romantic-font text-3xl mb-4">Benie & Gloire</p>
+      <p class="elegant-font">30 Août 2025</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('section-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('section:not(:first-child)').forEach(section => {
+        observer.observe(section);
+      });
+    });
+
+    // Animation séquentielle pour la galerie
+    document.querySelectorAll('.columns-1 > div').forEach((div, index) => {
+      div.style.setProperty('--order', index + 1);
+    });
+  </script>
+</body>
+</html>

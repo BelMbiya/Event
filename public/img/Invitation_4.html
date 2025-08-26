@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benie & Gloire - Wedding E-Invitation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    .serif-font {
+      font-family: 'DM Serif Display', serif;
+    }
+    
+    .sans-font {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .slide {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .page-section {
+      scroll-snap-align: start;
+    }
+
+    .scroll-container {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      height: 100vh;
+    }
+
+    .divider::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 50px;
+      background: #000;
+      margin: 2rem auto;
+    }
+  </style>
+</head>
+
+<body class="bg-white">
+  <div class="scroll-container">
+    <!-- Hero Section -->
+    <section class="page-section min-h-screen flex items-center justify-center p-6 bg-white">
+      <div class="max-w-md text-center slide">
+        <img src="Wed.jpg" alt="Benie & Gloire" class="w-full h-96 object-cover mb-8">
+        <h1 class="serif-font text-4xl mb-4">BENIE & GLOIRE</h1>
+        <p class="sans-font tracking-[0.2em] text-sm text-gray-600">30 AOÛT 2025</p>
+      </div>
+    </section>
+
+    <!-- Details Section -->
+    <section class="page-section min-h-screen flex items-center justify-center p-6 bg-white">
+      <div class="max-w-md text-center slide">
+        <h2 class="serif-font text-3xl mb-6">LES DÉTAILS</h2>
+        <p class="sans-font leading-relaxed text-gray-600 mb-8">
+          Nous vous invitons à célébrer<br>
+          notre union le
+        </p>
+        <div class="space-y-2 mb-12">
+          <p class="sans-font">Samedi, 30 Août 2025</p>
+          <p class="sans-font">19h00</p>
+          <p class="sans-font">Grand Chapiteau de GB</p>
+        </div>
+        <div class="divider"></div>
+        <p class="sans-font text-sm text-gray-500">
+          Une réception suivra la cérémonie
+        </p>
+      </div>
+    </section>
+
+    <!-- RSVP Section -->
+    <section class="page-section min-h-screen flex items-center justify-center p-6 bg-white">
+      <div class="max-w-md w-full slide">
+        <h2 class="serif-font text-3xl text-center mb-12">RSVP</h2>
+        <form class="space-y-8">
+          <div class="space-y-6">
+            <input type="text" placeholder="Votre nom" class="w-full p-3 border-b border-gray-200 focus:border-gray-400 outline-none sans-font">
+            <input type="email" placeholder="Votre email" class="w-full p-3 border-b border-gray-200 focus:border-gray-400 outline-none sans-font">
+            <select class="w-full p-3 border-b border-gray-200 focus:border-gray-400 outline-none sans-font">
+              <option value="">Nombre d'invités</option>
+              <option value="1">1 personne</option>
+              <option value="2">2 personnes</option>
+            </select>
+          </div>
+          <button class="w-full p-4 bg-black text-white sans-font tracking-wider">
+            Confirmer ma présence
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Préférences Section -->
+    <section class="page-section min-h-screen flex items-center justify-center p-6 bg-white">
+      <div class="max-w-md w-full slide">
+        <h2 class="serif-font text-3xl text-center mb-12">PRÉFÉRENCES</h2>
+        <div class="space-y-8">
+          <div>
+            <h3 class="sans-font text-sm tracking-wider mb-4">BOISSONS</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <label class="border p-4 text-center cursor-pointer hover:bg-gray-50">
+                <input type="checkbox" class="hidden peer">
+                <span class="sans-font text-sm peer-checked:font-medium">Champagne</span>
+              </label>
+              <!-- Répéter pour autres boissons -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.slide').forEach(slide => {
+        observer.observe(slide);
+      });
+    });
+  </script>
+</body>
+</html>

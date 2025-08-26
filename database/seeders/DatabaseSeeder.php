@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
             EventTypeSeeder::class,
             GuestTypeSeeder::class,
             GuestCategorySeeder::class,
-            UserSeeder::class
+            UserSeeder::class,
+            EventSeeder::class,
         ]);
         // User::factory(10)->create();
 

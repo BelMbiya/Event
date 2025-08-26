@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benie & Gloire - Célébration de Mariage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+  
+  <style>
+    @keyframes floralFloat {
+      0% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+      100% { transform: translateY(0) rotate(0); }
+    }
+
+    .elegant-font {
+      font-family: 'Playfair Display', serif;
+    }
+    
+    .script-font {
+      font-family: 'Great Vibes', cursive;
+    }
+
+    .floral-corner {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      opacity: 0.8;
+      animation: floralFloat 6s ease-in-out infinite;
+    }
+
+    .top-right { top: 0; right: 0; transform: rotate(90deg); }
+    .bottom-left { bottom: 0; left: 0; transform: rotate(-90deg); }
+
+    .romantic-border {
+      border: 1px solid rgba(235, 198, 190, 0.3);
+      box-shadow: 0 0 30px rgba(235, 198, 190, 0.2);
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(235, 198, 190, 0.3);
+    }
+
+    .gold-shimmer {
+      background: linear-gradient(45deg, #ffd700, #faf0e6, #ffd700);
+      background-size: 200% 200%;
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .btn-romantic {
+      background: linear-gradient(to right, #ebc6be, #f8d3c5);
+      transition: all 0.3s ease;
+    }
+
+    .btn-romantic:hover {
+      background: linear-gradient(to right, #f8d3c5, #ebc6be);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(235, 198, 190, 0.4);
+    }
+
+    @keyframes slideUpFade {
+      0% {
+        opacity: 0;
+        transform: translateY(100px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-up-hidden {
+      opacity: 0;
+      transform: translateY(100px);
+    }
+
+    .slide-up-animate {
+      animation: slideUpFade 1.5s ease-out forwards;
+    }
+
+    .hero-content {
+      opacity: 0;
+      transform: translateY(100px);
+    }
+
+    .hero-content.visible {
+      animation: slideUpFade 1.5s ease-out forwards;
+    }
+
+    /* Ajout des styles pour le contenu masqué */
+    .content-hidden {
+      opacity: 0;
+      transform: translateY(50px);
+      visibility: hidden;
+    }
+
+    .content-visible {
+      animation: contentFadeIn 1s ease forwards;
+    }
+
+    @keyframes contentFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(50px);
+        visibility: visible;
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#faf0e6]">
+  <!-- Hero Section -->
+  <section class="min-h-screen relative overflow-hidden flex items-center justify-center slide-up-hidden">
+    <!-- Image de fond avec overlay -->
+    <div class="absolute inset-0 w-full h-full">
+      <img 
+        src="Wed.jpg"
+        alt="Décor de mariage" 
+        class="w-full h-full object-cover"
+      >
+      <div class="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60"></div>
+    </div>
+
+    <!-- Coins floraux en SVG -->
+    <div class="absolute top-0 right-0 w-48 h-48 opacity-80 floral-corner top-right">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50,0 Q100,0 100,50 Q100,100 50,100 Q0,100 0,50 Q0,0 50,0" fill="none" stroke="#ebc6be" stroke-width="0.5"/>
+        <path d="M50,10 Q90,10 90,50 Q90,90 50,90 Q10,90 10,50 Q10,10 50,10" fill="none" stroke="#ebc6be" stroke-width="0.5"/>
+        <g transform="translate(30,30)">
+          <path d="M20,0 C30,10 30,20 20,30 C10,20 10,10 20,0" fill="#ebc6be" opacity="0.3"/>
+          <path d="M0,20 C10,30 20,30 30,20 C20,10 10,10 0,20" fill="#ebc6be" opacity="0.3"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="absolute bottom-0 left-0 w-48 h-48 opacity-80 floral-corner bottom-left">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50,0 Q100,0 100,50 Q100,100 50,100 Q0,100 0,50 Q0,0 50,0" fill="none" stroke="#ebc6be" stroke-width="0.5"/>
+        <path d="M50,10 Q90,10 90,50 Q90,90 50,90 Q10,90 10,50 Q10,10 50,10" fill="none" stroke="#ebc6be" stroke-width="0.5"/>
+        <g transform="translate(30,30)">
+          <path d="M20,0 C30,10 30,20 20,30 C10,20 10,10 20,0" fill="#ebc6be" opacity="0.3"/>
+          <path d="M0,20 C10,30 20,30 30,20 C20,10 10,10 0,20" fill="#ebc6be" opacity="0.3"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="max-w-4xl w-full bg-white/95 backdrop-blur-sm rounded-3xl p-16 romantic-border card-hover relative z-10 mx-4 hero-content">
+      <!-- En-tête élégant -->
+      <div class="text-center space-y-6">
+        <h4 class="elegant-font text-[#ebc6be] tracking-[0.3em] uppercase text-sm">Nous célébrons notre union</h4>
+        <h1 class="script-font text-6xl md:text-7xl text-[#967259] leading-tight">Benie & Gloire</h1>
+        <div class="flex items-center justify-center gap-4">
+          <div class="h-[1px] w-20 bg-[#ebc6be]"></div>
+          <p class="elegant-font text-[#967259]">30 AOÛT 2025</p>
+          <div class="h-[1px] w-20 bg-[#ebc6be]"></div>
+        </div>
+      </div>
+
+      <!-- Détails principaux -->
+      <div class="mt-16 text-center space-y-8">
+        <p class="elegant-font text-lg text-[#967259] leading-relaxed">
+          Les familles <span class="font-semibold">Ngoya</span> & <span class="font-semibold">Kadiebwe</span><br>
+          sollicitent l'honneur de votre présence à la cérémonie de mariage
+        </p>
+
+        <div class="space-y-2">
+          <p class="elegant-font text-lg text-[#967259]">Grand Chapiteau de GB</p>
+          <p class="text-[#967259]">19 heures précises</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section RSVP -->
+  <section class="py-20 px-8 bg-white/70">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="script-font text-5xl text-[#967259] mb-4">Répondez s'il vous plaît</h2>
+        <div class="h-[1px] w-32 bg-[#ebc6be] mx-auto"></div>
+      </div>
+
+      <form class="space-y-8">
+        <input type="text" placeholder="Votre nom" class="w-full p-4 border border-rose-200 rounded-lg focus:ring-2 focus:ring-rose-300 focus:border-transparent serif-font">
+        <select class="w-full p-4 border border-rose-200 rounded-lg focus:ring-2 focus:ring-rose-300 focus:border-transparent serif-font">
+          <option>1 personne</option>
+          <option>2 personnes</option>
+          <option>3 personnes</option>
+          <option>4 personnes</option>
+        </select>
+        <textarea placeholder="Un message pour les mariés..." class="w-full p-4 border border-rose-200 rounded-lg focus:ring-2 focus:ring-rose-300 focus:border-transparent serif-font h-32"></textarea>
+        <button class="blush-gradient px-8 py-3 text-rose-800 rounded-full hover:opacity-90 transition shadow-lg serif-font font-semibold">
+          Confirmer ma présence
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Section Cadeaux -->
+  <section class="py-20 px-6 bg-rose-50">
+    <div class="max-w-2xl mx-auto text-center">
+      <h2 class="script-font text-4xl text-rose-800 mb-8">Liste de Cadeaux</h2>
+      <p class="serif-font text-xl text-gray-700 mb-8">
+        Votre présence est notre plus beau cadeau. Cependant, si vous souhaitez nous gâter,<br>
+        une urne sera mise à disposition pour vos présents.
+      </p>
+      <div class="flex justify-center gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+          <img src="SCANME.jpg" alt="" class="w-16 h-16 mx-auto mb-4">
+          <p class="serif-font text-gray-600">Urne à disposition</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Contenu Principal -->
+  <section class="py-20 px-4 relative overflow-hidden bg-white content-hidden">
+    <div class="max-w-3xl mx-auto text-center relative z-10">
+      <h2 class="script-font text-5xl text-[#967259] mb-8">Notre Histoire</h2>
+      <p class="elegant-font text-lg text-gray-700 leading-relaxed mb-12">
+        C'est avec une immense joie que nous vous invitons à partager<br>
+        ce moment unique de nos vies.
+      </p>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="romantic-border p-8 rounded-2xl card-hover">
+          <h3 class="script-font text-2xl text-[#967259] mb-4">La Cérémonie</h3>
+          <p class="elegant-font text-gray-600">
+            19h00 précises<br>
+            Grand Chapiteau de GB<br>
+            (Shoprite)
+          </p>
+        </div>
+        <div class="romantic-border p-8 rounded-2xl card-hover">
+          <h3 class="script-font text-2xl text-[#967259] mb-4">La Réception</h3>
+          <p class="elegant-font text-gray-600">
+            20h30<br>
+            Salle des fêtes<br>
+            Grand Chapiteau
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Livre d'Or -->
+  <section class="py-20 px-4 bg-[#faf0e6] content-hidden">
+    <div class="max-w-2xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="script-font text-5xl text-[#967259] mb-4">Livre d'Or</h2>
+        <div class="h-[1px] w-32 bg-[#ebc6be] mx-auto"></div>
+      </div>
+      
+      <form class="space-y-6">
+        <div class="romantic-border bg-white/95 rounded-2xl p-8">
+          <textarea 
+            placeholder="Laissez un message aux mariés..."
+            class="w-full p-6 bg-transparent border-none focus:ring-0 elegant-font text-lg text-gray-700 min-h-[150px] resize-none"
+          ></textarea>
+          <div class="flex items-center gap-4 mt-4">
+            <input 
+              type="text" 
+              placeholder="Votre nom"
+              class="flex-1 p-3 bg-transparent border-b border-[#ebc6be] focus:ring-0 focus:border-[#967259] elegant-font"
+            >
+            <button class="btn-romantic px-6 py-3 rounded-full text-[#967259] font-semibold">
+              Envoyer
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Section Préférences -->
+  <section class="py-20 px-4 bg-white content-hidden">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="script-font text-5xl text-[#967259] text-center mb-8">Vos Préférences</h2>
+      <div class="romantic-border bg-white/95 rounded-2xl p-8 shadow-xl">
+        <div class="mb-12">
+          <h3 class="elegant-font text-2xl text-[#967259] mb-6 text-center">Boissons</h3>
+          <div class="flex flex-wrap gap-4 justify-center">
+            <label class="drink-option">
+              <input type="checkbox" class="hidden peer">
+              <span class="inline-block px-6 py-3 rounded-full border border-[#ebc6be] text-gray-700 peer-checked:bg-[#967259] peer-checked:text-white transition-all cursor-pointer hover:border-[#967259]">
+                🍾 Champagne
+              </span>
+            </label>
+            <!-- Ajouter d'autres options similaires -->
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <button class="btn-romantic px-8 py-3 rounded-full text-[#967259] font-semibold">
+            Confirmer mes choix
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer élégant -->
+  <footer class="py-16 bg-[#967259] text-white/90">
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="script-font text-3xl mb-6">Benie & Gloire</p>
+      <p class="elegant-font">30 Août 2025</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (entry.target.classList.contains('slide-up-hidden')) {
+              entry.target.classList.add('slide-up-animate');
+              
+              if (entry.target.classList.contains('min-h-screen')) {
+                const heroContent = entry.target.querySelector('.hero-content');
+                setTimeout(() => {
+                  heroContent.classList.add('visible');
+                }, 500);
+              }
+            }
+            
+            if (entry.target.classList.contains('content-hidden')) {
+              entry.target.classList.add('content-visible');
+            }
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px'
+      });
+
+      // Observer toutes les sections
+      document.querySelectorAll('section').forEach(section => {
+        if (section.classList.contains('min-h-screen')) {
+          section.classList.add('slide-up-hidden');
+        } else {
+          section.classList.add('content-hidden');
+        }
+        observer.observe(section);
+      });
+    });
+  </script>
+</body>
+</html>

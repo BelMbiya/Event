@@ -2,27 +2,64 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'first_name' => 'Super',
-            'last_name'  => 'Admin',
-            'email'      => 'admin@event.com',
-            'phone'      => '+243000000000',
-            'password'   => Hash::make('admin123'),
-            'role'       => 'admin',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $users = [
+            [
+                'first_name' => 'Marie',
+                'last_name' => 'Dubois',
+                'email' => 'marie.dubois@example.com',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 123 456 789',
+                'role' => 'admin',
+            ],
+            [
+                'first_name' => 'Jean',
+                'last_name' => 'Martin',
+                'email' => 'jean.martin@example.com',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 234 567 890',
+                'role' => 'organizer',
+            ],
+            [
+                'first_name' => 'Sophie',
+                'last_name' => 'Laurent',
+                'email' => 'sophie.laurent@example.com',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 345 678 901',
+                'role' => 'organizer',
+            ],
+            [
+                'first_name' => 'Pierre',
+                'last_name' => 'Moreau',
+                'email' => 'pierre.moreau@example.com',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 456 789 012',
+                'role' => 'organizer',
+            ],
+            [
+                'first_name' => 'Claire',
+                'last_name' => 'Bernard',
+                'email' => 'DE ',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 567 890 123',
+                'role' => 'organizer',
+            ],
+        ];
+
+        foreach ($users as $userData) {
+            User::create($userData);
+        }
     }
 }

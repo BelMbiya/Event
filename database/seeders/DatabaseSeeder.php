@@ -19,6 +19,15 @@ class DatabaseSeeder extends Seeder
             GuestCategorySeeder::class,
             UserSeeder::class,
             EventSeeder::class,
+            GuestSeeder::class,
+            InvitationSeeder::class,
+            GuestBookSeeder::class,
+            CongoleseDrinksSeeder::class, // Nouveau seeder pour les boissons congolaises
+            EventDrinkSeeder::class,
+            GuestDrinkChoiceSeeder::class,
+            InvitationContentSeeder::class,
+            ContentSeeder::class,
+            DrinkPricesSeeder::class, // Seeder pour les prix des boissons
         ]);
         // User::factory(10)->create();
 

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('invitations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->foreignId('guest_id')->constrained('guests')->onDelete('cascade');
+            $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
+            $table->foreignId('guest_id')->nullable()->constrained('guests')->onDelete('cascade');
             $table->string('unique_code')->unique();   // token aléatoire
             $table->string('invitation_url')->unique();
             $table->enum('status', ['pending','sent','opened','responded', 'called'])->default('pending');

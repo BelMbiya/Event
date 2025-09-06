@@ -11,7 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Enregistrer les middlewares personnalisés
+        $middleware->alias([
+            'check.event.access' => \App\Http\Middleware\CheckEventAccess::class,
+            'check.invitation.access' => \App\Http\Middleware\CheckInvitationAccess::class,
+            'redirect.if.not.authenticated' => \App\Http\Middleware\RedirectIfNotAuthenticated::class,
+            'validate.sensitive.data' => \App\Http\Middleware\ValidateSensitiveData::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

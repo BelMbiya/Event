@@ -19,6 +19,14 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS (important pour tabs, modals, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+
 
 </head>
 
@@ -63,20 +71,20 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('guests.index') }}">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Invités</span></a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
-                <i class="fas fa-fw fa-table"></i>
+            <a class="nav-link" href="{{ route('drink-choices.redirect') }}">
+                <i class="fas fa-fw fa-glass-cheers"></i>
                 <span>Choix des boissons</span></a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
-                <i class="fas fa-fw fa-table"></i>
+            <a class="nav-link" href="{{ route('guest-book.redirect') }}">
+                <i class="fas fa-fw fa-book"></i>
                 <span>Livre d'Or</span></a>
         </li>
 
@@ -209,9 +217,14 @@
 <!-- Page level plugins -->
 <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
 
+<!-- Summernote WYSIWYG Editor -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+
 <!-- Page level custom scripts -->
 <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
 <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
+@yield('scripts')
 
 </body>
 

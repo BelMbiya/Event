@@ -43,8 +43,18 @@ class ContentController extends Controller
     {
         $invitation = Invitation::findOrFail($invitation_id);
         
-        // ✅ NOUVEAU : Vérifier si la synchronisation est demandée
-        $syncToAllInvitations = $request->has('sync_to_all_invitations');
+        // ✅ DEBUG : Log des données reçues
+        \Log::info("=== MISE À JOUR INVITATION {$invitation_id} ===");
+        \Log::info("Données reçues:", $request->all());
+        \Log::info("Checkbox sync_to_all_invitations présente: " . ($request->has('sync_to_all_invitations') ? 'true' : 'false'));
+        \Log::info("Valeur sync_to_all_invitations: " . $request->input('sync_to_all_invitations'));
+        
+        // ✅ NOUVEAU : Vérifier si la synchronisation est demandée (amélioré)
+        $syncToAllInvitations = $request->has('sync_to_all_invitations') || 
+                               $request->input('sync_to_all_invitations') == '1' || 
+                               $request->input('sync_to_all_invitations') == 'on' ||
+                               $request->input('sync_to_all_invitations') === true;
+        \Log::info("Synchronisation activée: " . ($syncToAllInvitations ? 'true' : 'false'));
         
         // Traitement des champs boolean avant validation
         $request->merge([
@@ -196,7 +206,18 @@ class ContentController extends Controller
 
             // ✅ NOUVEAU : Synchroniser avec toutes les autres invitations du même événement
             if ($syncToAllInvitations) {
-                $this->syncContentToAllInvitations($content, $invitation->event_id, $invitation->id);
+                \Log::info("=== DÉBUT SYNCHRONISATION ===");
+                \Log::info("Synchronisation demandée pour l'invitation {$invitation->id} de l'événement {$invitation->event_id}");
+                try {
+                    $syncCount = $this->syncContentToAllInvitations($content, $invitation->event_id, $invitation->id);
+                    \Log::info("Synchronisation terminée avec succès: {$syncCount} invitations mises à jour");
+                } catch (\Exception $e) {
+                    \Log::error("Erreur lors de la synchronisation: " . $e->getMessage());
+                    \Log::error("Stack trace: " . $e->getTraceAsString());
+                }
+                \Log::info("=== FIN SYNCHRONISATION ===");
+            } else {
+                \Log::info("Synchronisation non demandée - mise à jour locale uniquement");
             }
 
             DB::commit();
@@ -493,15 +514,21 @@ class ContentController extends Controller
     private function syncContentToAllInvitations($sourceContent, $eventId, $excludeInvitationId)
     {
         try {
+            \Log::info("=== DÉBUT syncContentToAllInvitations ===");
+            \Log::info("Event ID: {$eventId}, Exclude Invitation ID: {$excludeInvitationId}");
+            
             // Récupérer toutes les autres invitations du même événement
             $otherInvitations = Invitation::where('event_id', $eventId)
                 ->where('id', '!=', $excludeInvitationId)
                 ->with('content')
                 ->get();
 
+            \Log::info("Nombre d'invitations trouvées à synchroniser: " . $otherInvitations->count());
             $syncCount = 0;
 
             foreach ($otherInvitations as $invitation) {
+                \Log::info("Synchronisation de l'invitation ID: {$invitation->id}");
+                
                 // Préparer les données à synchroniser (exclure les champs spécifiques à l'invitation)
                 $syncData = [
                     // Informations générales de l'événement
@@ -525,11 +552,8 @@ class ContentController extends Controller
                     'intro_2' => $sourceContent->intro_2,
                     'body_html' => $sourceContent->body_html,
                     
-                    // Images (optionnel - peut être synchronisé ou non selon les besoins)
-                    'hero_image_path' => $sourceContent->hero_image_path,
+                    // Images (seulement si elles existent)
                     'hero_image_alt' => $sourceContent->hero_image_alt,
-                    'gallery' => $sourceContent->gallery,
-                    'og_image' => $sourceContent->og_image,
                     
                     // Fonctionnalités
                     'guestbook_enabled' => $sourceContent->guestbook_enabled,
@@ -551,8 +575,19 @@ class ContentController extends Controller
                     // 'status' => $sourceContent->status, // Ne pas synchroniser le statut
                 ];
 
+                // Ajouter les images seulement si elles existent et ne sont pas vides
+                if (!empty($sourceContent->hero_image_path) && $sourceContent->hero_image_path !== null) {
+                    $syncData['hero_image_path'] = $sourceContent->hero_image_path;
+                }
+                if (!empty($sourceContent->gallery) && $sourceContent->gallery !== null) {
+                    $syncData['gallery'] = $sourceContent->gallery;
+                }
+                if (!empty($sourceContent->og_image) && $sourceContent->og_image !== null) {
+                    $syncData['og_image'] = $sourceContent->og_image;
+                }
+
                 // Mettre à jour ou créer le contenu pour cette invitation
-                Content::updateOrCreate(
+                $updatedContent = Content::updateOrCreate(
                     ['invitation_id' => $invitation->id],
                     array_merge($syncData, [
                         'event_id' => $eventId,
@@ -564,6 +599,7 @@ class ContentController extends Controller
                     ])
                 );
 
+                \Log::info("Contenu mis à jour pour l'invitation {$invitation->id}, Content ID: {$updatedContent->id}");
                 $syncCount++;
             }
 

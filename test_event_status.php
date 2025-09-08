@@ -91,3 +91,4 @@ if ($event->hasNoGuests() && $event->hasNoInvitations()) {
 }
 
 echo "\n=== FIN DU TEST ===\n";
+

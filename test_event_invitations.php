@@ -185,3 +185,4 @@ fetch(`/events/${eventId}/invitations-status`)
         }
     });
 */
+

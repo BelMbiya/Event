@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * ========================================
+ * EVENT MODEL - GESTION DES ÉVÉNEMENTS
+ * ========================================
+ * 
+ * Ce modèle représente un événement (mariage, anniversaire, etc.).
+ * Il centralise toutes les données de l'événement et gère les relations
+ * avec les invités, invitations, boissons et autres éléments.
+ */
+
 class Event extends Model
 {
     protected $fillable = [

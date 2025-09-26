@@ -3,6 +3,16 @@
 namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * DRINK CHOICES CONTROLLER - GESTION DES CHOIX DE BOISSONS
+ * ========================================
+ * 
+ * Ce contrôleur gère l'administration des choix de boissons des invités.
+ * Il permet de consulter, filtrer et exporter les choix de boissons
+ * avec des statistiques détaillées pour l'organisation.
+ */
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Guest;

@@ -1,3 +1,16 @@
+{{--
+========================================
+ADMIN INDEX VIEW - TABLEAU DE BORD ADMINISTRATEUR
+========================================
+
+Cette vue affiche le tableau de bord principal avec :
+- Statistiques globales (événements, invités, invitations, paiements)
+- Filtres avancés pour la recherche d'événements
+- Liste des événements avec métriques détaillées
+- Actions rapides et liens vers les fonctionnalités
+
+UTILISATION : Page d'accueil de l'administration
+--}}
 @extends('admin')
 @section('content')
     <!-- Messages de session -->
@@ -46,97 +59,39 @@
         </div>
     </div>
 
-    <!-- Filtres de recherche -->
+    <!-- Recherche simplifiée -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-filter"></i> Filtres de Recherche
+                <i class="fas fa-search"></i> Recherche
             </h6>
         </div>
         <div class="card-body">
-            <form method="GET" action="{{ route('dashboard') }}" id="filterForm">
+            <form method="GET" action="{{ route('dashboard') }}" id="searchForm">
                 <div class="row">
-                    <div class="col-md-3">
-                        <label class="form-label">Recherche par nom</label>
+                    <div class="col-md-10">
+                        <label class="form-label">Rechercher</label>
                         <input type="text" name="search" class="form-control" placeholder="Nom d'événement, invité..." value="{{ request('search') }}">
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Statut Événement</label>
-                        <select name="event_status" class="form-select">
-                            <option value="">Tous</option>
-                            <option value="upcoming" {{ request('event_status') == 'upcoming' ? 'selected' : '' }}>À venir</option>
-                            <option value="past" {{ request('event_status') == 'past' ? 'selected' : '' }}>Passés</option>
-                            <option value="today" {{ request('event_status') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Statut RSVP</label>
-                        <select name="rsvp_status" class="form-select">
-                            <option value="">Tous</option>
-                            <option value="confirmed" {{ request('rsvp_status') == 'confirmed' ? 'selected' : '' }}>Confirmés</option>
-                            <option value="pending" {{ request('rsvp_status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                            <option value="declined" {{ request('rsvp_status') == 'declined' ? 'selected' : '' }}>Déclinés</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Type d'Événement</label>
-                        <select name="event_type" class="form-select">
-                            <option value="">Tous</option>
-                            @foreach(\App\Models\EventType::all() as $type)
-                                <option value="{{ $type->id }}" {{ request('event_type') == $type->id ? 'selected' : '' }}>
-                                    {{ $type->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Date de début</label>
-                        <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
-                    </div>
-                    <div class="col-md-1">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i>
+                                <i class="fas fa-search"></i> Rechercher
                             </button>
                         </div>
                     </div>
                 </div>
+                @if(request('search'))
                 <div class="row mt-2">
-                    <div class="col-md-2">
-                        <label class="form-label">Date de fin</label>
-                        <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Invitations</label>
-                        <select name="invitation_status" class="form-select">
-                            <option value="">Tous</option>
-                            <option value="sent" {{ request('invitation_status') == 'sent' ? 'selected' : '' }}>Envoyées</option>
-                            <option value="not_sent" {{ request('invitation_status') == 'not_sent' ? 'selected' : '' }}>Non envoyées</option>
-                            <option value="opened" {{ request('invitation_status') == 'opened' ? 'selected' : '' }}>Ouvertes</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Boissons</label>
-                        <select name="drinks_status" class="form-select">
-                            <option value="">Tous</option>
-                            <option value="with_drinks" {{ request('drinks_status') == 'with_drinks' ? 'selected' : '' }}>Avec boissons</option>
-                            <option value="without_drinks" {{ request('drinks_status') == 'without_drinks' ? 'selected' : '' }}>Sans boissons</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Lieu</label>
-                        <input type="text" name="location" class="form-control" placeholder="Ville, lieu..." value="{{ request('location') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">&nbsp;</label>
-                        <div class="d-grid">
-                            <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Effacer
-                            </a>
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            Recherche : "<strong>{{ request('search') }}</strong>"
                         </div>
                     </div>
                 </div>
+                @endif
             </form>
         </div>
     </div>
@@ -159,7 +114,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+</div>
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
@@ -216,6 +171,8 @@
         </div>
     </div>
 
+
+
     <!-- Actions rapides -->
     <div class="row mb-4">
         <div class="col-12">
@@ -235,16 +192,25 @@
                                     </p>
                                     <!-- Première ligne de boutons -->
                                     <div class="mb-2">
-                                        <a href="{{ route('invitation.create', $event->id) }}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-plus"></i> Invitation
-                                        </a>
-                                        <form action="{{ route('invitation.create-for-all-guests', $event->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-warning btn-sm" 
-                                                    title="Vérifier et créer automatiquement les invitations manquantes">
-                                                <i class="fas fa-magic"></i> Auto-Créer
-                                            </button>
-                                        </form>
+                                        @if($event->invitations->count() == 0)
+                                            <a href="{{ route('invitation.create', $event->id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-plus"></i> Invitation
+                                            </a>
+                                            <form action="{{ route('invitation.create-for-all-guests', $event->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-warning btn-sm" 
+                                                        title="Vérifier et créer automatiquement les invitations manquantes">
+                                                    <i class="fas fa-magic"></i> Auto-Créer
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="badge bg-success me-2">
+                                                <i class="fas fa-check"></i> Invitation créée
+                                            </span>
+                                            <a href="{{ route('invitation.edit', $event->invitations->first()->id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </a>
+                                        @endif
                                     </div>
                                     
                                     <!-- Deuxième ligne de boutons -->
@@ -277,92 +243,6 @@
         </div>
     </div>
 
-    <!-- Content Row -->
-    <div class="row">
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Nombre de tables</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Nombre d'invitations</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Nombre d'invités
-                            </div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">0</div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar"
-                                             style="width: 0" aria-valuenow="0" aria-valuemin="0"
-                                             aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Requests Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Durée avant événement</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 <script>
@@ -378,22 +258,12 @@ function refreshDashboard() {
     }, 1000);
 }
 
-// Auto-submit du formulaire de filtres avec délai
-let filterTimeout;
-document.querySelectorAll('#filterForm input, #filterForm select').forEach(element => {
-    element.addEventListener('change', function() {
-        clearTimeout(filterTimeout);
-        filterTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
-});
-
-// Auto-submit pour les champs de recherche avec délai plus long
+// Auto-submit pour le champ de recherche avec délai
+let searchTimeout;
 document.querySelector('input[name="search"]').addEventListener('input', function() {
-    clearTimeout(filterTimeout);
-    filterTimeout = setTimeout(() => {
-        document.getElementById('filterForm').submit();
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        document.getElementById('searchForm').submit();
     }, 1000);
 });
 

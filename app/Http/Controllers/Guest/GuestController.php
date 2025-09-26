@@ -4,6 +4,16 @@ namespace App\Http\Controllers\guest;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * GUEST CONTROLLER - GESTION DES INVITÉS
+ * ========================================
+ * 
+ * Ce contrôleur gère l'administration des invités d'événements.
+ * Il traite l'ajout, modification, RSVP et génération de rapports
+ * pour le suivi et la gestion des invités.
+ */
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Models\Guest;

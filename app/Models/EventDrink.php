@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * ========================================
+ * EVENT DRINK MODEL - GESTION DES BOISSONS D'ÉVÉNEMENT
+ * ========================================
+ * 
+ * Ce modèle fait le lien entre un événement et ses boissons disponibles.
+ * Il permet de personnaliser les prix et la disponibilité des boissons
+ * pour chaque événement spécifique.
+ */
+
 class EventDrink extends Model
 {
     protected $fillable = [

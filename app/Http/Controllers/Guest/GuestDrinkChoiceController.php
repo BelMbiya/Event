@@ -4,6 +4,16 @@ namespace App\Http\Controllers\Guest;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * GUEST DRINK CHOICE CONTROLLER - GESTION DES CHOIX D'INVITÉS
+ * ========================================
+ * 
+ * Ce contrôleur gère les choix de boissons effectués par les invités.
+ * Il traite l'enregistrement des choix via les invitations publiques
+ * et permet la suppression en masse pour la gestion administrative.
+ */
 use App\Models\GuestDrinkChoice;
 
 class GuestDrinkChoiceController extends Controller
@@ -19,7 +29,7 @@ class GuestDrinkChoiceController extends Controller
         $request->validate([
             'guest_id'    => 'required|exists:guests,id',
             'drinks'      => 'required|array',
-            'unique_code' => 'required|exists:invitations,unique_code',
+            'event_id'    => 'required|exists:events,id', // ✅ NOUVEAU : ID de l'événement
         ]);
 
         foreach ($request->drinks as $eventDrinkId) {
@@ -35,8 +45,9 @@ class GuestDrinkChoiceController extends Controller
             );
         }
 
+        // ✅ NOUVELLE LOGIQUE : Redirection vers l'invitation dynamique
         return redirect()
-            ->route('invitation.show', $request->unique_code)
+            ->route('invitation.show.dynamic', $request->guest_id)
             ->with('success', 'Vos choix ont été enregistrés !');
     }
 

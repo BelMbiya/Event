@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.invitation.access' => \App\Http\Middleware\CheckInvitationAccess::class,
             'redirect.if.not.authenticated' => \App\Http\Middleware\RedirectIfNotAuthenticated::class,
             'validate.sensitive.data' => \App\Http\Middleware\ValidateSensitiveData::class,
+            'prevent.duplicate.invitation' => \App\Http\Middleware\PreventDuplicateInvitation::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

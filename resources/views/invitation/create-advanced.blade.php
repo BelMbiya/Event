@@ -1,3 +1,17 @@
+{{--
+========================================
+INVITATION CREATE ADVANCED VIEW - CRÉATION D'INVITATION AVANCÉE
+========================================
+
+Cette vue permet de créer des invitations personnalisées avec :
+- Formulaire multi-onglets (basique, lieu, contenu, fonctionnalités, thème)
+- Upload d'images (héros, galerie, OG image)
+- Personnalisation des thèmes et couleurs
+- Gestion des fonctionnalités (RSVP, boissons, livre d'or)
+- Validation en temps réel et sauvegarde
+
+UTILISATION : Création complète d'invitations avec toutes les options
+--}}
 @extends('admin')
 
 @section('content')
@@ -20,19 +34,29 @@
         Les champs marqués d'un <span class="text-danger">*</span> sont obligatoires pour la validation et l'enregistrement.
     </div>
 
+
     <form action="{{ route('invitation.store') }}" method="POST" enctype="multipart/form-data" id="invitationForm">
         @csrf
         <input type="hidden" name="event_id" value="{{ $event->id }}">
+        
+        <!-- Champs cachés pour les informations importantes de l'événement -->
+        <input type="hidden" name="couple" value="{{ $event->title }}">
+        <input type="hidden" name="event_datetime" value="{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d\TH:i') : '' }}">
+        <input type="hidden" name="timezone" value="Africa/Kinshasa">
+        <input type="hidden" name="guest_id" value="">
+        <input type="hidden" name="status" value="sent">
+        <input type="hidden" name="content_status" value="published">
+        <input type="hidden" name="venue_name" value="{{ $event->location }}">
+        <input type="hidden" name="venue_address_line1" value="{{ $event->address ?? '' }}">
+        <input type="hidden" name="venue_city" value="{{ $event->city ?? '' }}">
+        <input type="hidden" name="venue_region" value="{{ $event->region ?? '' }}">
+        <input type="hidden" name="venue_country" value="{{ $event->country ?? 'République Démocratique du Congo' }}">
+        <input type="hidden" name="google_maps_url" value="{{ $event->google_maps_url ?? '' }}">
 
         <!-- Onglets Bootstrap avec IDs uniques -->
         <ul class="nav nav-pills mb-4" id="invitationCreationTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="invitation-basic-tab" data-bs-toggle="pill" data-bs-target="#invitation-basic-content" type="button" role="tab">
-                    <i class="fas fa-info-circle me-2"></i>Informations de base
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="invitation-content-tab" data-bs-toggle="pill" data-bs-target="#invitation-content-panel" type="button" role="tab">
+                <button class="nav-link active" id="invitation-content-tab" data-bs-toggle="pill" data-bs-target="#invitation-content-panel" type="button" role="tab">
                     <i class="fas fa-edit me-2"></i>Contenu & Textes
                 </button>
             </li>
@@ -61,105 +85,8 @@
         <!-- Contenus des onglets -->
         <div class="tab-content p-4 border rounded bg-white shadow-sm" id="invitationTabsContent">
 
-            <!-- Onglet 1 : Informations de base -->
-            <div class="tab-pane fade show active" id="invitation-basic-content" role="tabpanel" aria-labelledby="invitation-basic-tab">
-                <h5><i class="fas fa-info-circle me-2"></i>Informations de base</h5>
-                <p class="text-muted">Configurez les informations essentielles de votre invitation</p>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Nom du couple <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="couple" value="{{ old('couple', $event->title) }}" required>
-                        <small class="form-text text-muted">Ex: Marie & Jean, Sophie & Pierre</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Date et heure de l'événement <span class="text-danger">*</span></label>
-                        <input type="datetime-local" class="form-control" name="event_datetime" 
-                               value="{{ old('event_datetime', $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d\TH:i') : '') }}" required>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Fuseau horaire</label>
-                        <select class="form-select" name="timezone">
-                            <option value="Africa/Kinshasa" {{ old('timezone') == 'Africa/Kinshasa' ? 'selected' : '' }}>Afrique/Kinshasa</option>
-                            <option value="Europe/Paris" {{ old('timezone') == 'Europe/Paris' ? 'selected' : '' }}>Europe/Paris</option>
-                            <option value="America/New_York" {{ old('timezone') == 'America/New_York' ? 'selected' : '' }}>Amérique/New York</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Invité concerné</label>
-                        <select class="form-select" name="guest_id">
-                            <option value="">Invitation générale</option>
-                            @foreach($guests as $guest)
-                                <option value="{{ $guest->id }}" {{ old('guest_id') == $guest->id ? 'selected' : '' }}>
-                                    {{ $guest->first_name }} {{ $guest->last_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Statut de l'invitation <span class="text-danger">*</span></label>
-                        <select class="form-select" name="status" required>
-                            <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : 'selected' }}>En attente</option>
-                            <option value="sent" {{ old('status') == 'sent' ? 'selected' : '' }}>Envoyée</option>
-                            <option value="opened" {{ old('status') == 'opened' ? 'selected' : '' }}>Ouverte</option>
-                            <option value="responded" {{ old('status') == 'responded' ? 'selected' : '' }}>Répondue</option>
-                            <option value="called" {{ old('status') == 'called' ? 'selected' : '' }}>Appelée</option>
-                        </select>
-                        <small class="form-text text-muted">Statut initial de l'invitation</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Statut du contenu <span class="text-danger">*</span></label>
-                        <select class="form-select" name="content_status" required>
-                            <option value="draft" {{ old('content_status', 'draft') == 'draft' ? 'selected' : 'selected' }}>Brouillon</option>
-                            <option value="published" {{ old('content_status') == 'published' ? 'selected' : '' }}>Publié</option>
-                            <option value="archived" {{ old('content_status') == 'archived' ? 'selected' : '' }}>Archivé</option>
-                        </select>
-                        <small class="form-text text-muted">Statut de publication du contenu</small>
-                    </div>
-                </div>
-
-                <h6 class="mt-4">Lieu de l'événement</h6>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Nom du lieu</label>
-                        <input type="text" class="form-control" name="venue_name" value="{{ old('venue_name', $event->location) }}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Adresse</label>
-                        <input type="text" class="form-control" name="venue_address_line1" value="{{ old('venue_address_line1', $event->address) }}">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Ville</label>
-                        <input type="text" class="form-control" name="venue_city" value="{{ old('venue_city', $event->city) }}">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Région</label>
-                        <input type="text" class="form-control" name="venue_region" value="{{ old('venue_region', $event->region) }}">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Pays</label>
-                        <input type="text" class="form-control" name="venue_country" value="{{ old('venue_country', $event->country ?? 'République Démocratique du Congo') }}">
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">URL Google Maps</label>
-                    <input type="url" class="form-control" name="google_maps_url" value="{{ old('google_maps_url', $event->google_maps_url) }}" placeholder="https://maps.google.com/...">
-                    <small class="form-text text-muted">Généré automatiquement à partir de l'adresse de l'événement</small>
-                </div>
-            </div>
-
-            <!-- Onglet 2 : Contenu & Textes -->
-            <div class="tab-pane fade" id="invitation-content-panel" role="tabpanel" aria-labelledby="invitation-content-tab">
+            <!-- Onglet 1 : Contenu & Textes -->
+            <div class="tab-pane fade show active" id="invitation-content-panel" role="tabpanel" aria-labelledby="invitation-content-tab">
                 <h5><i class="fas fa-edit me-2"></i>Contenu & Textes</h5>
                 <p class="text-muted">Personnalisez les textes de votre invitation</p>
 
@@ -182,23 +109,34 @@
                 </div>
 
                 <h6 class="mt-4">📅 Programme de l'événement</h6>
-                <p class="text-muted">Définissez le déroulement de votre événement (jusqu'à 5 créneaux)</p>
+                <p class="text-muted">Définissez le déroulement de votre événement avec un éditeur riche</p>
                 
-                @for($i = 1; $i <= 5; $i++)
-                <div class="row mt-2">
-                    <div class="col-md-4">
-                        <label class="form-label">Créneau {{ $i }} - Heure</label>
-                        <input type="time" class="form-control" name="schedule_time_{{ $i }}" 
-                               value="{{ old("schedule_time_$i", $i == 1 ? '14:00' : ($i == 2 ? '16:00' : ($i == 3 ? '18:00' : ($i == 4 ? '20:00' : '22:00')))) }}">
+                <div class="mb-3">
+                    <label class="form-label">Programme détaillé</label>
+                    <textarea class="form-control summernote" name="program_html" rows="8" placeholder="Créez votre programme avec des heures, descriptions et formatage...">{{ old('program_html', '<div class="program-schedule">
+    <div class="schedule-item">
+        <div class="time">14:00</div>
+        <div class="event">Cérémonie religieuse</div>
                     </div>
-                    <div class="col-md-8">
-                        <label class="form-label">Créneau {{ $i }} - Événement</label>
-                        <input type="text" class="form-control" name="schedule_event_{{ $i }}" 
-                               value="{{ old("schedule_event_$i", $i == 1 ? 'Cérémonie religieuse' : ($i == 2 ? 'Cocktail de bienvenue' : ($i == 3 ? 'Réception et dîner' : ($i == 4 ? 'Ouverture du bal' : 'Soirée dansante')))) }}" 
-                               placeholder="Description de l'événement">
+    <div class="schedule-item">
+        <div class="time">16:00</div>
+        <div class="event">Cocktail de bienvenue</div>
                     </div>
+    <div class="schedule-item">
+        <div class="time">18:00</div>
+        <div class="event">Réception et dîner</div>
                 </div>
-                @endfor
+    <div class="schedule-item">
+        <div class="time">20:00</div>
+        <div class="event">Ouverture du bal</div>
+    </div>
+    <div class="schedule-item">
+        <div class="time">22:00</div>
+        <div class="event">Soirée dansante</div>
+    </div>
+</div>') }}</textarea>
+                    <small class="form-text text-muted">Utilisez l'éditeur pour créer un programme personnalisé avec formatage, couleurs et mise en page</small>
+                </div>
             </div>
 
             <!-- Onglet 3 : Design & Thème -->
@@ -224,23 +162,43 @@
                     </div>
                 </div>
 
+                {{-- 
+                ========================================
+                SECTION POLICES ET DÉCORATIONS - COMMENTÉE
+                ========================================
+                
+                Cette section est commentée car les valeurs par défaut sont définies
+                automatiquement lors de la sauvegarde dans le contrôleur.
+                
+                Valeurs par défaut appliquées :
+                - Police des titres : "Alex Brush" (Élégant)
+                - Police du texte : "Cormorant Garamond" (Élégant)
+                - Éléments floraux : Activés (true)
+                - Effet de superposition : Activé (true)
+                - Effet parallaxe : Désactivé (false)
+                
+                Ces valeurs sont définies dans le contrôleur InvitationController@store
+                dans la variable $defaultTheme.
+                --}}
+                
+                {{-- 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Police des titres</label>
                         <select class="form-select" name="theme_heading_font">
-                            <option value="Alex Brush" {{ old('theme_heading_font') == 'Alex Brush' ? 'selected' : '' }}>Alex Brush (Élégant)</option>
-                            <option value="Dancing Script" {{ old('theme_heading_font') == 'Dancing Script' ? 'selected' : '' }}>Dancing Script (Romantique)</option>
-                            <option value="Great Vibes" {{ old('theme_heading_font') == 'Great Vibes' ? 'selected' : '' }}>Great Vibes (Classique)</option>
-                            <option value="Montserrat" {{ old('theme_heading_font') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Moderne)</option>
+                            <option value="Alex Brush" {{ old('theme_heading_font', 'Alex Brush') == 'Alex Brush' ? 'selected' : '' }}>Alex Brush (Élégant)</option>
+                            <option value="Dancing Script" {{ old('theme_heading_font', 'Alex Brush') == 'Dancing Script' ? 'selected' : '' }}>Dancing Script (Romantique)</option>
+                            <option value="Great Vibes" {{ old('theme_heading_font', 'Alex Brush') == 'Great Vibes' ? 'selected' : '' }}>Great Vibes (Classique)</option>
+                            <option value="Montserrat" {{ old('theme_heading_font', 'Alex Brush') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Moderne)</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Police du texte</label>
                         <select class="form-select" name="theme_body_font">
-                            <option value="Cormorant Garamond" {{ old('theme_body_font') == 'Cormorant Garamond' ? 'selected' : '' }}>Cormorant Garamond (Élégant)</option>
-                            <option value="Playfair Display" {{ old('theme_body_font') == 'Playfair Display' ? 'selected' : '' }}>Playfair Display (Classique)</option>
-                            <option value="Crimson Text" {{ old('theme_body_font') == 'Crimson Text' ? 'selected' : '' }}>Crimson Text (Traditionnel)</option>
-                            <option value="Open Sans" {{ old('theme_body_font') == 'Open Sans' ? 'selected' : '' }}>Open Sans (Moderne)</option>
+                            <option value="Cormorant Garamond" {{ old('theme_body_font', 'Cormorant Garamond') == 'Cormorant Garamond' ? 'selected' : '' }}>Cormorant Garamond (Élégant)</option>
+                            <option value="Playfair Display" {{ old('theme_body_font', 'Cormorant Garamond') == 'Playfair Display' ? 'selected' : '' }}>Playfair Display (Classique)</option>
+                            <option value="Crimson Text" {{ old('theme_body_font', 'Cormorant Garamond') == 'Crimson Text' ? 'selected' : '' }}>Crimson Text (Traditionnel)</option>
+                            <option value="Open Sans" {{ old('theme_body_font', 'Cormorant Garamond') == 'Open Sans' ? 'selected' : '' }}>Open Sans (Moderne)</option>
                         </select>
                     </div>
                 </div>
@@ -249,132 +207,254 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="theme_floral" value="1" {{ old('theme_floral') ? 'checked' : '' }}>
+                            <input class="form-check-input" type="checkbox" name="theme_floral" value="1" {{ old('theme_floral', true) ? 'checked' : '' }}>
                             <label class="form-check-label">Éléments floraux</label>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="theme_overlay" value="1" {{ old('theme_overlay') ? 'checked' : '' }}>
+                            <input class="form-check-input" type="checkbox" name="theme_overlay" value="1" {{ old('theme_overlay', true) ? 'checked' : '' }}>
                             <label class="form-check-label">Effet de superposition</label>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="theme_parallax" value="1" {{ old('theme_parallax') ? 'checked' : '' }}>
+                            <input class="form-check-input" type="checkbox" name="theme_parallax" value="1" {{ old('theme_parallax', false) ? 'checked' : '' }}>
                             <label class="form-check-label">Effet parallaxe</label>
                         </div>
                     </div>
                 </div>
+                --}}
             </div>
+
+             {{-- 
+             ========================================
+             ONGLET FONCTIONNALITÉS - SIMPLIFIÉ
+             ========================================
+             
+             Cette section est simplifiée car la plupart des valeurs par défaut sont définies
+             automatiquement lors de la sauvegarde dans le contrôleur.
+             
+             Valeurs par défaut appliquées automatiquement :
+             
+             📖 LIVRE D'OR :
+             - Activé par défaut (true)
+             - Titre : "Livre d'or"
+             - Sous-titre : "Laissez-nous un mot..."
+             
+             🍷 CHOIX DE BOISSONS :
+             - Activé par défaut (true)
+             - Titre : "Choisissez vos boissons"
+             - Bouton : "Valider mes choix"
+             
+             🔘 BOUTONS D'ACTION :
+             - RSVP : Activé, texte "Confirmer ma présence 💌"
+             - Carte : Activé, texte "Voir sur la carte 📍"
+             - Téléchargement : Activé, texte "Télécharger l'invitation (PDF)"
+             
+             Ces valeurs sont définies dans le contrôleur InvitationController@store
+             dans les variables $defaultCta et $defaultDrinks.
+             --}}
 
             <!-- Onglet 4 : Fonctionnalités -->
             <div class="tab-pane fade" id="invitation-features-panel" role="tabpanel" aria-labelledby="invitation-features-tab">
                 <h5><i class="fas fa-cogs me-2"></i>Fonctionnalités</h5>
-                <p class="text-muted">Activez ou désactivez les fonctionnalités de votre invitation</p>
+                 <p class="text-muted">Activez ou désactivez les fonctionnalités principales de votre invitation</p>
 
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>Livre d'or</h6>
+                         <h6>📖 Livre d'or</h6>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" name="guestbook_enabled" value="1" {{ old('guestbook_enabled', true) ? 'checked' : '' }}>
                             <label class="form-check-label">Activer le livre d'or</label>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Titre du livre d'or</label>
-                            <input type="text" class="form-control" name="guestbook_title" value="{{ old('guestbook_title', 'Livre d\'or') }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Sous-titre du livre d'or</label>
-                            <input type="text" class="form-control" name="guestbook_subtitle" value="{{ old('guestbook_subtitle', 'Laissez-nous un mot...') }}">
-                        </div>
+                         <small class="text-muted">
+                             <i class="fas fa-info-circle me-1"></i>
+                             Titre par défaut : "Livre d'or"<br>
+                             Sous-titre par défaut : "Laissez-nous un mot..."
+                         </small>
                     </div>
 
                     <div class="col-md-6">
-                        <h6>Choix de boissons</h6>
+                         <h6>🍷 Choix de boissons</h6>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" name="drinks_enabled" value="1" {{ old('drinks_enabled', true) ? 'checked' : '' }}>
                             <label class="form-check-label">Activer les choix de boissons</label>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Titre de la section boissons</label>
-                            <input type="text" class="form-control" name="drinks_title" value="{{ old('drinks_title', 'Choisissez vos boissons') }}">
+                         <small class="text-muted">
+                             <i class="fas fa-info-circle me-1"></i>
+                             Titre par défaut : "Choisissez vos boissons"<br>
+                             Bouton par défaut : "Valider mes choix"
+                         </small>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Texte du bouton de validation</label>
-                            <input type="text" class="form-control" name="drinks_submit_label" value="{{ old('drinks_submit_label', 'Valider mes choix') }}">
                         </div>
+
+                 <div class="alert alert-info mt-4">
+                     <h6><i class="fas fa-magic me-2"></i>Boutons d'action automatiques</h6>
+                     <p class="mb-0">
+                         Les boutons suivants sont activés automatiquement avec des textes par défaut :
+                     </p>
+                     <ul class="mb-0 mt-2">
+                         <li><strong>RSVP :</strong> "Confirmer ma présence 💌"</li>
+                         <li><strong>Carte :</strong> "Voir sur la carte 📍"</li>
+                         <li><strong>Téléchargement :</strong> "Télécharger l'invitation (PDF)"</li>
+                     </ul>
                     </div>
                 </div>
 
-                <h6 class="mt-4">Boutons d'action</h6>
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="cta_rsvp_enabled" value="1" {{ old('cta_rsvp_enabled', true) ? 'checked' : '' }}>
-                            <label class="form-check-label">Bouton RSVP</label>
-                        </div>
-                        <input type="text" class="form-control mt-2" name="cta_rsvp_label" value="{{ old('cta_rsvp_label', 'Confirmer ma présence 💌') }}" placeholder="Texte du bouton">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="cta_map_enabled" value="1" {{ old('cta_map_enabled', true) ? 'checked' : '' }}>
-                            <label class="form-check-label">Bouton Carte</label>
-                        </div>
-                        <input type="text" class="form-control mt-2" name="cta_map_label" value="{{ old('cta_map_label', 'Voir sur la carte 📍') }}" placeholder="Texte du bouton">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="cta_download_enabled" value="1" {{ old('cta_download_enabled', true) ? 'checked' : '' }}>
-                            <label class="form-check-label">Bouton Téléchargement</label>
-                        </div>
-                        <input type="text" class="form-control mt-2" name="cta_download_label" value="{{ old('cta_download_label', 'Télécharger l\'invitation (PDF)') }}" placeholder="Texte du bouton">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Onglet 5 : Médias & Images -->
+            <!-- Onglet 5 : Images de Sections -->
             <div class="tab-pane fade" id="invitation-media-panel" role="tabpanel" aria-labelledby="invitation-media-tab">
-                <h5><i class="fas fa-images me-2"></i>Médias & Images</h5>
-                <p class="text-muted">Ajoutez des images à votre invitation</p>
+                <h5><i class="fas fa-images me-2"></i>Images de Sections</h5>
+                <p class="text-muted">Ajoutez des images de fond pour chaque section de votre invitation</p>
 
-                <div class="mb-3">
-                    <label class="form-label">Image principale (Hero)</label>
-                    <input type="file" class="form-control" name="hero_image_path" accept="image/*" id="hero_image_input" onchange="previewImage(this, 'hero_image_preview')">
-                    <small class="form-text text-muted">Image qui apparaît en arrière-plan de l'en-tête</small>
-                    <div id="hero_image_preview" class="mt-2" style="display: none;">
-                        <img id="hero_image_preview_img" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                <!-- Images de sections - Layout 2 par ligne -->
+                <div class="row">
+                    <!-- Image Hero (En-tête) -->
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">🖼️ Image de fond - En-tête (Hero)</label>
+                        <div class="drag-drop-zone" data-target="hero_image_path">
+                            <input type="file" class="form-control d-none" name="hero_image_path" accept="image/*" id="hero_image_input">
+                            <div class="drag-drop-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
+                                <small class="text-muted">Image qui apparaît en arrière-plan de l'en-tête</small>
+                            </div>
+                            <div class="image-preview" id="hero_image_preview" style="display: none;">
+                                <img id="hero_image_preview_img" src="" alt="Aperçu" class="preview-image">
+                                <button type="button" class="btn btn-sm btn-danger remove-image" data-target="hero_image_path">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Programme -->
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">📅 Image de fond - Programme</label>
+                        <div class="drag-drop-zone" data-target="program_background_image">
+                            <input type="file" class="form-control d-none" name="program_background_image" accept="image/*" id="program_background_input">
+                            <div class="drag-drop-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
+                                <small class="text-muted">Image de fond pour la section programme</small>
+                            </div>
+                            <div class="image-preview" id="program_background_preview" style="display: none;">
+                                <img id="program_background_preview_img" src="" alt="Aperçu" class="preview-image">
+                                <button type="button" class="btn btn-sm btn-danger remove-image" data-target="program_background_image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Texte alternatif de l'image</label>
-                    <input type="text" class="form-control" name="hero_image_alt" value="{{ old('hero_image_alt') }}" placeholder="Description de l'image">
+                <div class="row">
+                    <!-- Image Livre d'or -->
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">📖 Image de fond - Livre d'or</label>
+                        <div class="drag-drop-zone" data-target="guestbook_background_image">
+                            <input type="file" class="form-control d-none" name="guestbook_background_image" accept="image/*" id="guestbook_background_input">
+                            <div class="drag-drop-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
+                                <small class="text-muted">Image de fond pour la section livre d'or</small>
+                            </div>
+                            <div class="image-preview" id="guestbook_background_preview" style="display: none;">
+                                <img id="guestbook_background_preview_img" src="" alt="Aperçu" class="preview-image">
+                                <button type="button" class="btn btn-sm btn-danger remove-image" data-target="guestbook_background_image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Choix de boissons -->
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">🍷 Image de fond - Choix de boissons</label>
+                        <div class="drag-drop-zone" data-target="drinks_background_image">
+                            <input type="file" class="form-control d-none" name="drinks_background_image" accept="image/*" id="drinks_background_input">
+                            <div class="drag-drop-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
+                                <small class="text-muted">Image de fond pour la section choix de boissons</small>
+                            </div>
+                            <div class="image-preview" id="drinks_background_preview" style="display: none;">
+                                <img id="drinks_background_preview_img" src="" alt="Aperçu" class="preview-image">
+                                <button type="button" class="btn btn-sm btn-danger remove-image" data-target="drinks_background_image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Galerie d'images</label>
+                {{-- 
+                <!-- Image RSVP - COMMENTÉ -->
+                <div class="mb-4">
+                    <label class="form-label">💌 Image de fond - RSVP</label>
+                    <input type="file" class="form-control" name="rsvp_background_image" accept="image/*" id="rsvp_background_input" onchange="previewImage(this, 'rsvp_background_preview')">
+                    <small class="form-text text-muted">Image de fond pour la section RSVP</small>
+                    <div id="rsvp_background_preview" class="mt-2" style="display: none;">
+                        <img id="rsvp_background_preview_img" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                </div>
+                </div>
+                --}}
+
+                <div class="row">
+                    <!-- Image Pied de page -->
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">🦶 Image de fond - Pied de page</label>
+                        <div class="drag-drop-zone" data-target="footer_background_image">
+                            <input type="file" class="form-control d-none" name="footer_background_image" accept="image/*" id="footer_background_input">
+                            <div class="drag-drop-content">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
+                                <small class="text-muted">Image de fond pour le pied de page</small>
+                            </div>
+                            <div class="image-preview" id="footer_background_preview" style="display: none;">
+                                <img id="footer_background_preview_img" src="" alt="Aperçu" class="preview-image">
+                                <button type="button" class="btn btn-sm btn-danger remove-image" data-target="footer_background_image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colonne vide pour équilibrer la dernière ligne -->
+                    <div class="col-md-6 mb-4">
+                        <!-- Espace vide pour équilibrer la mise en page -->
+                    </div>
+                </div>
+
+                {{-- 
+                <!-- Galerie d'images - COMMENTÉ -->
+                <div class="mb-4">
+                    <label class="form-label">🖼️ Galerie d'images</label>
                     <input type="file" class="form-control" name="gallery[]" multiple accept="image/*" id="gallery_input" onchange="previewMultipleImages(this, 'gallery_preview')">
                     <small class="form-text text-muted">Sélectionnez plusieurs images pour la galerie</small>
                     <div id="gallery_preview" class="mt-2" style="display: none;">
                         <div class="row" id="gallery_preview_images"></div>
                     </div>
                 </div>
+                --}}
 
-                <div class="mb-3">
-                    <label class="form-label">Image pour le partage social (OpenGraph)</label>
+                {{-- 
+                <!-- Image OpenGraph - COMMENTÉ -->
+                <div class="mb-4">
+                    <label class="form-label">📱 Image pour le partage social (OpenGraph)</label>
                     <input type="file" class="form-control" name="og_image" accept="image/*" id="og_image_input" onchange="previewImage(this, 'og_image_preview')">
                     <small class="form-text text-muted">Image qui apparaît lors du partage sur les réseaux sociaux</small>
                     <div id="og_image_preview" class="mt-2" style="display: none;">
                         <img id="og_image_preview_img" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
                     </div>
                 </div>
+                --}}
             </div>
 
-            <!-- Onglet 6 : Révision & Enregistrement -->
+            <!-- Onglet 6 : Création -->
             <div class="tab-pane fade" id="invitation-review-panel" role="tabpanel" aria-labelledby="invitation-review-tab">
-                <h5><i class="fas fa-check-circle me-2"></i>Révision & Enregistrement</h5>
-                <p class="text-muted">Vérifiez vos informations avant d'enregistrer</p>
+                <h5><i class="fas fa-check-circle me-2"></i>Création de l'invitation</h5>
+                <p class="text-muted">Créez votre invitation avec les paramètres configurés</p>
 
                 <div class="alert alert-info">
                     <h6><i class="fas fa-info-circle me-2"></i>Résumé de votre invitation</h6>
@@ -387,30 +467,14 @@
                     </ul>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Statut de publication <span class="text-danger">*</span></label>
-                    <select class="form-select" name="content_status" required>
-                        <option value="draft" selected>Brouillon</option>
-                        <option value="published">Publié</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Meta Title (SEO)</label>
-                    <input type="text" class="form-control" name="meta_title" value="{{ old('meta_title') }}" placeholder="Titre pour les moteurs de recherche">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Meta Description (SEO)</label>
-                    <textarea class="form-control" name="meta_description" rows="3" placeholder="Description pour les moteurs de recherche">{{ old('meta_description') }}</textarea>
-                </div>
+                <!-- Champs cachés pour les valeurs par défaut -->
+                <input type="hidden" name="content_status" value="sent">
+                <input type="hidden" name="meta_title" value="">
+                <input type="hidden" name="meta_description" value="">
 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-success btn-lg">
                         <i class="fas fa-save me-2"></i>Créer l'invitation
-                    </button>
-                    <button type="button" class="btn btn-warning btn-lg" onclick="createInvitationsForAllGuests({{ $event->id }}, '{{ $event->title }}')">
-                        <i class="fas fa-magic me-2"></i>Créer automatiquement pour tous les invités
                     </button>
                 </div>
             </div>
@@ -422,6 +486,135 @@
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote.min.js"></script>
+
+<!-- Styles pour les zones de drag & drop -->
+<style>
+.drag-drop-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    position: relative;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drag-drop-zone:hover {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+.drag-drop-zone.drag-over {
+    border-color: #28a745;
+    background-color: #d4edda;
+    transform: scale(1.02);
+}
+
+.drag-drop-content {
+    width: 100%;
+}
+
+.drag-drop-content i {
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+
+.drag-drop-zone:hover .drag-drop-content i {
+    color: #007bff;
+}
+
+.drag-drop-zone.drag-over .drag-drop-content i {
+    color: #28a745;
+}
+
+.click-to-upload {
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.click-to-upload:hover {
+    color: #0056b3 !important;
+    text-decoration: none;
+}
+
+.image-preview {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.gallery-preview {
+    margin-top: 1rem;
+}
+
+.gallery-thumbnail {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.gallery-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+/* Animation pour les zones de drag & drop */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.drag-drop-zone.drag-over {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .drag-drop-zone {
+        padding: 1rem;
+        min-height: 120px;
+    }
+    
+    .preview-image {
+        max-height: 150px;
+    }
+    
+    .gallery-thumbnail {
+        height: 120px;
+    }
+}
+</style>
 
 <script>
 $(document).ready(function() {
@@ -479,39 +672,185 @@ $(document).ready(function() {
     });
 });
 
-// Fonction pour prévisualiser une image unique
-function previewImage(input, previewId) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.getElementById(previewId);
-            const previewImg = document.getElementById(previewId + '_img');
-            previewImg.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+// ========================================
+// GESTION DES IMAGES AVEC DRAG & DROP ET PRÉVISUALISATION
+// ========================================
+
+// Initialiser tous les zones de drag & drop
+function initializeDragDrop() {
+    console.log('🖱️ Initialisation du drag & drop...');
+    
+    document.querySelectorAll('.drag-drop-zone').forEach((zone, index) => {
+        const input = zone.querySelector('input[type="file"]');
+        const target = zone.dataset.target;
+        const isMultiple = zone.dataset.multiple === 'true';
+        
+        console.log(`Zone ${index + 1}: ${target} (multiple: ${isMultiple})`);
+        
+        // Gestion du clic pour ouvrir le sélecteur de fichiers
+        zone.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(`Clic sur zone: ${target}`);
+            
+            // Vérifier si on clique sur le bouton de suppression
+            if (e.target.closest('.remove-image')) {
+                console.log('Clic sur bouton de suppression, ignoré');
+                return;
+            }
+            
+            // Ouvrir le sélecteur de fichiers
+            console.log(`Ouverture du sélecteur de fichiers pour: ${target}`);
+            input.click();
+        });
+        
+        // Gestion du drag & drop - dragover
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zone.classList.add('drag-over');
+            console.log(`Drag over: ${target}`);
+        });
+        
+        // Gestion du drag & drop - dragenter
+        zone.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zone.classList.add('drag-over');
+            console.log(`Drag enter: ${target}`);
+        });
+        
+        // Gestion du drag & drop - dragleave
+        zone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // Vérifier si on quitte vraiment la zone
+            if (!zone.contains(e.relatedTarget)) {
+                zone.classList.remove('drag-over');
+                console.log(`Drag leave: ${target}`);
+            }
+        });
+        
+        // Gestion du drag & drop - drop
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zone.classList.remove('drag-over');
+            
+            console.log(`Drop sur: ${target}`);
+            const files = e.dataTransfer.files;
+            console.log(`Fichiers reçus: ${files.length}`);
+            
+            if (files.length > 0) {
+                // Vérifier que ce sont des images
+                const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+                console.log(`Images valides: ${imageFiles.length}`);
+                
+                if (imageFiles.length > 0) {
+                    if (isMultiple) {
+                        // Créer un DataTransfer pour les fichiers multiples
+                        const dt = new DataTransfer();
+                        imageFiles.forEach(file => dt.items.add(file));
+                        input.files = dt.files;
+                    } else {
+                        // Prendre seulement le premier fichier
+                        const dt = new DataTransfer();
+                        dt.items.add(imageFiles[0]);
+                        input.files = dt.files;
+                    }
+                    
+                    console.log(`Fichiers assignés à l'input: ${input.files.length}`);
+                    handleFileSelect(input, target);
+                } else {
+                    alert('Veuillez glisser uniquement des fichiers images.');
+                }
+            }
+        });
+        
+        // Gestion de la sélection de fichier classique
+        input.addEventListener('change', (e) => {
+            console.log(`Sélection classique: ${target}, fichiers: ${e.target.files.length}`);
+            handleFileSelect(input, target);
+        });
+    });
+    
+    // Gestion des boutons de suppression
+    document.querySelectorAll('.remove-image').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const target = btn.dataset.target;
+            console.log(`Suppression: ${target}`);
+            removeImage(target);
+        });
+    });
+    
+    console.log('✅ Drag & drop initialisé');
 }
 
-// Fonction pour prévisualiser plusieurs images
-function previewMultipleImages(input, previewId) {
-    const preview = document.getElementById(previewId);
-    const previewImages = document.getElementById(previewId + '_images');
+// Gérer la sélection de fichier
+function handleFileSelect(input, target) {
+    const files = input.files;
+    handleSingleImagePreview(files[0], target);
+}
+
+// Prévisualiser une image unique
+function handleSingleImagePreview(file, target) {
+    console.log(`Prévisualisation: ${target}, fichier: ${file ? file.name : 'null'}`);
     
-    // Vider le conteneur précédent
+    if (!file) {
+        console.log('❌ Aucun fichier à prévisualiser');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        console.log(`Image chargée pour ${target}`);
+        
+        const zone = document.querySelector(`[data-target="${target}"]`);
+        if (!zone) {
+            console.error(`❌ Zone non trouvée: ${target}`);
+            return;
+        }
+        
+        const preview = zone.querySelector('.image-preview');
+        const previewImg = preview.querySelector('img');
+        const content = zone.querySelector('.drag-drop-content');
+        
+        if (preview && previewImg && content) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+            content.style.display = 'none';
+            console.log(`✅ Prévisualisation affichée pour ${target}`);
+        } else {
+            console.error(`❌ Éléments de prévisualisation non trouvés pour ${target}`);
+        }
+    };
+    
+    reader.onerror = function() {
+        console.error(`❌ Erreur lors du chargement de l'image pour ${target}`);
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Prévisualiser plusieurs images (galerie)
+function handleGalleryPreview(files) {
+    const preview = document.getElementById('gallery_preview');
+    const previewImages = document.getElementById('gallery_preview_images');
+    
     previewImages.innerHTML = '';
     
-    if (input.files && input.files.length > 0) {
+    if (files.length > 0) {
         preview.style.display = 'block';
         
-        Array.from(input.files).forEach((file, index) => {
+        Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const col = document.createElement('div');
                 col.className = 'col-md-3 mb-2';
                 col.innerHTML = `
                     <div class="position-relative">
-                        <img src="${e.target.result}" alt="Aperçu ${index + 1}" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover;">
+                        <img src="${e.target.result}" alt="Aperçu ${index + 1}" class="img-thumbnail gallery-thumbnail">
                         <small class="text-muted d-block text-center mt-1">Image ${index + 1}</small>
                     </div>
                 `;
@@ -523,6 +862,24 @@ function previewMultipleImages(input, previewId) {
         preview.style.display = 'none';
     }
 }
+
+// Supprimer une image
+function removeImage(target) {
+    const zone = document.querySelector(`[data-target="${target}"]`);
+    const input = zone.querySelector('input[type="file"]');
+    const preview = zone.querySelector('.image-preview');
+    const content = zone.querySelector('.drag-drop-content');
+    
+    input.value = '';
+    preview.style.display = 'none';
+    content.style.display = 'block';
+}
+
+
+// Initialiser au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDragDrop();
+});
 </script>
 @endsection
 

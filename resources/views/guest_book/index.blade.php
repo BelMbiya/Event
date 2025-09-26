@@ -152,33 +152,16 @@
                         <div class="row">
                             @foreach($guestBooks as $book)
                             <div class="col-md-6 mb-4">
-                                <div class="card border-left-{{ $book->status == 'approved' ? 'success' : ($book->status == 'pending' ? 'warning' : 'danger') }} shadow h-100">
+                                <div class="card shadow h-100">
                                     <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <h6 class="font-weight-bold text-gray-800 mb-1">
-                                                    {{ $book->guest->first_name ?? 'Anonyme' }} {{ $book->guest->last_name ?? '' }}
-                                                </h6>
-                                                <small class="text-muted">
-                                                    <i class="fas fa-calendar me-1"></i>
-                                                    {{ \Carbon\Carbon::parse($book->created_at)->locale('fr')->translatedFormat('d/m/Y à H:i') }}
-                                                </small>
-                                            </div>
-                                            <div>
-                                                @if($book->status == 'approved')
-                                                    <span class="badge bg-success">
-                                                        <i class="fas fa-check me-1"></i>Approuvé
-                                                    </span>
-                                                @elseif($book->status == 'pending')
-                                                    <span class="badge bg-warning">
-                                                        <i class="fas fa-clock me-1"></i>En attente
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-danger">
-                                                        <i class="fas fa-times me-1"></i>Rejeté
-                                                    </span>
-                                                @endif
-                                            </div>
+                                        <div class="mb-3">
+                                            <h6 class="font-weight-bold text-gray-800 mb-1">
+                                                {{ $book->guest->first_name ?? 'Anonyme' }} {{ $book->guest->last_name ?? '' }}
+                                            </h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{ \Carbon\Carbon::parse($book->created_at)->locale('fr')->translatedFormat('d/m/Y à H:i') }}
+                                            </small>
                                         </div>
                                         
                                         <p class="text-gray-800 mb-3">
@@ -191,24 +174,6 @@
                                             </button>
                                         @endif
                                         
-                                        <div class="d-flex justify-content-between align-items-center mt-3">
-                                            <div class="btn-group" role="group">
-                                                @if($book->status == 'pending')
-                                                    <button class="btn btn-success btn-sm" onclick="approveMessage({{ $book->id }})" title="Approuver">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm" onclick="rejectMessage({{ $book->id }})" title="Rejeter">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                @endif
-                                                <button class="btn btn-info btn-sm" onclick="viewMessage({{ $book->id }})" title="Voir détails">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-warning btn-sm" onclick="editMessage({{ $book->id }})" title="Modifier">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -269,49 +234,5 @@ function showFullMessage(bookId) {
         });
 }
 
-function approveMessage(bookId) {
-    if (confirm('Êtes-vous sûr de vouloir approuver ce message ?')) {
-        updateMessageStatus(bookId, 'approved');
-    }
-}
-
-function rejectMessage(bookId) {
-    if (confirm('Êtes-vous sûr de vouloir rejeter ce message ?')) {
-        updateMessageStatus(bookId, 'rejected');
-    }
-}
-
-function updateMessageStatus(bookId, status) {
-    fetch(`/guest_book/${bookId}/status`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Erreur lors de la mise à jour du statut');
-        }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Erreur lors de la mise à jour du statut');
-    });
-}
-
-function viewMessage(bookId) {
-    // Rediriger vers la page de détail du message
-    window.location.href = `/guest_book/${bookId}`;
-}
-
-function editMessage(bookId) {
-    // Rediriger vers la page d'édition du message
-    window.location.href = `/guest_book/${bookId}/edit`;
-}
 </script>
 @endsection

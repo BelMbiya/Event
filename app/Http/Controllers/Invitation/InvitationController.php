@@ -3,6 +3,16 @@
 namespace App\Http\Controllers\Invitation;
 
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * INVITATION CONTROLLER - GESTION COMPLÈTE DES INVITATIONS
+ * ========================================
+ * 
+ * Ce contrôleur gère toutes les fonctionnalités des invitations d'événements.
+ * Il traite la création, édition, publication, duplication et suppression
+ * des invitations avec gestion des contenus et métriques d'engagement.
+ */
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Invitation;
@@ -21,28 +31,37 @@ class InvitationController extends Controller
     {
         $query = Invitation::with(['event', 'guest', 'content']);
 
-        // Filtres
-        if ($request->filled('event_id')) {
-            $query->where('event_id', $request->event_id);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('guest_name')) {
-            $query->whereHas('guest', function($q) use ($request) {
-                $q->where('first_name', 'like', '%' . $request->guest_name . '%')
-                  ->orWhere('last_name', 'like', '%' . $request->guest_name . '%');
+        // ✅ RECHERCHE GLOBALE SIMPLIFIÉE
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                // Recherche dans les invitations
+                $q->where('status', 'like', "%{$search}%")
+                  ->orWhere('unique_code', 'like', "%{$search}%")
+                  
+                  // Recherche dans les événements
+                  ->orWhereHas('event', function($eventQuery) use ($search) {
+                      $eventQuery->where('title', 'like', "%{$search}%")
+                                ->orWhere('location', 'like', "%{$search}%")
+                                ->orWhere('description', 'like', "%{$search}%");
+                  })
+                  
+                  // Recherche dans les invités
+                  ->orWhereHas('guest', function($guestQuery) use ($search) {
+                      $guestQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhere('phone', 'like', "%{$search}%");
+                  })
+                  
+                  // Recherche dans le contenu
+                  ->orWhereHas('content', function($contentQuery) use ($search) {
+                      $contentQuery->where('couple', 'like', "%{$search}%")
+                                  ->orWhere('intro_1', 'like', "%{$search}%")
+                                  ->orWhere('intro_2', 'like', "%{$search}%")
+                                  ->orWhere('venue_name', 'like', "%{$search}%");
+                  });
             });
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
         }
 
         $invitations = $query->orderBy('created_at', 'desc')->get();
@@ -92,7 +111,6 @@ class InvitationController extends Controller
             'rsvp_enabled' => 'nullable|boolean',
             'drinks_enabled' => 'nullable|boolean',
             'guestbook_enabled' => 'nullable|boolean',
-            'create_for_all_guests' => 'nullable|boolean',
             'selected_guests' => 'nullable|array',
             'selected_guests.*' => 'exists:guests,id',
             // Champs supplémentaires pour le contenu
@@ -109,7 +127,11 @@ class InvitationController extends Controller
             'intro_2' => 'nullable|string',
             'body_html' => 'nullable|string',
             'hero_image_path' => 'nullable|file|image|max:2048',
-            'hero_image_alt' => 'nullable|string|max:255',
+            'program_background_image' => 'nullable|file|image|max:2048',
+            'guestbook_background_image' => 'nullable|file|image|max:2048',
+            'drinks_background_image' => 'nullable|file|image|max:2048',
+            'rsvp_background_image' => 'nullable|file|image|max:2048',
+            'footer_background_image' => 'nullable|file|image|max:2048',
             'gallery' => 'nullable|array',
             'gallery.*' => 'nullable|file|image|max:2048',
             'og_image' => 'nullable|file|image|max:2048',
@@ -136,13 +158,10 @@ class InvitationController extends Controller
             'content_status' => 'nullable|in:draft,published,archived'
         ]);
         
-        // Validation des champs de planning dynamiques
-        for ($i = 0; $i < 5; $i++) {
-            $request->validate([
-                "schedule_time_{$i}" => 'nullable|string|max:10',
-                "schedule_event_{$i}" => 'nullable|string|max:255',
-            ]);
-        }
+        // Validation du programme HTML
+        $request->validate([
+            'program_html' => 'nullable|string',
+        ]);
             
             DB::beginTransaction();
             
@@ -150,49 +169,37 @@ class InvitationController extends Controller
             $event = Event::findOrFail($validated['event_id']);
             $guests = Guest::where('event_id', $validated['event_id'])->get();
             
-            $invitations = [];
-            $duplicateGuests = [];
+            // ✅ LOGIQUE SIMPLIFIÉE : Créer toujours une invitation unique par événement
+            // Vérifier si une invitation existe déjà pour cet événement
+            $existingInvitation = Invitation::where('event_id', $validated['event_id'])
+                ->whereNull('guest_id') // Invitation générale de l'événement
+                ->first();
             
-            // Créer des invitations pour tous les invités (vérifier les doublons)
-            foreach ($guests as $guest) {
-                // Vérifier si l'invité a déjà une invitation pour cet événement
-                $existingInvitation = Invitation::where('event_id', $validated['event_id'])
-                    ->where('guest_id', $guest->id)
-                    ->first();
-                
-                if ($existingInvitation) {
-                    $duplicateGuests[] = "{$guest->first_name} {$guest->last_name}";
-                    continue; // Ignorer cet invité
-                }
-                
-                $guestUuid = Str::uuid();
-        $invitation = Invitation::create([
-            'event_id' => $validated['event_id'],
-                    'guest_id' => $guest->id,
-                    'unique_code' => $guestUuid,
-                    'status' => 'pending',
-                    'invitation_url' => url('/invitation/' . $guestUuid),
-                ]);
-                $invitations[] = $invitation;
+            if ($existingInvitation) {
+                return redirect()->back()
+                    ->with('warning', 'Une invitation existe déjà pour cet événement. Utilisez l\'édition pour la modifier.');
             }
             
-            // Si aucun invité, créer une invitation générale
-            if ($guests->isEmpty()) {
-                $uuid = Str::uuid();
-                $invitation = Invitation::create([
-                    'event_id' => $validated['event_id'],
-                    'guest_id' => null,
-                    'unique_code' => $uuid,
-                    'status' => 'pending',
-                    'invitation_url' => url('/invitation/' . $uuid),
-                ]);
-                $invitations[] = $invitation;
-            }
+            // Créer une seule invitation générale pour l'événement
+            $eventUuid = Str::uuid();
+            $invitation = Invitation::create([
+                'event_id' => $validated['event_id'],
+                'guest_id' => null, // Invitation générale
+                'unique_code' => $eventUuid,
+                'status' => 'sent',
+                'invitation_url' => url('/invitation/dynamic'),
+            ]);
+            $invitations = [$invitation];
             
             // Créer un contenu pour CHAQUE invitation (logique cohérente)
             if (!empty($invitations)) {
                 // Gestion des uploads de fichiers
                 $heroPath = $request->file('hero_image_path')?->store('invitations/hero', 'public');
+                $programBgPath = $request->file('program_background_image')?->store('invitations/sections', 'public');
+                $guestbookBgPath = $request->file('guestbook_background_image')?->store('invitations/sections', 'public');
+                $drinksBgPath = $request->file('drinks_background_image')?->store('invitations/sections', 'public');
+                $rsvpBgPath = $request->file('rsvp_background_image')?->store('invitations/sections', 'public');
+                $footerBgPath = $request->file('footer_background_image')?->store('invitations/sections', 'public');
                 $galleryPaths = $request->file('gallery') ? array_map(fn($f) => $f->store('invitations/gallery', 'public'), $request->file('gallery')) : null;
                 $ogPath = $request->file('og_image')?->store('invitations/og', 'public');
                 
@@ -222,7 +229,7 @@ class InvitationController extends Controller
                     Content::create([
                         'invitation_id' => $invitation->id, // ✅ Lié à cette invitation spécifique
                         'event_id' => $validated['event_id'],
-                        'guest_id' => $invitation->guest_id, // ✅ Lié à cet invité spécifique
+                        'guest_id' => $invitation->guest_id, // ✅ null pour invitation générale, ou guest_id pour invitation spécifique
                         'unique_code' => $contentUuid,
                         'slug' => Str::slug($validated['couple'] . '-' . $contentUuid),
                         'locale' => 'fr',
@@ -246,7 +253,11 @@ class InvitationController extends Controller
                         'intro_2' => $request->input('intro_2', 'Nous avons le plaisir de vous inviter à partager ce moment spécial'),
                         'body_html' => $request->input('body_html', '<p>C\'est avec une immense joie que nous vous invitons à célébrer avec nous ce moment si spécial de notre vie.</p>'),
                         'hero_image_path' => $heroPath,
-                        'hero_image_alt' => $request->input('hero_image_alt', ''),
+                        'program_background_image' => $programBgPath,
+                        'guestbook_background_image' => $guestbookBgPath,
+                        'drinks_background_image' => $drinksBgPath,
+                        'rsvp_background_image' => $rsvpBgPath,
+                        'footer_background_image' => $footerBgPath,
                         'gallery' => $galleryPaths ? json_encode($galleryPaths) : null,
                         'og_image' => $ogPath,
                         // Champs de fonctionnalités
@@ -289,7 +300,7 @@ class InvitationController extends Controller
                                 'parallax' => $request->has('theme_parallax')
                             ]
                         ]),
-                        'schedule' => $this->buildScheduleData($request),
+                        'program_html' => $request->input('program_html'),
                         'meta_title' => $request->input('meta_title', $validated['couple'] . ' - Invitation'),
                         'meta_description' => $request->input('meta_description', 'Invitation pour l\'événement de ' . $validated['couple']),
                         'published_at' => $request->input('content_status') === 'published' ? now() : null
@@ -348,6 +359,84 @@ class InvitationController extends Controller
         }
     }
 
+    /**
+     * ✅ NOUVELLE MÉTHODE : Affichage dynamique d'invitation
+     * URL: /invitation/{guest_id}
+     * Une seule invitation par événement qui s'adapte selon l'invité
+     */
+    public function showDynamic($guest_id)
+    {
+        // Récupérer l'invité spécifique avec son événement
+        $guest = Guest::with(['event.eventType', 'event.eventDrinks.drink', 'guestType', 'drinkChoices.eventDrink.drink', 'eventTable'])
+            ->findOrFail($guest_id);
+        
+        // Récupérer l'événement depuis l'invité
+        $event = $guest->event;
+        
+        // Récupérer le contenu de l'invitation (priorité au contenu général, puis spécifique)
+        $content = Content::where('event_id', $event->id)
+            ->whereNull('guest_id') // Contenu général de l'événement
+            ->first();
+        
+        // Si pas de contenu général ou pas de schedule/program_html, chercher le contenu spécifique de l'invité
+        if (!$content || (!$content->schedule && !$content->program_html)) {
+            $content = Content::where('event_id', $event->id)
+                ->where('guest_id', $guest_id) // Contenu spécifique de l'invité
+                ->first();
+        }
+        
+        // Si toujours pas de contenu, créer un contenu par défaut
+        if (!$content) {
+            $content = $this->createDefaultEventContent($event);
+        }
+        
+        // Récupérer les boissons de l'événement
+        $eventDrinks = EventDrink::with('drink')
+            ->where('event_id', $event->id)
+            ->get();
+        
+        // Récupérer les choix de boissons de cet invité
+        $guestDrinkChoices = $guest->drinkChoices ?? collect();
+        
+        // Récupérer les messages du livre d'or pour cet invité
+        $guestBookMessages = \App\Models\GuestBook::where('event_id', $event->id)
+            ->where('guest_id', $guest_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        // Créer un objet invitation virtuel pour la compatibilité avec la vue
+        $invitation = (object) [
+            'id' => $event->id,
+            'unique_code' => $event->id . '_' . $guest_id,
+            'event_id' => $event->id,
+            'guest_id' => $guest_id,
+            'status' => 'published',
+            'event' => $event,
+            'guest' => $guest,
+            'content' => $content
+        ];
+
+        // Créer le code unique pour les formulaires
+        $unique_code = $event->id . '_' . $guest_id;
+
+        // Marquer l'invitation comme ouverte
+        $this->markInvitationAsOpened($event->id, $guest_id);
+
+        return view('invitation.invitation_paper.Invitation_3', compact(
+            'invitation',
+            'guest',
+            'content',
+            'event',
+            'eventDrinks',
+            'guestDrinkChoices',
+            'guestBookMessages',
+            'unique_code'
+        ));
+    }
+
+    /**
+     * ✅ MÉTHODE LEGACY : Affichage d'invitation par code unique (pour compatibilité)
+     */
     public function show($unique_code)
     {
         $invitation = Invitation::with(['event', 'guest', 'content'])
@@ -412,12 +501,25 @@ class InvitationController extends Controller
             ? EventDrink::with('drink')->where('event_id', $event->id)->get()
             : collect();
 
+        // Récupérer les choix de boissons de cet invité
+        $guestDrinkChoices = $guest ? $guest->drinkChoices ?? collect() : collect();
+        
+        // Récupérer les messages du livre d'or pour cet invité
+        $guestBookMessages = $guest && $event->id
+            ? \App\Models\GuestBook::where('event_id', $event->id)
+                ->where('guest_id', $guest->id)
+                ->orderBy('created_at', 'desc')
+                ->get()
+            : collect();
+
         $pdf = Pdf::loadView('invitation.invitation_paper.Invitation_3', compact(
             'invitation',
             'guest',
             'content',
             'event',
             'eventDrinks',
+            'guestDrinkChoices',
+            'guestBookMessages',
             'unique_code'
         ));
 
@@ -597,7 +699,7 @@ class InvitationController extends Controller
                         'drinks' => $defaultDrinks,
                         'cta' => $defaultCta,
                         'theme' => $defaultTheme,
-                        'schedule' => null,
+                        'program_html' => null,
                         'meta_title' => $event->title . ' - Invitation',
                         'meta_description' => 'Invitation pour l\'événement de ' . $event->title,
                         'published_at' => null
@@ -978,6 +1080,244 @@ class InvitationController extends Controller
                 'success' => false,
                 'message' => 'Erreur lors de la vérification: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE : Créer un contenu par défaut pour un événement
+     */
+    private function createDefaultEventContent($event)
+    {
+        $contentUuid = Str::uuid();
+        
+        // Données par défaut pour le contenu
+        $defaultTheme = json_encode([
+            'colors' => ['primary' => '#e11d48', 'secondary' => '#f43f5e', 'accent' => '#fb7185'],
+            'fonts' => ['headings' => 'Alex Brush', 'body' => 'Cormorant Garamond'],
+            'decorations' => ['floral' => true, 'overlay' => true, 'parallax' => false]
+        ]);
+        
+        $defaultCta = json_encode([
+            "rsvp" => ["enabled" => true, "label" => "Confirmer ma présence 💌"],
+            "map" => ["enabled" => true, "label" => "Voir sur la carte 📍"],
+            "download" => ["enabled" => true, "label" => "Télécharger l'invitation (PDF)"]
+        ]);
+        
+        $defaultDrinks = json_encode([
+            'enabled' => true,
+            'title' => 'Choisissez vos boissons',
+            'submit_label' => 'Valider mes choix'
+        ]);
+        
+        return Content::create([
+            'invitation_id' => null, // Pas d'invitation spécifique
+            'event_id' => $event->id,
+            'guest_id' => null, // Contenu général de l'événement
+            'unique_code' => $contentUuid,
+            'slug' => Str::slug($event->title . '-' . $contentUuid),
+            'locale' => 'fr',
+            'couple' => $event->title,
+            'event_datetime' => $event->event_date,
+            'timezone' => 'Africa/Kinshasa',
+            'status' => 'published',
+            'version' => 1,
+            // Champs de lieu avec valeurs par défaut
+            'venue_name' => $event->location,
+            'venue_address_line1' => '',
+            'venue_address_line2' => '',
+            'venue_city' => '',
+            'venue_region' => '',
+            'venue_country' => '',
+            'google_maps_url' => $event->google_maps_url ?? '',
+            'venue_lat' => null,
+            'venue_lng' => null,
+            // Champs de contenu avec valeurs par défaut
+            'intro_1' => 'C\'est avec une immense joie que nous vous invitons à célébrer avec nous',
+            'intro_2' => 'Nous avons le plaisir de vous inviter à partager ce moment spécial',
+            'body_html' => '<p>C\'est avec une immense joie que nous vous invitons à célébrer avec nous ce moment si spécial de notre vie.</p>',
+            'hero_image_path' => null,
+            'hero_image_alt' => '',
+            'gallery' => null,
+            'og_image' => null,
+            // Champs de fonctionnalités avec valeurs par défaut
+            'guestbook_enabled' => true,
+            'guestbook_title' => 'Livre d\'or',
+            'guestbook_subtitle' => 'Laissez-nous un message',
+            'drinks_enabled' => true,
+            'drinks' => $defaultDrinks,
+            'cta' => $defaultCta,
+            'theme' => $defaultTheme,
+            'program_html' => null,
+            'meta_title' => $event->title . ' - Invitation',
+            'meta_description' => 'Invitation pour l\'événement de ' . $event->title,
+            'published_at' => now()
+        ]);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE : Marquer une invitation comme ouverte
+     */
+    private function markInvitationAsOpened($event_id, $guest_id)
+    {
+        // Mettre à jour le statut de l'invité pour indiquer qu'il a ouvert l'invitation
+        // Note: rsvp_status ne peut être que 'pending', 'confirmed', ou 'declined'
+        // On ne change pas le statut RSVP, on peut ajouter un champ 'opened_at' si nécessaire
+        $guest = Guest::where('event_id', $event_id)
+            ->where('id', $guest_id)
+            ->first();
+        
+        if ($guest) {
+            // Mettre à jour la date de réponse pour indiquer que l'invitation a été ouverte
+            $guest->update(['response_date' => now()]);
+            
+            // Log de l'ouverture pour les statistiques
+            \Log::info("Invitation ouverte - Event: {$event_id}, Guest: {$guest_id}");
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE : Générer les liens d'invitation dynamiques pour tous les invités
+     */
+    public function generateDynamicLinks($event_id)
+    {
+        try {
+            $event = Event::findOrFail($event_id);
+            $guests = Guest::where('event_id', $event_id)->get();
+            
+            $links = [];
+            foreach ($guests as $guest) {
+                $links[] = [
+                    'guest_id' => $guest->id,
+                    'guest_name' => "{$guest->first_name} {$guest->last_name}",
+                    'guest_email' => $guest->email,
+                    'dynamic_url' => url("/invitation/{$guest->id}"),
+                    'whatsapp_url' => "https://wa.me/?text=" . urlencode("Vous êtes invité à notre événement ! Cliquez ici : " . url("/invitation/{$guest->id}"))
+                ];
+            }
+            
+            return response()->json([
+                'success' => true,
+                'event' => [
+                    'id' => $event->id,
+                    'title' => $event->title
+                ],
+                'links' => $links,
+                'total_guests' => count($links)
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération des liens: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * ✏️ AFFICHAGE DU FORMULAIRE D'ÉDITION D'UNE INVITATION
+     * 
+     * @param int $id ID de l'invitation à éditer
+     * @return \Illuminate\View\View
+     */
+    public function edit($id)
+    {
+        $invitation = Invitation::with(['event', 'content'])->findOrFail($id);
+        $event = $invitation->event;
+        
+        // Récupérer le contenu de l'invitation
+        $content = $invitation->content;
+        
+        return view('invitation.edit-advanced', compact('invitation', 'event', 'content'));
+    }
+
+    /**
+     * 💾 MISE À JOUR D'UNE INVITATION EXISTANTE
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param int $id ID de l'invitation à mettre à jour
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $id)
+    {
+        $invitation = Invitation::with(['event', 'content'])->findOrFail($id);
+        $event = $invitation->event;
+        
+        // Validation des données
+        $request->validate([
+            'intro_1' => 'nullable|string',
+            'intro_2' => 'nullable|string',
+            'body_html' => 'nullable|string',
+            'program_html' => 'nullable|string',
+            'theme' => 'nullable|string',
+            'cta' => 'nullable|string',
+            'primary_color' => 'nullable|string',
+            'secondary_color' => 'nullable|string',
+            'accent_color' => 'nullable|string',
+            'hero_image_path' => 'nullable|file|image|max:2048',
+            'program_background_image' => 'nullable|file|image|max:2048',
+            'guestbook_background_image' => 'nullable|file|image|max:2048',
+            'drinks_background_image' => 'nullable|file|image|max:2048',
+            'rsvp_background_image' => 'nullable|file|image|max:2048',
+            'footer_background_image' => 'nullable|file|image|max:2048',
+            'gallery' => 'nullable|array',
+            'gallery.*' => 'nullable|file|image|max:2048',
+            'og_image' => 'nullable|file|image|max:2048',
+            'guestbook_enabled' => 'boolean',
+            'drinks_enabled' => 'boolean',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Gestion des images
+            $heroPath = $request->file('hero_image_path')?->store('invitations/hero', 'public');
+            $programBgPath = $request->file('program_background_image')?->store('invitations/sections', 'public');
+            $guestbookBgPath = $request->file('guestbook_background_image')?->store('invitations/sections', 'public');
+            $drinksBgPath = $request->file('drinks_background_image')?->store('invitations/sections', 'public');
+            $rsvpBgPath = $request->file('rsvp_background_image')?->store('invitations/sections', 'public');
+            $footerBgPath = $request->file('footer_background_image')?->store('invitations/sections', 'public');
+            $galleryPaths = $request->file('gallery') ? array_map(fn($f) => $f->store('invitations/gallery', 'public'), $request->file('gallery')) : null;
+            $ogPath = $request->file('og_image')?->store('invitations/og', 'public');
+
+            // Mise à jour du contenu
+            $contentData = [
+                'intro_1' => $request->input('intro_1'),
+                'intro_2' => $request->input('intro_2'),
+                'body_html' => $request->input('body_html'),
+                'program_html' => $request->input('program_html'),
+                'theme' => $request->input('theme'),
+                'cta' => $request->input('cta'),
+                'primary_color' => $request->input('primary_color'),
+                'secondary_color' => $request->input('secondary_color'),
+                'accent_color' => $request->input('accent_color'),
+                'guestbook_enabled' => $request->boolean('guestbook_enabled'),
+                'drinks_enabled' => $request->boolean('drinks_enabled'),
+            ];
+
+            // Ajouter les chemins d'images seulement s'ils sont fournis
+            if ($heroPath) $contentData['hero_image_path'] = $heroPath;
+            if ($programBgPath) $contentData['program_background_image'] = $programBgPath;
+            if ($guestbookBgPath) $contentData['guestbook_background_image'] = $guestbookBgPath;
+            if ($drinksBgPath) $contentData['drinks_background_image'] = $drinksBgPath;
+            if ($rsvpBgPath) $contentData['rsvp_background_image'] = $rsvpBgPath;
+            if ($footerBgPath) $contentData['footer_background_image'] = $footerBgPath;
+            if ($galleryPaths) $contentData['gallery'] = json_encode($galleryPaths);
+            if ($ogPath) $contentData['og_image'] = $ogPath;
+
+            // Mettre à jour le contenu
+            $invitation->content->update($contentData);
+
+            DB::commit();
+
+            return redirect()->route('invitation.index')
+                ->with('success', 'Invitation mise à jour avec succès !');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Erreur lors de la mise à jour: ' . $e->getMessage());
         }
     }
 }

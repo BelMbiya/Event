@@ -3,6 +3,16 @@
 namespace App\Http\Controllers\Event;
 
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * EVENT SELECTION CONTROLLER - SÉLECTION D'ÉVÉNEMENTS
+ * ========================================
+ * 
+ * Ce contrôleur gère la sélection et redirection vers les événements.
+ * Il permet de choisir un événement et rediriger vers les fonctionnalités
+ * appropriées (boissons, livre d'or, invitations).
+ */
 use App\Models\Event;
 use Illuminate\Http\Request;
 

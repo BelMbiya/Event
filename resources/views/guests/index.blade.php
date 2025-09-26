@@ -1,3 +1,17 @@
+{{--
+========================================
+GUESTS INDEX VIEW - LISTE DES INVITÉS
+========================================
+
+Cette vue affiche la liste des invités avec :
+- Tableau des invités avec informations personnelles
+- Actions (voir, modifier, supprimer)
+- Export PDF de la liste complète
+- Gestion des statuts RSVP
+- Interface responsive avec design moderne
+
+UTILISATION : Administration des invités d'événements
+--}}
 @extends('admin')
 @section('content')
 

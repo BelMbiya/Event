@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * ========================================
+ * CONFIGURATION APP - CONFIGURATION PRINCIPALE DE L'APPLICATION
+ * ========================================
+ * 
+ * Ce fichier contient la configuration principale de l'application Laravel.
+ * Il définit le nom, l'environnement, les services et les paramètres
+ * globaux de l'application de gestion d'événements et d'invitations.
+ */
 return [
 
     /*

@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * ========================================
+ * MIGRATION - CRÉATION DE LA TABLE EVENTS
+ * ========================================
+ * 
+ * Cette migration crée la table principale des événements.
+ * Elle stocke toutes les informations d'un événement : titre, date, lieu,
+ * organisateur, type, et options de personnalisation (couleur, programme).
+ */
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

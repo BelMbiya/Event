@@ -1,3 +1,17 @@
+{{--
+========================================
+INVITATION EDIT CONTENT VIEW - ÉDITION DE CONTENU D'INVITATION
+========================================
+
+Cette vue permet d'éditer le contenu d'une invitation existante avec :
+- Formulaire complet de personnalisation
+- Synchronisation avec d'autres invitations du même événement
+- Prévisualisation en temps réel
+- Gestion des templates et thèmes
+- Upload et gestion des médias
+
+UTILISATION : Modification du contenu d'invitations déjà créées
+--}}
 @extends('admin')
 
 @section('content')
@@ -37,12 +51,7 @@
         <!-- Onglets Bootstrap avec IDs uniques -->
         <ul class="nav nav-pills mb-4" id="editContentTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="edit-basic-tab" data-bs-toggle="pill" data-bs-target="#edit-basic-content" type="button" role="tab">
-                    <i class="fas fa-info-circle me-2"></i>Informations de base
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="edit-content-tab" data-bs-toggle="pill" data-bs-target="#edit-content-panel" type="button" role="tab">
+                <button class="nav-link active" id="edit-content-tab" data-bs-toggle="pill" data-bs-target="#edit-content-panel" type="button" role="tab">
                     <i class="fas fa-edit me-2"></i>Contenu & Textes
                 </button>
             </li>
@@ -71,80 +80,8 @@
         <!-- Contenus des onglets -->
         <div class="tab-content p-4 border rounded bg-white shadow-sm" id="editContentTabsContent">
 
-            <!-- Onglet 1 : Informations de base -->
-            <div class="tab-pane fade show active" id="edit-basic-content" role="tabpanel" aria-labelledby="edit-basic-tab">
-                <h5><i class="fas fa-info-circle me-2"></i>Informations de base</h5>
-                <p class="text-muted">Configurez les informations essentielles de votre invitation</p>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Nom du couple <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="couple" value="{{ old('couple', $content->couple) }}" required>
-                        <small class="form-text text-muted">Ex: Marie & Jean, Sophie & Pierre</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Date et heure de l'événement <span class="text-danger">*</span></label>
-                        <input type="datetime-local" class="form-control" name="event_datetime" 
-                               value="{{ old('event_datetime', $content->event_datetime ? \Carbon\Carbon::parse($content->event_datetime)->format('Y-m-d\TH:i') : '') }}" required>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Fuseau horaire</label>
-                        <select class="form-select" name="timezone">
-                            <option value="Africa/Kinshasa" {{ old('timezone', $content->timezone) == 'Africa/Kinshasa' ? 'selected' : '' }}>Afrique/Kinshasa</option>
-                            <option value="Europe/Paris" {{ old('timezone', $content->timezone) == 'Europe/Paris' ? 'selected' : '' }}>Europe/Paris</option>
-                            <option value="America/New_York" {{ old('timezone', $content->timezone) == 'America/New_York' ? 'selected' : '' }}>Amérique/New York</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Statut du contenu</label>
-                        <select class="form-select" name="status">
-                            <option value="draft" {{ old('status', $content->status) == 'draft' ? 'selected' : '' }}>Brouillon</option>
-                            <option value="published" {{ old('status', $content->status) == 'published' ? 'selected' : '' }}>Publié</option>
-                            <option value="archived" {{ old('status', $content->status) == 'archived' ? 'selected' : '' }}>Archivé</option>
-                        </select>
-                        <small class="form-text text-muted">Statut de publication du contenu</small>
-                    </div>
-                </div>
-
-                <h6 class="mt-4">Lieu de l'événement</h6>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Nom du lieu</label>
-                        <input type="text" class="form-control" name="venue_name" value="{{ old('venue_name', $content->venue_name) }}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Adresse</label>
-                        <input type="text" class="form-control" name="venue_address_line1" value="{{ old('venue_address_line1', $content->venue_address_line1) }}">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Ville</label>
-                        <input type="text" class="form-control" name="venue_city" value="{{ old('venue_city', $content->venue_city) }}">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Région</label>
-                        <input type="text" class="form-control" name="venue_region" value="{{ old('venue_region', $content->venue_region) }}">
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Pays</label>
-                        <input type="text" class="form-control" name="venue_country" value="{{ old('venue_country', $content->venue_country) }}">
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">URL Google Maps</label>
-                    <input type="url" class="form-control" name="google_maps_url" value="{{ old('google_maps_url', $content->google_maps_url) }}" placeholder="https://maps.google.com/...">
-                    <small class="form-text text-muted">Généré automatiquement à partir de l'adresse de l'événement</small>
-                </div>
-            </div>
-
-            <!-- Onglet 2 : Contenu & Textes -->
-            <div class="tab-pane fade" id="edit-content-panel" role="tabpanel" aria-labelledby="edit-content-tab">
+            <!-- Onglet 1 : Contenu & Textes -->
+            <div class="tab-pane fade show active" id="edit-content-panel" role="tabpanel" aria-labelledby="edit-content-tab">
                 <h5><i class="fas fa-edit me-2"></i>Contenu & Textes</h5>
                 <p class="text-muted">Personnalisez les textes de votre invitation</p>
 
@@ -167,36 +104,34 @@
                 </div>
 
                 <h6 class="mt-4">📅 Programme de l'événement</h6>
-                <p class="text-muted">Définissez le déroulement de votre événement (jusqu'à 5 créneaux)</p>
+                <p class="text-muted">Définissez le déroulement de votre événement avec un éditeur riche</p>
                 
-                @php
-                    $schedule = $content->schedule ? json_decode($content->schedule, true) : [];
-                    // ✅ CORRECTION : S'assurer que $schedule est un array et extraire les données correctement
-                    $scheduleItems = [];
-                    if (is_array($schedule)) {
-                        foreach ($schedule as $item) {
-                            if (is_array($item) && isset($item['time']) && isset($item['event'])) {
-                                $scheduleItems[] = $item;
-                            }
-                        }
-                    }
-                @endphp
-                
-                @for($i = 1; $i <= 5; $i++)
-                <div class="row mt-2">
-                    <div class="col-md-4">
-                        <label class="form-label">Créneau {{ $i }} - Heure</label>
-                        <input type="time" class="form-control" name="schedule_time_{{ $i }}" 
-                               value="{{ old("schedule_time_$i", $scheduleItems[$i-1]['time'] ?? '') }}">
-                    </div>
-                    <div class="col-md-8">
-                        <label class="form-label">Créneau {{ $i }} - Événement</label>
-                        <input type="text" class="form-control" name="schedule_event_{{ $i }}" 
-                               value="{{ old("schedule_event_$i", $scheduleItems[$i-1]['event'] ?? '') }}" 
-                               placeholder="Description de l'événement">
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label">Programme détaillé</label>
+                    <textarea class="form-control summernote" name="program_html" rows="8" placeholder="Créez votre programme avec des heures, descriptions et formatage...">{{ old('program_html', $content->program_html ?? '<div class="program-schedule">
+    <div class="schedule-item">
+        <div class="time">14:00</div>
+        <div class="event">Cérémonie religieuse</div>
+    </div>
+    <div class="schedule-item">
+        <div class="time">16:00</div>
+        <div class="event">Cocktail de bienvenue</div>
+    </div>
+    <div class="schedule-item">
+        <div class="time">18:00</div>
+        <div class="event">Réception et dîner</div>
+    </div>
+    <div class="schedule-item">
+        <div class="time">20:00</div>
+        <div class="event">Ouverture du bal</div>
+    </div>
+    <div class="schedule-item">
+        <div class="time">22:00</div>
+        <div class="event">Soirée dansante</div>
+    </div>
+</div>') }}</textarea>
+                    <small class="form-text text-muted">Utilisez l'éditeur pour créer un programme personnalisé avec formatage, couleurs et mise en page</small>
                 </div>
-                @endfor
             </div>
 
             <!-- Onglet 3 : Design & Thème -->

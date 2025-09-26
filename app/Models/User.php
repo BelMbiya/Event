@@ -2,6 +2,16 @@
 
 namespace App\Models;
 
+/**
+ * ========================================
+ * USER MODEL - GESTION DES UTILISATEURS
+ * ========================================
+ * 
+ * Ce modèle gère l'authentification et les utilisateurs du système.
+ * Il représente les organisateurs d'événements qui peuvent créer et gérer
+ * des événements, invitations et invités.
+ */
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;

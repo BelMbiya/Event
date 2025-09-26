@@ -113,7 +113,7 @@
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card shadow-sm h-100">
                         <!-- Header de la carte -->
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <div class="avatar-circle me-3">
                                     <i class="fas fa-user text-white"></i>
@@ -124,31 +124,6 @@
                                         {{ \Carbon\Carbon::parse($book->created_at)->locale('fr')->diffForHumans() }}
                                     </small>
                                 </div>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item" href="#" onclick="editMessage({{ $book->id }})">
-                                            <i class="fas fa-edit me-2"></i>Modifier
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#" onclick="toggleVisibility({{ $book->id }})">
-                                            <i class="fas fa-eye me-2"></i>
-                                            {{ $book->visibility === 'public' ? 'Rendre privé' : 'Rendre public' }}
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item text-danger" href="#" onclick="deleteMessage({{ $book->id }})">
-                                            <i class="fas fa-trash me-2"></i>Supprimer
-                                        </a>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
 
@@ -165,22 +140,9 @@
 
                         <!-- Footer de la carte -->
                         <div class="card-footer bg-transparent">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    @if($book->visibility === 'public')
-                                        <span class="badge bg-success me-2">
-                                            <i class="fas fa-eye me-1"></i>Public
-                                        </span>
-                                    @else
-                                        <span class="badge bg-info me-2">
-                                            <i class="fas fa-lock me-1"></i>Privé
-                                        </span>
-                                    @endif
-                                </div>
-                                <small class="text-muted">
-                                    {{ \Carbon\Carbon::parse($book->created_at)->locale('fr')->format('d/m/Y H:i') }}
-                                </small>
-                            </div>
+                            <small class="text-muted">
+                                {{ \Carbon\Carbon::parse($book->created_at)->locale('fr')->format('d/m/Y H:i') }}
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -278,22 +240,6 @@ function showFullMessage(bookId) {
         });
 }
 
-function editMessage(bookId) {
-    // Implémenter l'édition du message
-    console.log('Éditer le message:', bookId);
-}
-
-function toggleVisibility(bookId) {
-    // Implémenter le changement de visibilité
-    console.log('Changer la visibilité:', bookId);
-}
-
-function deleteMessage(bookId) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
-        // Implémenter la suppression
-        console.log('Supprimer le message:', bookId);
-    }
-}
 
 function downloadPDF() {
     // Implémenter le téléchargement PDF

@@ -8,6 +8,30 @@ use App\Models\EventDrink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * ========================================
+ * EVENT DRINK CONTROLLER - GESTION UNIFIÉE DES BOISSONS D'ÉVÉNEMENT
+ * ========================================
+ * 
+ * Ce contrôleur gère TOUS les aspects des boissons pour les événements :
+ * - Gestion complète des boissons d'événement
+ * - Statistiques et rapports avancés
+ * - Export PDF et Excel
+ * - Assignation en masse
+ * - Duplication entre événements
+ * - Création en masse (fusionnée depuis Invitation/EventDrinkController)
+ * 
+ * FONCTIONNALITÉS PRINCIPALES :
+ * - ✅ CRUD complet des boissons d'événement
+ * - ✅ Statistiques détaillées et rapports
+ * - ✅ Export PDF et Excel
+ * - ✅ Assignation en masse
+ * - ✅ Duplication entre événements
+ * - ✅ Gestion des choix des invités
+ * 
+ * @author Assistant IA - Optimisation et fusion
+ * @version 2.0 - Unifié et optimisé
+ */
 class EventDrinkController extends Controller
 {
     /**
@@ -313,6 +337,57 @@ class EventDrinkController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->with('error', 'Erreur lors de la duplication: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Méthode de création en masse pour les invitations (fusionnée depuis Invitation/EventDrinkController)
+     * Crée plusieurs boissons d'événement en une seule fois
+     */
+    public function storeBulk(Request $request)
+    {
+        $eventId = $request->input('event_id');
+        $drinkIds = $request->input('drinks', []);
+
+        try {
+            $created = 0;
+            $skipped = 0;
+
+            foreach ($drinkIds as $drink) {
+                // Si $drink n'est pas numérique ou n'existe pas, sauter
+                if (!is_numeric($drink) || !\App\Models\Drink::find($drink)) {
+                    continue;
+                }
+
+                // Vérifier si déjà assigné
+                $existing = EventDrink::where('event_id', $eventId)
+                    ->where('drink_id', $drink)
+                    ->first();
+
+                if (!$existing) {
+                    EventDrink::create([
+                        'event_id' => $eventId,
+                        'drink_id' => $drink,
+                        'price' => 0,
+                        'available' => true,
+                        'limit_per_guest' => 1,
+                        'display_order' => 0,
+                    ]);
+                    $created++;
+                } else {
+                    $skipped++;
+                }
+            }
+
+            $message = "{$created} boisson(s) enregistrée(s) avec succès !";
+            if ($skipped > 0) {
+                $message .= " {$skipped} boisson(s) déjà assignée(s) ignorée(s).";
+            }
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de l\'enregistrement: ' . $e->getMessage());
         }
     }
 }

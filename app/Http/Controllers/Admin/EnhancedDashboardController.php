@@ -3,6 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * ENHANCED DASHBOARD CONTROLLER - TABLEAU DE BORD AMÉLIORÉ
+ * ========================================
+ * 
+ * Ce contrôleur gère le tableau de bord amélioré avec des fonctionnalités avancées.
+ * Il fournit des statistiques en temps réel, activité récente et API endpoints
+ * pour des mises à jour dynamiques via JavaScript.
+ */
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Invitation;

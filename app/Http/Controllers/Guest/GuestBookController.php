@@ -5,6 +5,16 @@ namespace App\Http\Controllers\Guest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * GUEST BOOK CONTROLLER - GESTION DU LIVRE D'OR
+ * ========================================
+ * 
+ * Ce contrôleur gère le livre d'or des événements.
+ * Il permet aux invités de laisser des messages et aux organisateurs
+ * de consulter et exporter les messages laissés.
+ */
 use App\Models\Event;
 use App\Models\Guest;
 use App\Models\Invitation;
@@ -45,29 +55,31 @@ class GuestBookController extends Controller
         return view('guests.book', compact('events', 'guests'));
     }
 
-    public function store(Request $request, $unique_code=null)
-{
-    $request->validate([
-        'event_id' => 'nullable|exists:events,id',
-        'guest_id' => 'nullable|exists:guests,id',
-        'message' => 'required|string',
-    ]);
+    public function store(Request $request, $guest_id=null)
+    {
+        $request->validate([
+            'guest_id' => 'required|exists:guests,id',
+            'message' => 'required|string',
+        ]);
 
-    $invitation = Invitation::where('unique_code', $unique_code)->first();
+        // ✅ NOUVELLE LOGIQUE : Utiliser directement le guest_id de l'URL
+        $guestId = $guest_id ?? $request->guest_id;
 
-    if (!$invitation) {
-        return redirect()->back()->with('error', 'Invitation invalide.');
+        // Récupérer l'invité avec son événement
+        $guest = Guest::with('event')->findOrFail($guestId);
+
+        DB::table('guest_books')->insert([
+            'event_id' => $guest->event_id,
+            'guest_id' => $guestId,
+            'message'  => $request->message,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // ✅ NOUVELLE LOGIQUE : Redirection vers l'invitation dynamique
+        return redirect()
+            ->route('invitation.show.dynamic', $guestId)
+            ->with('success', 'Message enregistré avec succès !');
     }
-
-    DB::table('guest_books')->insert([
-        'event_id' => $invitation->event_id,
-        'guest_id' => $invitation->guest_id,
-        'message'  => $request->message,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    return redirect()->back()->with('success', 'Message enregistré avec succès !');
-}
 
 }

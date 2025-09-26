@@ -1,3 +1,16 @@
+{{--
+========================================
+DASHBOARD ENHANCED VIEW - TABLEAU DE BORD AMÉLIORÉ
+========================================
+
+Cette vue affiche le tableau de bord amélioré avec :
+- Statistiques en temps réel (AJAX)
+- Activité récente des utilisateurs
+- Événements récents avec métriques
+- Interface moderne et responsive
+
+UTILISATION : Alternative moderne au dashboard principal
+--}}
 @extends('admin')
 
 @section('content')

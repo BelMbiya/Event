@@ -3,6 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+
+/**
+ * ========================================
+ * AUTH CONTROLLER - GESTION DE L'AUTHENTIFICATION
+ * ========================================
+ * 
+ * Ce contrôleur gère l'authentification des utilisateurs.
+ * Il traite la connexion, déconnexion et redirection après authentification
+ * pour sécuriser l'accès aux fonctionnalités d'administration.
+ */
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

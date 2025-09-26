@@ -1,9 +1,25 @@
 <?php
 
+/**
+ * ========================================
+ * ROUTES WEB - DÉFINITION DES ROUTES DE L'APPLICATION
+ * ========================================
+ * 
+ * Ce fichier définit toutes les routes de l'application web.
+ * Il organise les routes par fonctionnalités : authentification, administration,
+ * invitations, invités, boissons, et routes publiques.
+ * 
+ * STRUCTURE :
+ * - Routes d'authentification (login/logout)
+ * - Routes d'administration (tableaux de bord)
+ * - Routes des invitations (CRUD complet)
+ * - Routes des invités et choix de boissons
+ * - Routes publiques (sans authentification)
+ */
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\IndexController;
-use App\Http\Controllers\Invitation\ContentInvitationController;
+use App\Http\Controllers\Invitation\ContentController;
 use App\Http\Controllers\Guest\GuestDrinkChoiceController;
 use App\Http\Controllers\guest\GuestController;
 use App\Http\Controllers\guest\GuestBookController;
@@ -56,21 +72,46 @@ Route::controller(App\Http\Controllers\Invitation\InvitationController::class)
         // Route: GET /invitation/create/{event_id}
         // Fonction: Affiche le formulaire de création d'invitation pour un événement spécifique
         // Vue: invitation.create-advanced
+        // Middleware: Empêche la création si l'événement a déjà une invitation
         Route::get('invitation/create/{event_id}', 'create')
-            ->name('invitation.create');
+            ->name('invitation.create')
+            ->middleware('prevent.duplicate.invitation');
         
         // 💾 SAUVEGARDE D'UNE NOUVELLE INVITATION
         // Route: POST /invitation
         // Fonction: Sauvegarde une nouvelle invitation avec son contenu
         // Retour: JSON (AJAX) ou redirection
-        Route::post('invitation', 'store')->name('invitation.store');
+        // Middleware: Empêche la création si l'événement a déjà une invitation
+        Route::post('invitation', 'store')->name('invitation.store')
+            ->middleware('prevent.duplicate.invitation');
         
-        // 👁️ AFFICHAGE D'UNE INVITATION
+        // 👁️ AFFICHAGE D'UNE INVITATION DYNAMIQUE
+        // Route: GET /invitation/{guest_id}
+        // Fonction: Affiche une invitation publique qui s'adapte selon l'invité
+        // Vue: invitation.invitation_paper.Invitation_3
+        Route::get('invitation/{guest_id}', 'showDynamic')
+            ->name('invitation.show.dynamic');
+        
+        // 👁️ AFFICHAGE D'UNE INVITATION (LEGACY - pour compatibilité)
         // Route: GET /invitation/{unique_code}
         // Fonction: Affiche une invitation publique via son code unique
         // Vue: invitation.invitation_paper.Invitation_3
         Route::get('invitation/{unique_code}', 'show')
             ->name('invitation.show');
+        
+        // ✏️ ÉDITION D'UNE INVITATION
+        // Route: GET /invitation/{id}/edit
+        // Fonction: Affiche le formulaire d'édition d'une invitation
+        // Vue: invitation.edit-advanced
+        Route::get('invitation/{id}/edit', 'edit')
+            ->name('invitation.edit');
+        
+        // 💾 MISE À JOUR D'UNE INVITATION
+        // Route: PUT/PATCH /invitation/{id}
+        // Fonction: Met à jour une invitation existante
+        // Retour: Redirection vers la liste
+        Route::put('invitation/{id}', 'update')
+            ->name('invitation.update');
         
         // 🗑️ SUPPRESSION D'UNE INVITATION
         // Route: DELETE /invitation/{id}
@@ -83,15 +124,19 @@ Route::controller(App\Http\Controllers\Invitation\InvitationController::class)
         // Route: POST /events/{event_id}/create-invitations-for-all-guests
         // Fonction: Crée automatiquement des invitations pour tous les invités d'un événement
         // Retour: JSON avec statistiques de création
+        // Middleware: Empêche la création si l'événement a déjà une invitation
         Route::post('events/{event_id}/create-invitations-for-all-guests', 'createInvitationsForAllGuests')
-            ->name('invitation.create-for-all-guests');
+            ->name('invitation.create-for-all-guests')
+            ->middleware('prevent.duplicate.invitation');
         
         // 🎯 CRÉATION POUR INVITÉS SÉLECTIONNÉS
         // Route: POST /events/{event_id}/create-invitations-for-selected-guests
         // Fonction: Crée des invitations pour des invités spécifiquement sélectionnés
         // Retour: JSON avec détails de création
+        // Middleware: Empêche la création si l'événement a déjà une invitation
         Route::post('events/{event_id}/create-invitations-for-selected-guests', 'createInvitationsForSelectedGuests')
-            ->name('invitation.create-for-selected-guests');
+            ->name('invitation.create-for-selected-guests')
+            ->middleware('prevent.duplicate.invitation');
         
         // 🔍 VÉRIFICATION DU STATUT DES INVITATIONS
         // Route: GET /events/{event_id}/invitations-status
@@ -134,6 +179,13 @@ Route::controller(App\Http\Controllers\Invitation\InvitationController::class)
         // Retour: JSON avec statistiques
         Route::get('invitation/stats/{event_id?}', 'getStats')
             ->name('invitation.stats');
+        
+        // 🔗 GÉNÉRATION DE LIENS DYNAMIQUES
+        // Route: GET /invitation/{event_id}/generate-links
+        // Fonction: Génère les liens d'invitation dynamiques pour tous les invités
+        // Retour: JSON avec tous les liens personnalisés
+        Route::get('invitation/{event_id}/generate-links', 'generateDynamicLinks')
+            ->name('invitation.generate-links');
     });
 Route::middleware('auth')->group(function () {
     Route::get('/invitation/{unique_code}/download', [InvitationController::class, 'downloadInvitation'])
@@ -158,19 +210,19 @@ Route::middleware('auth')->group(function () {
     // ROUTES POUR LA GESTION DU CONTENU D'INVITATION (ANCIEN SYSTÈME)
     // ========================================
     
-    // 🎨 CRÉATION DE CONTENU (ANCIEN SYSTÈME)
+    // 🎨 CRÉATION DE CONTENU (ANCIEN SYSTÈME - COMPATIBILITÉ)
     // Route: GET /edit-content/{invitation_id}
     // Fonction: Affiche le formulaire de création de contenu pour une invitation
     // Vue: invitation.content
-    // Note: Système legacy, utilise ContentInvitationController
-    Route::get('/edit-content/{invitation_id}', [ContentInvitationController::class, 'create'])->name('content.create');
+    // Note: Système legacy, utilise ContentController (fusionné)
+    Route::get('/edit-content/{invitation_id}', [ContentController::class, 'create'])->name('content.create');
     
-    // 💾 SAUVEGARDE DE CONTENU (ANCIEN SYSTÈME)
+    // 💾 SAUVEGARDE DE CONTENU (ANCIEN SYSTÈME - COMPATIBILITÉ)
     // Route: POST /edit-content
     // Fonction: Sauvegarde le contenu d'une invitation
     // Retour: Redirection vers la liste des invitations
-    // Note: Système legacy, utilise ContentInvitationController
-    Route::post('/edit-content', [ContentInvitationController::class, 'store'])->name('content.store');
+    // Note: Système legacy, utilise ContentController (fusionné)
+    Route::post('/edit-content', [ContentController::class, 'store'])->name('content.store');
 
     // ========================================
     // ROUTES POUR LA GESTION DU CONTENU D'INVITATION (NOUVEAU SYSTÈME)
@@ -212,11 +264,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/guest_book/event/{event_id}', [GuestBookController::class, 'index'])
         ->name('book.index');
     Route::get('/guest_book/create', [GuestBookController::class, 'create'])->name('book.create');
-    Route::post('/guest_book/store/{unique_code?}', [GuestBookController::class, 'store'])->name('book.store');
+    
+    // ✅ NOUVELLE ROUTE : Livre d'or avec logique dynamique
+    Route::post('/guest_book/store/{guest_id}', [GuestBookController::class, 'store'])
+        ->name('book.store.dynamic');
+    
+    // ✅ ROUTE LEGACY : Livre d'or avec code unique (pour compatibilité)
+    Route::post('/guest_book/store/{unique_code?}', [GuestBookController::class, 'store'])
+        ->name('book.store');
+    
     Route::get('/guest_book/event/{event_id}/download-pdf', [GuestBookController::class, 'downloadPDF'])
         ->name('book.download-pdf');
 
     Route::post('/event-drinks/store', [EventDrinkController::class, 'store'])->name('event-drinks.store');
+    Route::post('/event-drinks/store-bulk', [EventDrinkController::class, 'storeBulk'])->name('event-drinks.store-bulk');
 });
 
 // Routes publiques (sans authentification)
@@ -224,6 +285,10 @@ Route::post('/guest-drink-choices', [GuestDrinkChoiceController::class, 'store']
     ->name('guest_drink_choices.store');
 Route::delete('/guests/{guest_id}/drink-choices', [GuestDrinkChoiceController::class, 'destroyByGuest'])
     ->name('guest-drink-choices.destroy-by-guest');
+
+    // ✅ NOUVELLE ROUTE PUBLIQUE : Livre d'or dynamique
+Route::post('/guest-book/{guest_id}', [App\Http\Controllers\Guest\GuestBookController::class, 'store'])
+    ->name('guest-book.store.dynamic');
 
 //Route::post('/guest/drink-choices', [GuestDrinkChoiceController::class, 'store'])
 //      ->name('guest.drink.choices.store');

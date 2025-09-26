@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * ========================================
+ * GUEST MODEL - GESTION DES INVITÉS
+ * ========================================
+ * 
+ * Ce modèle représente un invité à un événement.
+ * Il stocke les informations personnelles de l'invité et gère
+ * son statut RSVP, ses choix de boissons et son invitation.
+ */
+
 class Guest extends Model
 {
     protected $fillable = [
@@ -29,5 +39,15 @@ class Guest extends Model
     public function drinkChoices()
     {
         return $this->hasMany(GuestDrinkChoice::class);
+    }
+
+    public function eventTable()
+    {
+        return $this->belongsTo(EventTable::class);
+    }
+
+    public function guestBooks()
+    {
+        return $this->hasMany(GuestBook::class);
     }
 }

@@ -106,41 +106,22 @@
         </div>
     </div>
 
-    <!-- Filtres -->
+    <!-- Recherche simplifiée -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtres et Recherche</h5>
+            <h5 class="mb-0"><i class="fas fa-search me-2"></i>Recherche</h5>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('drink-choices.index', $event->id) }}" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Statut</label>
-                    <select name="status" class="form-select">
-                        <option value="">Tous</option>
-                        <option value="with_choices" {{ request('status') == 'with_choices' ? 'selected' : '' }}>Avec choix</option>
-                        <option value="without_choices" {{ request('status') == 'without_choices' ? 'selected' : '' }}>Sans choix</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Boisson</label>
-                    <select name="drink_id" class="form-select">
-                        <option value="">Toutes les boissons</option>
-                        @foreach($eventDrinks as $eventDrink)
-                            <option value="{{ $eventDrink->id }}" {{ request('drink_id') == $eventDrink->id ? 'selected' : '' }}>
-                                {{ $eventDrink->drink->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Recherche</label>
+                <div class="col-md-10">
+                    <label class="form-label">Rechercher</label>
                     <input type="text" name="search" class="form-control" placeholder="Nom, prénom ou email..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-filter"></i> Filtrer
+                            <i class="fas fa-search"></i> Rechercher
                         </button>
                     </div>
                 </div>

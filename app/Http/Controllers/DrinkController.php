@@ -6,6 +6,16 @@ use App\Models\Drink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * ========================================
+ * DRINK CONTROLLER - GESTION DES BOISSONS
+ * ========================================
+ * 
+ * Ce contrôleur gère le catalogue des boissons disponibles.
+ * Il permet la création, modification et suppression des boissons
+ * qui seront ensuite utilisées dans les événements.
+ */
+
 class DrinkController extends Controller
 {
     /**

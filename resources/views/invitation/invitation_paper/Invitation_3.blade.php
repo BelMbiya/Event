@@ -1498,45 +1498,54 @@
 
     <!-- Hero Section -->
     @php
-        // SOLUTION DÉFINITIVE POUR LES IMAGES HERO
-        $heroImageUrl = null;
-        
-        if($content->hero_image_path) {
-            $cleanPath = trim($content->hero_image_path);
+        // FONCTION POUR GÉRER LES CHEMINS D'IMAGES
+        function getImageUrl($imagePath, $defaultUrl = null) {
+            if(!$imagePath) return $defaultUrl;
             
-            // 1. Essayer le chemin direct avec storage/
-            $directPath = 'storage/' . $cleanPath;
-            if(file_exists(public_path($directPath))) {
-                $heroImageUrl = 'http://localhost:8000/' . $directPath;
+            $cleanPath = trim($imagePath);
+            
+            // 1. Essayer le chemin direct avec storage/ (public/storage/)
+            $publicPath = 'storage/' . $cleanPath;
+            if(file_exists(public_path($publicPath))) {
+                return asset($publicPath);
             }
             
-            // 2. Si pas trouvé, essayer avec le nom de fichier seulement
-            if(!$heroImageUrl) {
+            // 2. Essayer le chemin dans storage/app/public/
+            $storagePath = storage_path('app/public/' . $cleanPath);
+            if(file_exists($storagePath)) {
+                return asset('storage/' . $cleanPath);
+            }
+            
+            // 3. Si pas trouvé, essayer avec le nom de fichier seulement dans hero/
+            if(strpos($cleanPath, 'hero/') !== false) {
                 $filenamePath = 'storage/invitations/hero/' . basename($cleanPath);
                 if(file_exists(public_path($filenamePath))) {
-                    $heroImageUrl = 'http://localhost:8000/' . $filenamePath;
+                    return asset($filenamePath);
                 }
             }
             
-            // 3. Si pas trouvé, essayer le chemin original
-            if(!$heroImageUrl) {
-                if(file_exists(public_path($cleanPath))) {
-                    $heroImageUrl = 'http://localhost:8000/' . $cleanPath;
+            // 4. Si pas trouvé, essayer avec le nom de fichier seulement dans sections/
+            if(strpos($cleanPath, 'sections/') !== false) {
+                $filenamePath = 'storage/invitations/sections/' . basename($cleanPath);
+                if(file_exists(public_path($filenamePath))) {
+                    return asset($filenamePath);
                 }
             }
             
-            // 4. Fallback final même si le fichier n'existe pas
-            if(!$heroImageUrl) {
-                $heroImageUrl = 'http://localhost:8000/storage/' . $cleanPath;
-            }
+            // 5. Fallback final même si le fichier n'existe pas
+            return asset('storage/' . $cleanPath);
         }
         
-        // Image par défaut si rien n'est trouvé
-        $finalHeroImageUrl = $heroImageUrl ?: 'https://cdn0.mariages.net/article-real-wedding/678/3_2/1920/jpg/3928114.webp';
+        // IMAGES DE FOND DES SECTIONS
+        $heroImageUrl = getImageUrl($content->hero_image_path, 'https://cdn0.mariages.net/article-real-wedding/678/3_2/1920/jpg/3928114.webp');
+        $programBgUrl = getImageUrl($content->program_background_image, 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80');
+        $guestbookBgUrl = getImageUrl($content->guestbook_background_image, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80');
+        $drinksBgUrl = getImageUrl($content->drinks_background_image, 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80');
+        $footerBgUrl = getImageUrl($content->footer_background_image, 'https://images.unsplash.com/photo-1519167758481-83f1426e1b1e?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80');
     @endphp
     <section class="hero-section relative min-h-screen flex items-center justify-center" 
-             style="background-image: url('{{ $finalHeroImageUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;"
-             data-parallax="scroll" data-image-src="{{ $finalHeroImageUrl }}">
+             style="background-image: url('{{ $heroImageUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;"
+             data-parallax="scroll" data-image-src="{{ $heroImageUrl }}">
         <!-- Overlay pour la lisibilité - opacité réduite -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.1); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">
@@ -1580,11 +1589,7 @@
                         </p>
                         @endif
 
-                        <!-- Bouton d'ouverture -->
-                        <button class="modern-button" onclick="scrollToContent()">
-                            <i class="fas fa-envelope me-2"></i>
-                            Ouvrir l'invitation
-                        </button>
+                        <!-- Bouton d'ouverture supprimé -->
                     </div>
                 </div>
             </div>
@@ -1824,7 +1829,7 @@
 
     <!-- Section Livre d'Or -->
     @if($content->guestbook_enabled)
-    <section class="guestbook-section py-5" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+    <section class="guestbook-section py-5" style="background-image: url('{{ $guestbookBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
         <!-- Overlay pour la lisibilité -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">
@@ -1838,28 +1843,58 @@
                             {{ $content->guestbook_subtitle ?? 'Laissez-nous un mot, une pensée ou une bénédiction pour marquer ce moment unique.' }}
                         </p>
 
-                        <!-- Formulaire d'ajout -->
-                        <div class="text-start bg-light rounded-3 p-4">
-                            <h3 class="modern-font text-dark mb-3">
-                                @if($guest)
-                                    Écrire un message - {{ $guest->first_name }} {{ $guest->last_name }}
-                                @else
-                                    Écrire un message
-                                @endif
-                            </h3>
-                            <form action="{{ route('book.store', ['unique_code' => $unique_code]) }}" method="POST">
-                                @csrf
-                                <div class="mb-3">
-                                    <label class="form-label text-dark">Votre message</label>
-                                    <textarea rows="4" name="message" class="form-control"
-                                        placeholder="Écrivez votre message ici..."></textarea>
+                        @php
+                            // Vérifier si l'invité a déjà envoyé un message
+                            $hasExistingMessage = $guestBookMessages && $guestBookMessages->count() > 0;
+                            $existingMessage = $hasExistingMessage ? $guestBookMessages->first() : null;
+                        @endphp
+
+                        @if($hasExistingMessage)
+                            <!-- Affichage du message existant (lecture seule) -->
+                            <div class="text-start bg-light rounded-3 p-4">
+                                <div class="alert alert-success mb-4">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Votre message a été envoyé !</strong>
                                 </div>
-                                <button type="submit" class="modern-button">
-                                    <i class="fas fa-paper-plane me-2"></i>
-                                    Envoyer
-                                </button>
-                            </form>
-                        </div>
+                                <h3 class="modern-font text-dark mb-3">
+                                    <i class="fas fa-heart me-2" style="color: #e11d48;"></i>
+                                    Votre message
+                                </h3>
+                                <div class="bg-white rounded-3 p-4 border">
+                                    <p class="text-dark mb-3" style="font-size: 1.1rem; line-height: 1.6;">
+                                        "{{ $existingMessage->message }}"
+                                    </p>
+                                    <div class="text-muted small">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Envoyé le {{ \Carbon\Carbon::parse($existingMessage->created_at)->locale('fr')->format('d/m/Y à H:i') }}
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Formulaire pour envoyer un message -->
+                            <div class="text-start bg-light rounded-3 p-4">
+                                <h3 class="modern-font text-dark mb-3">
+                                    @if($guest)
+                                        Écrire un message - {{ $guest->first_name }} {{ $guest->last_name }}
+                                    @else
+                                        Écrire un message
+                                    @endif
+                                </h3>
+                                <form action="{{ route('book.store.dynamic', $guest->id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="guest_id" value="{{ $guest->id }}">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark">Votre message</label>
+                                        <textarea rows="4" name="message" class="form-control" required
+                                            placeholder="Écrivez votre message ici..."></textarea>
+                                    </div>
+                                    <button type="submit" class="modern-button">
+                                        <i class="fas fa-paper-plane me-2"></i>
+                                        Envoyer
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -1868,9 +1903,11 @@
     @endif
 
     <!-- Section Programme/Schedule -->
-    @if($content->schedule)
-    <section class="schedule-section py-5">
-        <div class="container">
+    @if($content->program_html || $content->schedule)
+    <section class="schedule-section py-5" style="background-image: url('{{ $programBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+        <!-- Overlay pour la lisibilité -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.2); z-index: 1;"></div>
+        <div class="container" style="position: relative; z-index: 2;">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <div class="invitation-card p-5 text-center">
@@ -1890,70 +1927,61 @@
                             </div>
                         </div>
                         
-                        @php
-                            $schedule = [];
-                            if ($content->schedule) {
-                                if (is_string($content->schedule)) {
-                                    $schedule = json_decode($content->schedule, true) ?: [];
-                                } elseif (is_array($content->schedule)) {
-                                    $schedule = $content->schedule;
-                                }
-                            }
-                        @endphp
-                        
-                        @if($schedule && is_array($schedule) && count($schedule) > 0)
-                            <div class="timeline-container">
-                                <div class="timeline">
-                                    @foreach($schedule as $index => $item)
-                                        @php
-                                            $time = '';
-                                            $event = '';
-                                            
-                                            if (is_array($item) && isset($item['time']) && isset($item['event'])) {
+                        <!-- Programme HTML personnalisé ou Schedule -->
+                        <div class="program-content">
+                            @if($content->program_html)
+                                {!! $content->program_html !!}
+                            @elseif($content->schedule)
+                                @php
+                                    $schedule = is_string($content->schedule) ? json_decode($content->schedule, true) : $content->schedule;
+                                @endphp
+                                @if($schedule && is_array($schedule))
+                                    <div class="timeline-container">
+                                        @foreach($schedule as $index => $item)
+                                            @php
                                                 $time = $item['time'] ?? '';
-                                                $event = $item['event'] ?? '';
-                                            } elseif (is_string($item)) {
-                                                $scheduleKeys = array_keys($schedule);
-                                                $time = $scheduleKeys[$index] ?? '';
-                                                $event = $item;
-                                            }
-                                        @endphp
-                                        
-                                        @if($time && $event)
-                                            <div class="timeline-item {{ $index % 2 == 0 ? 'timeline-left' : 'timeline-right' }}">
-                                                <div class="timeline-marker">
-                                                    <div class="timeline-icon">
-                                                        @if($event && (strpos(strtolower($event), 'cérémonie') !== false || strpos(strtolower($event), 'mariage') !== false))
-                                                            <i class="fas fa-heart"></i>
-                                                        @elseif($event && (strpos(strtolower($event), 'cocktail') !== false || strpos(strtolower($event), 'apéritif') !== false))
-                                                            <i class="fas fa-glass-cheers"></i>
-                                                        @elseif($event && (strpos(strtolower($event), 'dîner') !== false || strpos(strtolower($event), 'repas') !== false))
-                                                            <i class="fas fa-utensils"></i>
-                                                        @elseif($event && (strpos(strtolower($event), 'danse') !== false || strpos(strtolower($event), 'soirée') !== false))
-                                                            <i class="fas fa-music"></i>
-                                                        @else
-                                                            <i class="fas fa-clock"></i>
+                                                $eventItem = $item['event'] ?? '';
+                                                $location = $item['location'] ?? '';
+                                            @endphp
+                                            @if($time && $eventItem)
+                                                <div class="timeline-item {{ $loop->index % 2 == 0 ? 'timeline-left' : 'timeline-right' }}">
+                                                    <div class="timeline-marker">
+                                                        <div class="timeline-icon">
+                                                            @if($eventItem && (strpos(strtolower($eventItem), 'cérémonie') !== false || strpos(strtolower($eventItem), 'mariage') !== false))
+                                                                <i class="fas fa-heart"></i>
+                                                            @elseif($eventItem && (strpos(strtolower($eventItem), 'cocktail') !== false || strpos(strtolower($eventItem), 'apéritif') !== false))
+                                                                <i class="fas fa-glass-cheers"></i>
+                                                            @elseif($eventItem && (strpos(strtolower($eventItem), 'dîner') !== false || strpos(strtolower($eventItem), 'repas') !== false))
+                                                                <i class="fas fa-utensils"></i>
+                                                            @elseif($eventItem && (strpos(strtolower($eventItem), 'danse') !== false || strpos(strtolower($eventItem), 'soirée') !== false))
+                                                                <i class="fas fa-music"></i>
+                                                            @else
+                                                                <i class="fas fa-clock"></i>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="timeline-content">
+                                                        <div class="timeline-time">{{ $time }}</div>
+                                                        <div class="timeline-event">{{ $eventItem }}</div>
+                                                        @if($location)
+                                                            <div class="timeline-location">
+                                                                <i class="fas fa-map-marker-alt me-1"></i>{{ $location }}
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>
-                                                <div class="timeline-content">
-                                                    <div class="timeline-time">{{ $time }}</div>
-                                                    <div class="timeline-event">{{ $event }}</div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        @else
-                            <div class="no-schedule">
-                                <div class="text-center py-5">
-                                    <i class="fas fa-calendar-plus text-muted mb-3" style="font-size: 3rem;"></i>
-                                    <h4 class="text-muted">Programme à venir</h4>
-                                    <p class="text-muted">Le programme détaillé sera bientôt disponible</p>
-                                </div>
-                            </div>
-                        @endif
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="schedule-text">
+                                        <p class="elegant-font" style="font-size: 1.1rem; line-height: 1.8; color: #666;">
+                                            {{ $content->schedule }}
+                                        </p>
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1963,7 +1991,7 @@
 
     <!-- Section Préférences de Boissons -->
     @if($content->drinks_enabled && $eventDrinks && $eventDrinks->count() > 0)
-    <section class="drinks-section" style="background-image: url('https://images.unsplash.com/photo-1544145945-f90425340c7e?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+    <section class="drinks-section" style="background-image: url('{{ $drinksBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
         <!-- Overlay sombre léger pour la lisibilité -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">
@@ -1984,38 +2012,72 @@
                             {{ $drinksData['title'] ?? 'Choisissez vos boissons' }}
                         </h4>
                         
-                        <form action="{{ route('guest_drink_choices.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="guest_id" value="{{ $guest->id ?? '' }}">
-                            <input type="hidden" name="unique_code" value="{{ $unique_code }}">
+                        @php
+                            // Vérifier si l'invité a déjà fait ses choix
+                            $hasExistingChoices = $guestDrinkChoices && $guestDrinkChoices->count() > 0;
+                            $selectedDrinkIds = $hasExistingChoices ? $guestDrinkChoices->pluck('event_drink_id')->toArray() : [];
+                        @endphp
 
+                        @if($hasExistingChoices)
+                            <!-- Affichage des choix existants (lecture seule) -->
                             <div class="mb-4">
+                                <div class="alert alert-success mb-4">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Vos choix ont été enregistrés !</strong>
+                                </div>
                                 <div class="d-flex flex-wrap justify-content-center">
                                     @foreach ($eventDrinks as $drink)
+                                        @php
+                                            $isSelected = in_array($drink->id, $selectedDrinkIds);
+                                        @endphp
                                         <div class="drink-option">
-                                            <!-- Checkbox masqué -->
-                                            <input type="checkbox" 
-                                                   class="btn-check" 
-                                                   name="drinks[]" 
-                                                   value="{{ $drink->id }}" 
-                                                   id="drink{{ $drink->id }}" 
-                                                   autocomplete="off">
-
-                                            <!-- Le label devient le bouton stylisé -->
-                                            <label class="btn btn-outline-primary rounded-pill px-4 py-2 drink-label" 
-                                                   for="drink{{ $drink->id }}">
+                                            <span class="btn {{ $isSelected ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 py-2 drink-label disabled" 
+                                                  style="{{ $isSelected ? 'background-color: #e11d48 !important; border-color: #e11d48 !important; color: white !important;' : '' }}">
+                                                @if($isSelected)
+                                                    <i class="fas fa-check me-2"></i>
+                                                @endif
                                                 {{ $drink->drink->name }}
-                                            </label>
+                                            </span>
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
+                        @else
+                            <!-- Formulaire pour faire les choix -->
+                            <form action="{{ route('guest_drink_choices.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="guest_id" value="{{ $guest->id ?? '' }}">
+                                <input type="hidden" name="event_id" value="{{ $event->id }}">
+                                <input type="hidden" name="unique_code" value="{{ $unique_code }}">
 
-                            <button type="submit" class="modern-button">
-                                <i class="fas fa-check me-2"></i>
-                                {{ $drinksData['submit_label'] ?? 'Valider mes choix' }}
-                            </button>
-                        </form>
+                                <div class="mb-4">
+                                    <div class="d-flex flex-wrap justify-content-center">
+                                        @foreach ($eventDrinks as $drink)
+                                            <div class="drink-option">
+                                                <!-- Checkbox masqué -->
+                                                <input type="checkbox" 
+                                                       class="btn-check" 
+                                                       name="drinks[]" 
+                                                       value="{{ $drink->id }}" 
+                                                       id="drink{{ $drink->id }}" 
+                                                       autocomplete="off">
+
+                                                <!-- Le label devient le bouton stylisé -->
+                                                <label class="btn btn-outline-primary rounded-pill px-4 py-2 drink-label" 
+                                                       for="drink{{ $drink->id }}">
+                                                    {{ $drink->drink->name }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="modern-button">
+                                    <i class="fas fa-check me-2"></i>
+                                    {{ $drinksData['submit_label'] ?? 'Valider mes choix' }}
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -2110,8 +2172,10 @@
     @endif
 
     <!-- Footer -->
-    <footer class="footer-section py-5">
-        <div class="container text-center">
+    <footer class="footer-section py-5" style="background-image: url('{{ $footerBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+        <!-- Overlay pour la lisibilité -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 1;"></div>
+        <div class="container text-center" style="position: relative; z-index: 2;">
             <p class="romantic-font text-white mb-2" style="font-size: 2rem;">{{ $content->couple ?? 'Notre Mariage' }}</p>
             @if($content->event_datetime)
             <p class="elegant-font text-white-50">{{ \Carbon\Carbon::parse($content->event_datetime)->locale('fr')->translatedFormat('d F Y') }}</p>

@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * ========================================
+ * INVITATION MODEL - GESTION DES INVITATIONS
+ * ========================================
+ * 
+ * Ce modèle représente une invitation envoyée à un invité.
+ * Il gère le statut de l'invitation, les codes uniques d'accès
+ * et les métriques d'engagement (ouverture, réponse).
+ */
+
 class Invitation extends Model
 {
     protected $fillable = [

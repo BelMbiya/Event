@@ -57,7 +57,10 @@ class ContentController extends Controller
             ->limit(5)
             ->get();
         
-        return view('invitation.edit-content', compact('invitation', 'content', 'templates', 'similarContents'));
+        // Extraire l'événement de l'invitation
+        $event = $invitation->event;
+        
+        return view('invitation.edit-advanced', compact('invitation', 'content', 'templates', 'similarContents', 'event'));
     }
 
     public function update(Request $request, $invitation_id)

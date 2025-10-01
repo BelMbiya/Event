@@ -18,9 +18,9 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #078ba0;
             padding-bottom: 20px;
-            background: linear-gradient(135deg, #e11d48, #f43f5e);
+            background: linear-gradient(135deg, #04647a, #078ba0);
             color: white;
             border-radius: 10px;
             padding: 20px;
@@ -53,7 +53,7 @@
         .stat-number {
             font-size: 18px;
             font-weight: bold;
-            color: #667eea;
+            color: #ff7f00;
         }
         
         .stat-label {
@@ -77,13 +77,13 @@
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #e11d48;
+            border-bottom: 2px solid #04647a;
         }
         
         .invitation-title {
             font-size: 20px;
             font-weight: bold;
-            color: #e11d48;
+            color: #04647a;
         }
         
         .invitation-status {
@@ -130,7 +130,7 @@
         
         .guest-info h5 {
             margin: 0 0 10px 0;
-            color: #e11d48;
+            color: #04647a;
             font-size: 16px;
         }
         
@@ -147,7 +147,7 @@
         }
         
         th {
-            background-color: #667eea;
+            background-color: #04647a;
             color: white;
             font-weight: bold;
         }
@@ -178,29 +178,55 @@
 </head>
 <body>
     <div class="header">
-        <h1>Rapport des Invitations</h1>
-        <p><strong>Généré le:</strong> {{ now()->locale('fr')->translatedFormat('l d F Y à H:i') }}</p>
-        <p><strong>Total d'invitations:</strong> {{ $invitations->count() }}</p>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:14px">
+            <tr>
+                <td style="width:20%; vertical-align:middle; text-align:left;">
+                    <img src="{{ public_path('img/logotoninvite.png') }}" alt="Logo" style="height:50px; max-width:100px;">
+                </td>
+                <td style="width:60%; vertical-align:middle; text-align:center;">
+                    <h1 style="margin:0; color:white; font-size:24px;">Rapport des Invitations</h1>
+                    <p style="margin:5px 0; color:rgba(255,255,255,0.9); font-size:14px;">
+                        <strong>Généré le:</strong> {{ now()->locale('fr')->translatedFormat('l d F Y à H:i') }}
+                    </p>
+                    <p style="margin:5px 0; color:rgba(255,255,255,0.9); font-size:14px;">
+                        <strong>Total d'invitations:</strong> {{ $invitations->count() }}
+                    </p>
+                </td>
+                <td style="width:20%; vertical-align:middle; text-align:right;">
+                    <!-- Espace pour équilibrer -->
+                </td>
+            </tr>
+        </table>
     </div>
     
-    <div class="stats">
-        <div class="stat-item">
-            <div class="stat-number">{{ $invitations->count() }}</div>
-            <div class="stat-label">Total Invitations</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ $invitations->where('status', 'sent')->count() }}</div>
-            <div class="stat-label">Envoyées</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ $invitations->where('status', 'opened')->count() }}</div>
-            <div class="stat-label">Ouvertes</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">{{ $invitations->where('status', 'responded')->count() }}</div>
-            <div class="stat-label">Répondus</div>
-        </div>
-    </div>
+    <table style="width:100%; border-collapse:collapse; margin-bottom:14px">
+        <tr>
+            <td style="width:25%; vertical-align:top; padding:0">
+                <div style="border:1px solid #078ba0; border-radius:4px; padding:6px; background:#f0f9ff; text-align:center;">
+                    <div style="font-size:16px; font-weight:bold; color:#ff7f00; margin-bottom:4px;">{{ $invitations->count() }}</div>
+                    <div style="font-size:7px; color:#374151; font-weight:bold;">Total Invitations</div>
+                </div>
+            </td>
+            <td style="width:25%; vertical-align:top; padding:0">
+                <div style="border:1px solid #078ba0; border-radius:4px; padding:6px; background:#f0f9ff; text-align:center;">
+                    <div style="font-size:16px; font-weight:bold; color:#ff7f00; margin-bottom:4px;">{{ $invitations->where('status', 'sent')->count() }}</div>
+                    <div style="font-size:7px; color:#374151; font-weight:bold;">Envoyées</div>
+                </div>
+            </td>
+            <td style="width:25%; vertical-align:top; padding:0">
+                <div style="border:1px solid #078ba0; border-radius:4px; padding:6px; background:#f0f9ff; text-align:center;">
+                    <div style="font-size:16px; font-weight:bold; color:#ff7f00; margin-bottom:4px;">{{ $invitations->where('status', 'opened')->count() }}</div>
+                    <div style="font-size:7px; color:#374151; font-weight:bold;">Ouvertes</div>
+                </div>
+            </td>
+            <td style="width:25%; vertical-align:top; padding:0">
+                <div style="border:1px solid #078ba0; border-radius:4px; padding:6px; background:#f0f9ff; text-align:center;">
+                    <div style="font-size:16px; font-weight:bold; color:#ff7f00; margin-bottom:4px;">{{ $invitations->where('status', 'responded')->count() }}</div>
+                    <div style="font-size:7px; color:#374151; font-weight:bold;">Répondus</div>
+                </div>
+            </td>
+        </tr>
+    </table>
     
     <h2>Liste des Invitations</h2>
     

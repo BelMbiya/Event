@@ -44,7 +44,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
         <input type="hidden" name="event_datetime" value="{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d\TH:i') : '' }}">
         <input type="hidden" name="timezone" value="Africa/Kinshasa">
         <input type="hidden" name="guest_id" value="">
-        <input type="hidden" name="status" value="sent">
+        <input type="hidden" name="status" value="{{ $content->status ?? 'published' }}">
         <input type="hidden" name="content_status" value="published">
         <input type="hidden" name="venue_name" value="{{ $event->location }}">
         <input type="hidden" name="venue_address_line1" value="{{ $event->address ?? '' }}">
@@ -54,6 +54,55 @@ UTILISATION : Modification complète d'invitations avec toutes les options
         <input type="hidden" name="slug" value="{{ Str::slug($event->title) }}">
         <input type="hidden" name="unique_code" value="{{ $invitation->unique_code }}">
         <input type="hidden" name="invitation_id" value="{{ $invitation->id }}">
+        
+        <!-- Champs manquants avec valeurs par défaut -->
+        <input type="hidden" name="venue_address_line2" value="{{ $content->venue_address_line2 ?? '' }}">
+        <input type="hidden" name="venue_region" value="{{ $content->venue_region ?? '' }}">
+        <input type="hidden" name="google_maps_url" value="{{ $content->google_maps_url ?? '' }}">
+        <input type="hidden" name="venue_lat" value="{{ $content->venue_lat ?? '' }}">
+        <input type="hidden" name="venue_lng" value="{{ $content->venue_lng ?? '' }}">
+        
+        <!-- Champs de contenu avec valeurs par défaut -->
+        <input type="hidden" name="intro_2" value="💌 Invitation 💌">
+        <input type="hidden" name="hero_image_alt" value="{{ $content->hero_image_alt ?? '' }}">
+        
+        <!-- Champs de fonctionnalités avec valeurs par défaut -->
+        <input type="hidden" name="guestbook_title" value="{{ $content->guestbook_title ?? 'Livre d\'or' }}">
+        <input type="hidden" name="guestbook_subtitle" value="{{ $content->guestbook_subtitle ?? 'Laissez-nous un message' }}">
+        <input type="hidden" name="drinks_title" value="{{ $content->drinks_title ?? 'Choix des boissons' }}">
+        <input type="hidden" name="drinks_submit_label" value="{{ $content->drinks_submit_label ?? 'Confirmer mes choix' }}">
+        <input type="hidden" name="cta_rsvp_label" value="{{ $content->cta_rsvp_label ?? 'Répondre à l\'invitation' }}">
+        <input type="hidden" name="cta_map_label" value="{{ $content->cta_map_label ?? 'Voir sur la carte' }}">
+        <input type="hidden" name="cta_download_label" value="{{ $content->cta_download_label ?? 'Télécharger l\'invitation' }}">
+        
+        <!-- Champs de thème avec valeurs par défaut -->
+        @php
+            // Extraire les couleurs du thème JSON
+            $theme = json_decode($content->theme ?? '{}', true);
+            $colors = $theme['colors'] ?? [];
+            $fonts = $theme['fonts'] ?? [];
+            $decorations = $theme['decorations'] ?? [];
+            
+            $primaryColor = $colors['primary'] ?? '#e11d48';
+            $secondaryColor = $colors['secondary'] ?? '#f43f5e';
+            $accentColor = $colors['accent'] ?? '#fb7185';
+            $headingFont = $fonts['headings'] ?? 'Playfair Display';
+            $bodyFont = $fonts['body'] ?? 'Inter';
+        @endphp
+        
+        <!-- Les couleurs sont maintenant gérées par les champs visibles dans l'onglet Design & Thème -->
+        <input type="hidden" name="theme_heading_font" value="{{ $headingFont }}">
+        <input type="hidden" name="theme_body_font" value="{{ $bodyFont }}">
+        
+        <!-- Champs meta avec valeurs par défaut -->
+        <input type="hidden" name="meta_title" value="{{ $content->meta_title ?? $event->title . ' - Invitation' }}">
+        <input type="hidden" name="meta_description" value="{{ $content->meta_description ?? 'Invitation pour l\'événement de ' . $event->title }}">
+        
+        <!-- Champs de planning dynamiques avec valeurs par défaut -->
+        @for($i = 0; $i < 5; $i++)
+            <input type="hidden" name="schedule_time_{{ $i }}" value="{{ $content->{'schedule_time_' . $i} ?? '' }}">
+            <input type="hidden" name="schedule_event_{{ $i }}" value="{{ $content->{'schedule_event_' . $i} ?? '' }}">
+        @endfor
 
         <!-- Navigation par onglets -->
         <ul class="nav nav-tabs mb-4" id="invitationTabs" role="tablist">
@@ -97,10 +146,10 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                     <textarea class="form-control summernote" name="intro_1" rows="3" placeholder="Message d'introduction...">{{ old('intro_1', $content->intro_1 ?? '') }}</textarea>
                 </div>
 
-                <!-- Message principal -->
+                <!-- Message principal (body_html) -->
                 <div class="mb-4">
                     <label class="form-label">Message Principal <span class="text-danger">*</span></label>
-                    <textarea class="form-control summernote" name="intro_2" rows="4" placeholder="Message principal de l'invitation...">{{ old('intro_2', $content->intro_2 ?? '') }}</textarea>
+                    <textarea class="form-control summernote" name="body_html" rows="4" placeholder="Message principal de l'invitation...">{{ old('body_html', $content->body_html ?? '') }}</textarea>
                 </div>
 
                 <!-- Programme de l'événement avec Summernote -->
@@ -141,17 +190,17 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Couleur principale</label>
-                        <input type="color" class="form-control form-control-color" name="primary_color" value="{{ old('primary_color', $content->primary_color ?? '#e11d48') }}">
+                        <input type="color" class="form-control form-control-color" name="theme_primary_color" value="{{ old('theme_primary_color', $primaryColor) }}">
                         <small class="form-text text-muted">Couleur dominante de l'invitation</small>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Couleur secondaire</label>
-                        <input type="color" class="form-control form-control-color" name="secondary_color" value="{{ old('secondary_color', $content->secondary_color ?? '#f43f5e') }}">
+                        <input type="color" class="form-control form-control-color" name="theme_secondary_color" value="{{ old('theme_secondary_color', $secondaryColor) }}">
                         <small class="form-text text-muted">Couleur d'accent</small>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Couleur d'accent</label>
-                        <input type="color" class="form-control form-control-color" name="accent_color" value="{{ old('accent_color', $content->accent_color ?? '#fb7185') }}">
+                        <input type="color" class="form-control form-control-color" name="theme_accent_color" value="{{ old('theme_accent_color', $accentColor) }}">
                         <small class="form-text text-muted">Couleur pour les détails</small>
                     </div>
                 </div>
@@ -354,386 +403,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
-<style>
-/* Styles pour les zones de drag & drop */
-.drag-drop-zone {
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #f8f9fa;
-    position: relative;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+<link rel="stylesheet" href="{{ asset('css/invitation-edit.css') }}">
 
-.drag-drop-zone:hover {
-    border-color: #007bff;
-    background-color: #e3f2fd;
-}
-
-.drag-drop-zone.drag-over {
-    border-color: #28a745;
-    background-color: #d4edda;
-    transform: scale(1.02);
-}
-
-.drag-drop-content {
-    width: 100%;
-}
-
-.drag-drop-content i {
-    color: #6c757d;
-    transition: color 0.3s ease;
-}
-
-.drag-drop-zone:hover .drag-drop-content i {
-    color: #007bff;
-}
-
-.drag-drop-zone.drag-over .drag-drop-content i {
-    color: #28a745;
-}
-
-.click-to-upload {
-    cursor: pointer;
-    text-decoration: underline;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.click-to-upload:hover {
-    color: #0056b3 !important;
-    text-decoration: none;
-}
-
-.image-preview {
-    position: relative;
-    width: 100%;
-    text-align: center;
-}
-
-.preview-image {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.remove-image {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    z-index: 10;
-}
-
-.gallery-thumbnail {
-    position: relative;
-    display: inline-block;
-    margin: 5px;
-}
-
-.gallery-thumbnail img {
-    border-radius: 4px;
-    transition: transform 0.2s ease;
-}
-
-.gallery-thumbnail:hover img {
-    transform: scale(1.05);
-}
-
-.remove-gallery-image {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    z-index: 10;
-}
-
-/* Animation pour le drag over */
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-.drag-drop-zone.drag-over {
-    animation: pulse 0.6s ease-in-out;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .drag-drop-zone {
-        padding: 1rem;
-        min-height: 120px;
-    }
-    
-    .preview-image {
-        max-height: 150px;
-    }
-    
-    .gallery-thumbnail {
-        height: 120px;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialiser Summernote
-    $('.summernote').summernote({
-        height: 300,
-        toolbar: [
-            ['style', ['style']],
-            ['font', ['bold', 'underline', 'clear']],
-            ['fontname', ['fontname']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['table', ['table']],
-            ['insert', ['link', 'picture', 'video']],
-            ['view', ['fullscreen', 'codeview', 'help']]
-        ]
-    });
-
-    // Initialiser le drag & drop
-    initializeDragDrop();
-    
-    // Gérer l'affichage des images existantes
-    handleExistingImages();
-});
-
-function handleExistingImages() {
-    console.log('🖼️ Gestion des images existantes...');
-    
-    // Vérifier chaque zone de drag & drop pour les images existantes
-    document.querySelectorAll('.drag-drop-zone').forEach(zone => {
-        const target = zone.dataset.target;
-        const preview = document.getElementById(`${target}_preview`);
-        const content = zone.querySelector('.drag-drop-content');
-        
-        if (preview && preview.style.display === 'block') {
-            // Masquer le contenu de drag & drop si une image existe
-            if (content) {
-                content.style.display = 'none';
-            }
-            console.log(`Image existante affichée pour: ${target}`);
-        }
-    });
-}
-
-function initializeDragDrop() {
-    console.log('🖱️ Initialisation du drag & drop...');
-    
-    document.querySelectorAll('.drag-drop-zone').forEach((zone, index) => {
-        const input = zone.querySelector('input[type="file"]');
-        const target = zone.dataset.target;
-        const isMultiple = zone.dataset.multiple === 'true';
-        
-        console.log(`Zone ${index + 1}: ${target} (multiple: ${isMultiple})`);
-        
-        // Gestion du clic pour ouvrir le sélecteur de fichiers
-        zone.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log(`Clic sur zone: ${target}`);
-            
-            // Vérifier si on clique sur le bouton de suppression
-            if (e.target.closest('.remove-image')) {
-                console.log('Clic sur bouton de suppression, ignoré');
-                return;
-            }
-            
-            // Ouvrir le sélecteur de fichiers
-            console.log(`Ouverture du sélecteur de fichiers pour: ${target}`);
-            input.click();
-        });
-        
-        // Gestion du drag & drop - dragover
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            zone.classList.add('drag-over');
-            console.log(`Drag over: ${target}`);
-        });
-        
-        // Gestion du drag & drop - dragenter
-        zone.addEventListener('dragenter', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            zone.classList.add('drag-over');
-            console.log(`Drag enter: ${target}`);
-        });
-        
-        // Gestion du drag & drop - dragleave
-        zone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // Vérifier si on quitte vraiment la zone
-            if (!zone.contains(e.relatedTarget)) {
-                zone.classList.remove('drag-over');
-                console.log(`Drag leave: ${target}`);
-            }
-        });
-        
-        // Gestion du drag & drop - drop
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            zone.classList.remove('drag-over');
-            
-            console.log(`Drop sur: ${target}`);
-            const files = e.dataTransfer.files;
-            console.log(`Fichiers reçus: ${files.length}`);
-            
-            if (files.length > 0) {
-                // Vérifier que ce sont des images
-                const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-                console.log(`Images valides: ${imageFiles.length}`);
-                
-                if (imageFiles.length > 0) {
-                    if (isMultiple) {
-                        // Créer un DataTransfer pour les fichiers multiples
-                        const dt = new DataTransfer();
-                        imageFiles.forEach(file => dt.items.add(file));
-                        input.files = dt.files;
-                    } else {
-                        // Prendre seulement le premier fichier
-                        const dt = new DataTransfer();
-                        dt.items.add(imageFiles[0]);
-                        input.files = dt.files;
-                    }
-                    
-                    console.log(`Fichiers assignés à l'input: ${input.files.length}`);
-                    handleFileSelect(input, target);
-                } else {
-                    alert('Veuillez glisser uniquement des fichiers images.');
-                }
-            }
-        });
-        
-        // Gestion de la sélection de fichier classique
-        input.addEventListener('change', (e) => {
-            console.log(`Sélection classique: ${target}, fichiers: ${e.target.files.length}`);
-            handleFileSelect(input, target);
-        });
-    });
-    
-    // Gestion des boutons de suppression
-    document.querySelectorAll('.remove-image').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const target = btn.dataset.target;
-            console.log(`Suppression: ${target}`);
-            removeImage(target);
-        });
-    });
-    
-    console.log('✅ Drag & drop initialisé');
-}
-
-// Gérer la sélection de fichier
-function handleFileSelect(input, target) {
-    const files = input.files;
-    handleSingleImagePreview(files[0], target);
-}
-
-// Prévisualiser une image unique
-function handleSingleImagePreview(file, target) {
-    console.log(`Prévisualisation: ${target}, fichier: ${file ? file.name : 'null'}`);
-    
-    if (!file) {
-        console.log('❌ Aucun fichier à prévisualiser');
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        console.log(`Image chargée pour ${target}`);
-        
-        const zone = document.querySelector(`[data-target="${target}"]`);
-        if (!zone) {
-            console.error(`❌ Zone non trouvée: ${target}`);
-            return;
-        }
-        
-        const preview = zone.querySelector('.image-preview');
-        const previewImg = preview.querySelector('img');
-        const content = zone.querySelector('.drag-drop-content');
-        
-        if (preview && previewImg && content) {
-            previewImg.src = e.target.result;
-            preview.style.display = 'block';
-            content.style.display = 'none';
-            console.log(`✅ Prévisualisation affichée pour ${target}`);
-        } else {
-            console.error(`❌ Éléments de prévisualisation non trouvés pour ${target}`);
-        }
-    };
-    
-    reader.onerror = function() {
-        console.error(`❌ Erreur lors du chargement de l'image pour ${target}`);
-    };
-    
-    reader.readAsDataURL(file);
-}
-
-// Prévisualiser plusieurs images (galerie)
-function handleGalleryPreview(files) {
-    const preview = document.getElementById('gallery_preview');
-    const previewImages = document.getElementById('gallery_preview_images');
-    
-    previewImages.innerHTML = '';
-    
-    if (files.length > 0) {
-        preview.style.display = 'block';
-        
-        Array.from(files).forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const col = document.createElement('div');
-                col.className = 'col-md-3 mb-2';
-                col.innerHTML = `
-                    <div class="position-relative">
-                        <img src="${e.target.result}" alt="Aperçu ${index + 1}" class="img-thumbnail gallery-thumbnail">
-                        <small class="text-muted d-block text-center mt-1">Image ${index + 1}</small>
-                    </div>
-                `;
-                previewImages.appendChild(col);
-            };
-            reader.readAsDataURL(file);
-        });
-    } else {
-        preview.style.display = 'none';
-    }
-}
-
-// Supprimer une image
-function removeImage(target) {
-    const zone = document.querySelector(`[data-target="${target}"]`);
-    const input = zone.querySelector('input[type="file"]');
-    const preview = zone.querySelector('.image-preview');
-    const content = zone.querySelector('.drag-drop-content');
-    
-    input.value = '';
-    preview.style.display = 'none';
-    content.style.display = 'block';
-}
-</script>
+<script src="{{ asset('js/invitation-edit.js') }}"></script>
 @endsection

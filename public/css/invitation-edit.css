@@ -1,0 +1,138 @@
+/* Styles pour les zones de drag & drop */
+.drag-drop-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    position: relative;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drag-drop-zone:hover {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+.drag-drop-zone.drag-over {
+    border-color: #28a745;
+    background-color: #d4edda;
+    transform: scale(1.02);
+}
+
+.drag-drop-content {
+    width: 100%;
+}
+
+.drag-drop-content i {
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+
+.drag-drop-zone:hover .drag-drop-content i {
+    color: #007bff;
+}
+
+.drag-drop-zone.drag-over .drag-drop-content i {
+    color: #28a745;
+}
+
+.click-to-upload {
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.click-to-upload:hover {
+    color: #0056b3 !important;
+    text-decoration: none;
+}
+
+.image-preview {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.remove-image {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 10;
+}
+
+.gallery-thumbnail {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+}
+
+.gallery-thumbnail img {
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+}
+
+.gallery-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+.remove-gallery-image {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    z-index: 10;
+}
+
+/* Animation pour le drag over */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.drag-drop-zone.drag-over {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .drag-drop-zone {
+        padding: 1rem;
+        min-height: 120px;
+    }
+    
+    .preview-image {
+        max-height: 150px;
+    }
+    
+    .gallery-thumbnail {
+        height: 120px;
+    }
+}

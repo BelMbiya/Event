@@ -42,7 +42,7 @@ class GuestBookController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('guest_book.pdf', compact('guestBooks', 'event'));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('guest_book.pdf.pdf', compact('guestBooks', 'event'));
         
         return $pdf->download('livre_dor_' . $event->title . '_' . date('Y-m-d') . '.pdf');
     }
@@ -52,7 +52,7 @@ class GuestBookController extends Controller
     {
         $events = Event::all();
         $guests = Guest::all();
-        return view('guests.book', compact('events', 'guests'));
+        return view('guest_book.create', compact('events', 'guests'));
     }
 
     public function store(Request $request, $guest_id=null)

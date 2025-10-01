@@ -1,0 +1,391 @@
+/* ============================================
+   JavaScript pour invitation/create-advanced.blade.php
+   Création d'invitations avancées
+   ============================================ */
+
+$(document).ready(function() {
+    // Initialiser Summernote
+    $('.summernote').summernote({
+        height: 200,
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+
+    // Mise à jour du résumé en temps réel
+    function updateReview() {
+        $('#review-couple').text($('input[name="couple"]').val() || '-');
+        $('#review-date').text($('input[name="event_datetime"]').val() || '-');
+        $('#review-venue').text($('input[name="venue_name"]').val() || '-');
+        
+        let features = [];
+        if ($('input[name="guestbook_enabled"]').is(':checked')) features.push('Livre d\'or');
+        if ($('input[name="drinks_enabled"]').is(':checked')) features.push('Choix de boissons');
+        if ($('input[name="cta_rsvp_enabled"]').is(':checked')) features.push('RSVP');
+        if ($('input[name="cta_map_enabled"]').is(':checked')) features.push('Carte');
+        if ($('input[name="cta_download_enabled"]').is(':checked')) features.push('Téléchargement');
+        
+        $('#review-features').text(features.join(', ') || 'Aucune');
+    }
+
+    // Mise à jour automatique du résumé
+    $('input, textarea, select').on('input change', updateReview);
+    
+    // Initialiser le résumé
+    updateReview();
+
+    // Gestion des images
+    $('.image-upload').on('change', function() {
+        const file = this.files[0];
+        const preview = $(this).siblings('.image-preview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.html(`<img src="${e.target.result}" class="img-fluid" style="max-height: 200px;">`);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Validation du formulaire
+    $('#invitationForm').on('submit', function(e) {
+        let isValid = true;
+        
+        // Validation des champs requis
+        const requiredFields = ['couple', 'event_datetime', 'venue_name'];
+        requiredFields.forEach(function(field) {
+            if (!$(`[name="${field}"]`).val()) {
+                $(`[name="${field}"]`).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(`[name="${field}"]`).removeClass('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return false;
+        }
+    });
+
+    // Gestion des couleurs de thème
+    $('#primary-color, #secondary-color').on('change', function() {
+        const primaryColor = $('#primary-color').val();
+        const secondaryColor = $('#secondary-color').val();
+        
+        // Mettre à jour l'aperçu des couleurs
+        $('.color-preview').css({
+            'background': `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`
+        });
+    });
+
+    // Prévisualisation en temps réel
+    $('#preview-btn').on('click', function() {
+        // Collecter les données du formulaire
+        const formData = new FormData($('#invitationForm')[0]);
+        
+        // Ouvrir une nouvelle fenêtre avec la prévisualisation
+        const previewWindow = window.open('', '_blank', 'width=1200,height=800');
+        
+        // Envoyer les données via POST
+        const form = $('<form method="POST" action="/invitations/preview"></form>');
+        form.appendTo('body');
+        
+        // Ajouter un token CSRF
+        form.append($('<input type="hidden" name="_token" value="' + $('meta[name="csrf-token"]').attr('content') + '">'));
+        
+        // Ajouter les données du formulaire
+        for (let [key, value] of formData.entries()) {
+            form.append($(`<input type="hidden" name="${key}" value="${value}">`));
+        }
+        
+        form.submit();
+        form.remove();
+    });
+
+    // Gestion des sections conditionnelles
+    $('input[name="guestbook_enabled"]').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#guestbook-options').show();
+        } else {
+            $('#guestbook-options').hide();
+        }
+    });
+
+    $('input[name="drinks_enabled"]').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#drinks-options').show();
+        } else {
+            $('#drinks-options').hide();
+        }
+    });
+
+    // Initialiser l'état des sections
+    $('input[name="guestbook_enabled"], input[name="drinks_enabled"]').trigger('change');
+});
+
+// Fonction pour sauvegarder automatiquement
+function autoSave() {
+    const formData = new FormData($('#invitationForm')[0]);
+    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+    formData.append('auto_save', '1');
+    
+    $.ajax({
+        url: '/invitations/auto-save',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.success) {
+                console.log('Sauvegarde automatique réussie');
+            }
+        },
+        error: function() {
+            console.log('Erreur lors de la sauvegarde automatique');
+        }
+    });
+}
+
+// Sauvegarde automatique toutes les 30 secondes
+setInterval(autoSave, 30000);
+
+// Fonction pour initialiser le drag and drop
+function initializeDragDrop() {
+    const dropZones = document.querySelectorAll('.drop-zone');
+    
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+        
+        zone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+        });
+        
+        zone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const input = this.querySelector('input[type="file"]');
+                if (input) {
+                    input.files = files;
+                    handleFileSelect(input, this);
+                }
+            }
+        });
+    });
+}
+
+function handleFileSelect(input, target) {
+    const files = input.files;
+    if (files.length === 1) {
+        handleSingleImagePreview(files[0], target);
+    } else if (files.length > 1) {
+        handleGalleryPreview(files);
+    }
+}
+
+function handleSingleImagePreview(file, target) {
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = target.querySelector('.image-preview');
+            if (preview) {
+                preview.innerHTML = `<img src="${e.target.result}" class="img-fluid" style="max-height: 200px;">`;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function handleGalleryPreview(files) {
+    const galleryPreview = document.getElementById('galleryPreview');
+    if (!galleryPreview) return;
+    
+    galleryPreview.innerHTML = '';
+    
+    Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const col = document.createElement('div');
+                col.className = 'col-md-3 mb-3';
+                col.innerHTML = `
+                    <div class="image-frame">
+                        <img src="${e.target.result}" class="img-fluid">
+                        <button type="button" class="btn btn-sm btn-danger remove-image" onclick="removeImage(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                galleryPreview.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function removeImage(target) {
+    const frame = target.closest('.col-md-3');
+    if (frame) {
+        frame.remove();
+    }
+}
+
+// Initialisation générale
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDragDrop();
+    
+    // Gestion de la soumission du formulaire
+    document.getElementById('invitationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        // Afficher un indicateur de chargement
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Création en cours...';
+        submitBtn.disabled = true;
+        
+        fetch('/invitations/store', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showCreationResult(data, 'success');
+            } else {
+                showCreationResult(data, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showCreationResult({message: 'Une erreur est survenue'}, 'error');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+});
+
+function showCreationResult(data, type) {
+    const modal = document.getElementById('creationResultModal');
+    const content = document.getElementById('creationResultContent');
+    
+    if (type === 'success') {
+        content.innerHTML = `
+            <div class="alert alert-success">
+                <h5><i class="fas fa-check-circle"></i> Invitation créée avec succès !</h5>
+                <p>Votre invitation a été créée et est maintenant disponible.</p>
+                <hr>
+                <p><strong>Code d'invitation :</strong> ${data.invitation_code || 'N/A'}</p>
+                <p><strong>URL :</strong> <a href="${data.invitation_url || '#'}" target="_blank">${data.invitation_url || 'N/A'}</a></p>
+            </div>
+            <div class="text-center">
+                <a href="${data.invitation_url || '#'}" target="_blank" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> Voir l'Invitation
+                </a>
+                <a href="/invitations" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Voir toutes les Invitations
+                </a>
+            </div>
+        `;
+    } else {
+        content.innerHTML = `
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-triangle"></i> Erreur lors de la création</h5>
+                <p>${data.message || 'Une erreur est survenue lors de la création de l\'invitation.'}</p>
+            </div>
+            <div class="text-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        `;
+    }
+    
+    $('#creationResultModal').modal('show');
+}
+
+function createInvitationsForAllGuests(eventId, eventTitle) {
+    if (!confirm(`Créer une invitation pour tous les invités de "${eventTitle}" ?`)) {
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('event_id', eventId);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    
+    fetch('/invitations/create-for-all-guests', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAutoCreationResult(data, 'success');
+        } else {
+            showAutoCreationResult(data, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAutoCreationResult({message: 'Une erreur est survenue'}, 'error');
+    });
+}
+
+function showAutoCreationModal(eventTitle) {
+    const modal = document.getElementById('autoCreationModal');
+    const title = modal.querySelector('.modal-title');
+    title.innerHTML = `<i class="fas fa-magic"></i> Création Automatique - ${eventTitle}`;
+    
+    $('#autoCreationModal').modal('show');
+}
+
+function showAutoCreationResult(data, type) {
+    const modal = document.getElementById('autoCreationResultModal');
+    const content = document.getElementById('autoCreationResultContent');
+    
+    if (type === 'success') {
+        content.innerHTML = `
+            <div class="alert alert-success">
+                <h5><i class="fas fa-check-circle"></i> Invitations créées avec succès !</h5>
+                <p>${data.count || 0} invitations ont été créées pour les invités de cet événement.</p>
+            </div>
+            <div class="text-center">
+                <a href="/invitations" class="btn btn-primary">
+                    <i class="fas fa-list"></i> Voir toutes les Invitations
+                </a>
+            </div>
+        `;
+    } else {
+        content.innerHTML = `
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-triangle"></i> Erreur lors de la création automatique</h5>
+                <p>${data.message || 'Une erreur est survenue lors de la création des invitations.'}</p>
+            </div>
+            <div class="text-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        `;
+    }
+    
+    $('#autoCreationResultModal').modal('show');
+}

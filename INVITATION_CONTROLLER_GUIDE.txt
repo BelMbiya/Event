@@ -1,0 +1,205 @@
+========================================
+GUIDE DU CONTRÔLEUR D'INVITATIONS
+========================================
+
+Ce fichier explique le rôle de chaque méthode et paramètre du contrôleur InvitationController.
+
+========================================
+MÉTHODES PRINCIPALES
+========================================
+
+1. index()
+   - Rôle: Affiche la liste de toutes les invitations
+   - Paramètres: Aucun
+   - Retourne: Vue 'invitation.index' avec la liste des invitations
+
+2. create()
+   - Rôle: Affiche le formulaire de création d'invitation
+   - Paramètres: Aucun
+   - Retourne: Vue 'invitation.create-advanced' avec les événements disponibles
+
+3. store(Request $request)
+   - Rôle: Crée une nouvelle invitation avec son contenu
+   - Paramètres: $request (données du formulaire)
+   - Logique:
+     * Valide les données
+     * Crée une invitation pour chaque invité de l'événement
+     * Génère des URLs uniques
+     * Sauvegarde en base de données
+   - Retourne: Redirection vers la liste avec message de succès
+
+4. show($unique_code)
+   - Rôle: Affiche une invitation publique
+   - Paramètres: $unique_code (code unique de l'invitation)
+   - Retourne: Vue 'invitation.invitation_paper.Invitation_3' avec les données
+
+5. showDynamic($event_id, $id)
+   - Rôle: Affiche une invitation dynamique avec toutes les sections
+   - Paramètres: 
+     * $event_id (ID de l'événement)
+     * $id (ID de l'invitation)
+   - Logique:
+     * Récupère l'invitation, l'invité, le contenu
+     * Prépare les URLs d'images
+     * Extrait les couleurs du thème
+     * Marque l'invitation comme ouverte
+   - Retourne: Vue complète avec toutes les données
+
+6. update(Request $request, $id)
+   - Rôle: Met à jour une invitation (GET) ou traite la modification (PUT/POST)
+   - Paramètres: 
+     * $request (données du formulaire)
+     * $id (ID de l'invitation)
+   - Logique GET: Affiche le formulaire d'édition
+   - Logique PUT/POST: Met à jour toutes les invitations de l'événement
+   - Retourne: Vue d'édition ou redirection avec message
+
+7. destroy($id)
+   - Rôle: Supprime une invitation
+   - Paramètres: $id (ID de l'invitation)
+   - Retourne: Redirection avec message de confirmation
+
+========================================
+MÉTHODES UTILITAIRES
+========================================
+
+8. getImageUrl($imagePath, $defaultUrl = null)
+   - Rôle: Génère l'URL d'une image depuis le stockage
+   - Paramètres:
+     * $imagePath (chemin de l'image)
+     * $defaultUrl (URL par défaut si image non trouvée)
+   - Retourne: URL de l'image ou URL par défaut
+
+9. createDefaultContent($invitation)
+   - Rôle: Crée un contenu par défaut pour une invitation
+   - Paramètres: $invitation (objet invitation)
+   - Logique:
+     * Génère un UUID unique
+     * Définit les valeurs par défaut
+     * Crée le contenu en base
+   - Retourne: Objet Content créé
+
+10. markInvitationAsOpened($event_id, $invitation_id)
+    - Rôle: Marque une invitation comme ouverte (pour statistiques)
+    - Paramètres:
+      * $event_id (ID de l'événement)
+      * $invitation_id (ID de l'invitation)
+    - Retourne: Aucun
+
+========================================
+PARAMÈTRES IMPORTANTS
+========================================
+
+CHAMPS DE CONTENU:
+- intro_1: Message d'introduction (éditable)
+- intro_2: Sous-titre (toujours "Invitation")
+- body_html: Message principal avec formatage (éditable)
+- program_html: Programme de l'événement (éditable)
+
+CHAMPS DE LIEU:
+- venue_name: Nom du lieu
+- venue_address_line1: Adresse ligne 1
+- venue_address_line2: Adresse ligne 2
+- venue_city: Ville
+- venue_country: Pays
+- google_maps_url: URL Google Maps
+
+CHAMPS D'IMAGES:
+- hero_image_path: Image de fond de l'en-tête
+- program_background_image: Image de fond du programme
+- guestbook_background_image: Image de fond du livre d'or
+- drinks_background_image: Image de fond des boissons
+- footer_background_image: Image de fond du pied de page
+
+CHAMPS DE THÈME:
+- theme_primary_color: Couleur principale
+- theme_secondary_color: Couleur secondaire
+- theme_accent_color: Couleur d'accent
+- theme_heading_font: Police des titres
+- theme_body_font: Police du corps
+
+CHAMPS DE FONCTIONNALITÉS:
+- guestbook_enabled: Livre d'or activé/désactivé
+- drinks_enabled: Choix de boissons activé/désactivé
+- cta_rsvp_enabled: Bouton RSVP activé/désactivé
+
+========================================
+LOGIQUE DE VALIDATION
+========================================
+
+RÈGLES DE VALIDATION:
+- couple: requis, string, max 255 caractères
+- event_datetime: date valide
+- venue_name: string, max 255 caractères
+- hero_image_path: fichier image, max 2MB
+- status: doit être 'draft', 'published' ou 'archived'
+
+VALEURS PAR DÉFAUT:
+- timezone: 'Africa/Kinshasa'
+- locale: 'fr'
+- status: 'published'
+- intro_2: 'Invitation'
+- guestbook_enabled: true
+- drinks_enabled: true
+
+========================================
+GESTION DES ERREURS
+========================================
+
+TRANSACTIONS:
+- Utilise DB::beginTransaction() pour la cohérence
+- DB::commit() en cas de succès
+- DB::rollback() en cas d'erreur
+
+LOGGING:
+- \Log::info() pour les opérations réussies
+- \Log::error() pour les erreurs
+
+REDIRECTIONS:
+- Succès: redirect()->route('invitation.index') avec message
+- Erreur: redirect()->back() avec erreurs de validation
+
+========================================
+STRUCTURE DES DONNÉES
+========================================
+
+MODÈLE INVITATION:
+- id: Identifiant unique
+- event_id: ID de l'événement
+- guest_id: ID de l'invité
+- unique_code: Code unique pour l'URL
+- invitation_url: URL de l'invitation
+- status: Statut (sent, opened, responded)
+
+MODÈLE CONTENT:
+- invitation_id: ID de l'invitation
+- event_id: ID de l'événement
+- guest_id: ID de l'invité
+- unique_code: Code unique du contenu
+- couple: Nom du couple
+- body_html: Contenu principal
+- theme: JSON des couleurs et polices
+
+========================================
+ROUTES ASSOCIÉES
+========================================
+
+GET /invitation → index()
+GET /invitation/create → create()
+POST /invitation → store()
+GET /invitation/{unique_code} → show()
+GET /invitation/{event_id}/{id} → showDynamic()
+GET /invitation/{id}/edit → update() (GET)
+PUT /invitation/{id} → update() (PUT)
+DELETE /invitation/{id} → destroy()
+
+========================================
+NOTES IMPORTANTES
+========================================
+
+1. La méthode update() gère à la fois l'affichage (GET) et la modification (PUT)
+2. La création d'invitation est automatique pour tous les invités de l'événement
+3. Les URLs d'invitation sont uniques par invité
+4. Le thème est stocké en JSON dans la base de données
+5. Les images sont stockées dans storage/app/public/invitations/
+6. La validation est stricte pour éviter les erreurs de données

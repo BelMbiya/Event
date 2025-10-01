@@ -1,0 +1,222 @@
+/* ============================================
+   CSS pour les vues de choix de boissons
+   ============================================ */
+
+/* Styles pour les statistiques */
+.stats-card {
+    border-radius: 10px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.25);
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+/* Styles pour les cartes d'invités */
+.guest-card {
+    border-radius: 10px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    transition: all 0.15s ease-in-out;
+}
+
+.guest-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.25);
+}
+
+.guest-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Styles pour les choix de boissons */
+.drink-choice-item {
+    margin: 0.5rem;
+    position: relative;
+}
+
+.drink-choice-item .btn-check {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.drink-choice-item .btn-outline-primary {
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid #4e73df;
+    color: #4e73df;
+    background-color: transparent;
+}
+
+.drink-choice-item .btn-outline-primary:hover {
+    background-color: #4e73df;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+}
+
+.drink-choice-item .btn-check:checked + .btn-outline-primary {
+    background-color: #4e73df;
+    color: white;
+    border-color: #4e73df;
+    box-shadow: 0 4px 8px rgba(78, 115, 223, 0.4);
+}
+
+/* Styles pour les filtres */
+.filter-section {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-section .form-control,
+.filter-section .form-select {
+    border-radius: 8px;
+    border: 1px solid #d1d3e2;
+    padding: 0.75rem 1rem;
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Styles pour les boutons d'action */
+.action-buttons .btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+}
+
+.action-buttons .btn-success {
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+}
+
+.action-buttons .btn-success:hover {
+    background-color: #17a673;
+    border-color: #17a673;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(28, 200, 138, 0.3);
+}
+
+.action-buttons .btn-info {
+    background-color: #36b9cc;
+    border-color: #36b9cc;
+}
+
+.action-buttons .btn-info:hover {
+    background-color: #2c9faf;
+    border-color: #2c9faf;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(54, 185, 204, 0.3);
+}
+
+/* Styles pour les modales */
+.modal-content {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.25);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e3e6f0;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid #e3e6f0;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Styles pour les badges de statut */
+.badge-status {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+.badge-status.completed {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.badge-status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.badge-status.partial {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+    
+    .guest-card {
+        margin-bottom: 1rem;
+    }
+    
+    .filter-section {
+        padding: 1rem;
+    }
+    
+    .action-buttons .btn {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .guest-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .drink-choice-item .btn-outline-primary {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+}

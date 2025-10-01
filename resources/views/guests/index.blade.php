@@ -1,111 +1,86 @@
-{{--
-========================================
-GUESTS INDEX VIEW - LISTE DES INVITÉS
-========================================
-
-Cette vue affiche la liste des invités avec :
-- Tableau des invités avec informations personnelles
-- Actions (voir, modifier, supprimer)
-- Export PDF de la liste complète
-- Gestion des statuts RSVP
-- Interface responsive avec design moderne
-
-UTILISATION : Administration des invités d'événements
---}}
 @extends('admin')
+
 @section('content')
-
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Gestion des invites</h1>
-    <div>
-        <button class="btn btn-success me-2" onclick="downloadGuestsPDF()">
-            <i class="fas fa-download me-2"></i>
-            Télécharger PDF
-        </button>
-        <a href="{{ route("guests.create") }}" class="btn btn-primary">Créer une nouvelle invite</a>
-    </div>
-</div>
-<section class="relative py-24 bg-gradient-to-b from-rose-50 via-white to-rose-100">
-
-    <div class="max-w-6xl mx-auto relative z-10">
-        <h2 class="romantic-font text-5xl text-rose-600 text-center mb-12">Liste des Invités</h2>
-
-        <div class="glass-effect rounded-3xl shadow-xl p-10 md:p-14 overflow-x-auto">
-            @if(session('success'))
-                <div class="bg-green-100 text-green-700 p-4 rounded mb-6 text-center">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-sm">
-                <thead class="bg-rose-100 text-rose-600 font-semibold text-left">
-                    <tr>
-                        <th class="px-6 py-3">#</th>
-                        <th class="px-6 py-3">Prénom</th>
-                        <th class="px-6 py-3">Nom</th>
-                        <th class="px-6 py-3">Email</th>
-                        <th class="px-6 py-3">Téléphone</th>
-                        <th class="px-6 py-3">Événement</th>
-                        <th class="px-6 py-3">Type</th>
-                        <th class="px-6 py-3">RSVP</th>
-                        <th class="px-6 py-3">Repas</th>
-                        <th class="px-6 py-3 text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($guests as $guest)
-                        <tr class="border-b border-gray-200 hover:bg-rose-50 transition">
-                            <td class="px-6 py-4">{{ $guest->id }}</td>
-                            <td class="px-6 py-4">{{ $guest->first_name }}</td>
-                            <td class="px-6 py-4">{{ $guest->last_name }}</td>
-                            <td class="px-6 py-4">{{ $guest->email ?? '-' }}</td>
-                            <td class="px-6 py-4">{{ $guest->phone ?? '-' }}</td>
-                            <td class="px-6 py-4">{{ $guest->event->title ?? '-' }}</td>
-                            <td class="px-6 py-4">{{ $guest->guestType->name ?? '-' }}</td>
-                            <td class="px-6 py-4">{{ ucfirst($guest->rsvp_status ?? 'pending') }}</td>
-                            <td class="px-6 py-4">{{ $guest->meal_choice ?? '-' }}</td>
-                            <td class="px-6 py-4 text-center">
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('guests.edit', $guest->id) }}" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button class="btn btn-info btn-sm" onclick="downloadGuestPDF({{ $guest->id }})">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                    <form action="{{ route('guests.destroy', $guest->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Voulez-vous vraiment supprimer cet invité ?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="px-6 py-4 text-center text-gray-500">Aucun invité trouvé</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
-            <div class="mt-6">
-                {{ $guests->links() }}
-            </div>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-users me-2"></i>
+                Gestion des Invités
+            </h1>
+            <p class="text-muted">Liste de tous les invités</p>
+        </div>
+        <div>
+            <a href="{{ route('guests.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Ajouter un invité
+            </a>
         </div>
     </div>
-</section>
 
-<script>
-function downloadGuestsPDF() {
-    window.open('/guests/download-pdf', '_blank');
-}
-
-function downloadGuestPDF(guestId) {
-    window.open(`/guests/${guestId}/download-pdf`, '_blank');
-}
-</script>
+    <!-- Table des invités -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-list me-2"></i>
+                Liste des Invités
+            </h6>
+        </div>
+        <div class="card-body">
+            @if($guests->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Événement</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($guests as $guest)
+                                <tr>
+                                    <td>{{ $guest->first_name }} {{ $guest->last_name }}</td>
+                                    <td>{{ $guest->email }}</td>
+                                    <td>{{ $guest->phone }}</td>
+                                    <td>{{ $guest->event->title ?? 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ route('guests.edit', $guest->id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="POST" action="{{ route('guests.destroy', $guest->id) }}" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet invité ?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center">
+                    {{ $guests->links() }}
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-gray-300 mb-3"></i>
+                    <h5 class="text-gray-600">Aucun invité trouvé</h5>
+                    <p class="text-gray-500">Commencez par ajouter des invités à vos événements.</p>
+                    <a href="{{ route('guests.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Ajouter le premier invité
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
 @endsection

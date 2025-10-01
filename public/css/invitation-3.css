@@ -1,0 +1,824 @@
+/* ============================================
+   CSS pour Invitation_3.blade.php
+   Invitation électronique personnalisée
+   ============================================ */
+
+/* Variables CSS personnalisées */
+:root {
+    --color-primary: #e11d48;     /* rose */
+    --color-secondary: #f59e0b;   /* doré */
+    --color-text: #6b7280;
+    --color-paper: #ffffff;
+    --color-blush: #ffe9ef;
+}
+
+/* Animations de base */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Typographie */
+.romantic-font {
+    font-family: 'Alex Brush', cursive;
+}
+
+.elegant-font {
+    font-family: 'Cormorant Garamond', serif;
+}
+
+.modern-font {
+    font-family: 'Poppins', sans-serif;
+}
+
+.animate-fade-in {
+    animation: fadeInUp 1s ease forwards;
+    opacity: 0;
+}
+
+/* Fond général */
+.digital-invitation {
+    background:
+        radial-gradient(1200px 600px at 50% -300px, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 60%),
+        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.15) 0%, rgba(255,182,193,0) 60%),
+        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.12) 0%, rgba(255,218,185,0) 60%),
+        linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%);
+    min-height: 100vh;
+}
+
+/* Carte d'invitation */
+.invitation-card {
+    background:
+        radial-gradient(800px 400px at 20% 0%, rgba(225,29,72,0.12) 0%, rgba(225,29,72,0) 60%),
+        radial-gradient(700px 500px at 90% 100%, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0) 60%),
+        var(--color-paper);
+    border-radius: 28px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Décorations de la carte */
+.invitation-card::before,
+.invitation-card::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    opacity: 0.3;
+    border-radius: 50%;
+}
+
+.invitation-card::before {
+    top: -50px;
+    left: -50px;
+    background: radial-gradient(circle, rgba(225,29,72,0.2) 0%, rgba(225,29,72,0.1) 30%, transparent 70%);
+    transform: rotate(45deg);
+}
+
+.invitation-card::after {
+    right: -50px;
+    bottom: -50px;
+    background: radial-gradient(circle, rgba(245,158,11,0.2) 0%, rgba(245,158,11,0.1) 30%, transparent 70%);
+    transform: rotate(-45deg);
+}
+
+/* Éléments flottants */
+.floating-elements { 
+    display: none; 
+}
+
+.floating-element { 
+    display: none; 
+}
+
+/* Section Hero */
+.hero-section:not([style*="background-image"]),
+.hero-section.no-hero-image {
+    background: 
+        radial-gradient(1200px 600px at 50% -300px, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 60%),
+        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.15) 0%, rgba(255,182,193,0) 60%),
+        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.12) 0%, rgba(255,218,185,0) 60%),
+        linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%);
+    position: relative;
+}
+
+/* Motifs décoratifs pour les sections sans image */
+.hero-section.no-hero-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e11d48' fill-opacity='0.03'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-section.no-hero-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(225, 29, 72, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(225, 29, 72, 0.04) 0%, transparent 50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Overlay contextuel pour les images de fond */
+.hero-section[style*="background-image"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.2) 0%, rgba(255,182,193,0) 60%),
+        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.15) 0%, rgba(255,218,185,0) 60%),
+        transparent;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Sections avec arrière-plans contextuels */
+.invitation-section {
+    background: 
+        linear-gradient(135deg, rgba(225,29,72,0.05) 0%, rgba(245,158,11,0.03) 100%),
+        rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.guestbook-section {
+    background: 
+        radial-gradient(600px 400px at 30% 20%, rgba(225,29,72,0.08) 0%, rgba(225,29,72,0) 60%),
+        radial-gradient(500px 300px at 70% 80%, rgba(245,158,11,0.06) 0%, rgba(245,158,11,0) 60%),
+        rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.schedule-section {
+    background: 
+        linear-gradient(45deg, rgba(225,29,72,0.04) 0%, rgba(245,158,11,0.02) 50%, rgba(225,29,72,0.04) 100%),
+        rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.drinks-section {
+    background: 
+        radial-gradient(800px 500px at 50% 0%, rgba(245,158,11,0.08) 0%, rgba(245,158,11,0) 60%),
+        radial-gradient(600px 400px at 0% 100%, rgba(225,29,72,0.06) 0%, rgba(225,29,72,0) 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2));
+    backdrop-filter: blur(8px);
+}
+
+.gallery-section {
+    background: 
+        radial-gradient(1000px 600px at 50% 50%, rgba(225,29,72,0.06) 0%, rgba(225,29,72,0) 70%),
+        rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.footer-section {
+    background: 
+        linear-gradient(135deg, rgba(225,29,72,0.15) 0%, rgba(245,158,11,0.1) 100%),
+        rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* Éléments de texte avec gradient */
+.gradient-text {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Boutons modernes */
+.modern-button {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+    border: none;
+    border-radius: 999px;
+    padding: 12px 26px;
+    color: white;
+    font-weight: 600;
+    letter-spacing: .3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.modern-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* Bouton de carte */
+.map-button {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary)) !important;
+    border: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.map-button:hover::before {
+    left: 100%;
+}
+
+.map-button:hover {
+    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary)) !important;
+    box-shadow: 0 8px 20px rgba(225, 29, 72, 0.4) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Bouton de téléchargement */
+.download-button {
+    background: linear-gradient(45deg, var(--color-secondary), var(--color-accent, #fbbf24)) !important;
+}
+
+.download-button:hover {
+    background: linear-gradient(45deg, var(--color-secondary), var(--color-accent, #fbbf24)) !important;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Timeline Styles */
+.timeline-container {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, 
+        rgba(225,29,72,0.8) 0%, 
+        rgba(245,158,11,0.8) 50%, 
+        rgba(225,29,72,0.8) 100%);
+    transform: translateX(-50%);
+    border-radius: 2px;
+    box-shadow: 0 0 15px rgba(225,29,72,0.3);
+}
+
+.timeline-item {
+    position: relative;
+    margin: 25px 0;
+    width: 100%;
+    opacity: 0;
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.timeline-item:nth-child(1) { animation-delay: 0.1s; }
+.timeline-item:nth-child(2) { animation-delay: 0.15s; }
+.timeline-item:nth-child(3) { animation-delay: 0.2s; }
+.timeline-item:nth-child(4) { animation-delay: 0.25s; }
+.timeline-item:nth-child(5) { animation-delay: 0.3s; }
+
+.timeline-marker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.timeline-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        rgba(225,29,72,0.9) 0%, 
+        rgba(245,158,11,0.9) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(225,29,72,0.4);
+    border: 3px solid white;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+}
+
+.timeline-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(225,29,72,0.6);
+}
+
+.timeline-icon:hover::before {
+    animation: shine 0.6s ease;
+}
+
+.timeline-content {
+    background: linear-gradient(135deg, 
+        rgba(255,255,255,0.95) 0%, 
+        rgba(255,248,248,0.95) 100%);
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    position: relative;
+    width: 45%;
+    margin-top: -25px;
+    border: 1px solid rgba(225,29,72,0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.timeline-content:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.timeline-left .timeline-content {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.timeline-right .timeline-content {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.timeline-time {
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #e11d48, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Poppins', sans-serif;
+    min-width: 80px;
+    text-align: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: rgba(225,29,72,0.1);
+    flex-shrink: 0;
+}
+
+.timeline-event {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.4;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    flex: 1;
+}
+
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    width: 0;
+    height: 0;
+    border: 12px solid transparent;
+}
+
+.timeline-left .timeline-content::before {
+    right: -24px;
+    border-left-color: rgba(255,255,255,0.95);
+}
+
+.timeline-right .timeline-content::before {
+    left: -24px;
+    border-right-color: rgba(255,255,255,0.95);
+}
+
+/* Styles pour les boissons */
+.drink-label {
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+    background-color: transparent !important;
+    transition: all 0.3s ease !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+    margin: 0.5rem;
+}
+
+.drink-label:hover {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3) !important;
+}
+
+.btn-check:checked + .drink-label {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-check:checked + .drink-label::before {
+    content: '✓ ';
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.drink-option {
+    margin: 0.5rem;
+    position: relative;
+}
+
+.drink-option .btn-check {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.drink-option .drink-label {
+    cursor: pointer;
+    user-select: none;
+    min-width: 120px;
+    text-align: center;
+}
+
+.drink-option .btn-check:checked + .drink-label {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Images et galerie */
+.image-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-frame:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.image-frame img {
+    transition: transform 0.3s ease;
+}
+
+.image-frame:hover img {
+    transform: scale(1.05);
+}
+
+.gallery-item {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Z-index pour les overlays */
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-section .absolute {
+    z-index: 1;
+}
+
+/* Section visible */
+.section-visible {
+    animation: fadeInUp 1s ease forwards;
+}
+
+/* Styles pour le header de la section programme */
+.schedule-header {
+    position: relative;
+    padding: 2rem 0;
+}
+
+.schedule-subtitle {
+    margin-top: 1rem;
+}
+
+.schedule-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+.divider-line {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #e11d48, transparent);
+    border-radius: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 30px;
+    }
+
+    .timeline-marker {
+        left: 30px;
+    }
+
+    .timeline-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+
+    .timeline-content {
+        width: calc(100% - 80px);
+        margin-left: 80px !important;
+        margin-right: 0 !important;
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .timeline-content::before {
+        left: -12px !important;
+        right: auto !important;
+        border-right-color: rgba(255,255,255,0.95) !important;
+        border-left-color: transparent !important;
+    }
+
+    .timeline-time {
+        font-size: 0.9rem;
+        min-width: auto;
+        width: 100%;
+    }
+
+    .timeline-event {
+        font-size: 0.9rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .timeline-container {
+        padding: 0.5rem 0;
+    }
+
+    .timeline-item {
+        margin: 20px 0;
+    }
+
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .timeline-content {
+        width: calc(100% - 70px);
+        margin-left: 70px !important;
+        padding: 10px 12px;
+    }
+}
+
+/* ============================================
+   STYLES PDF OPTIMISÉS
+   ============================================ */
+
+.pdf-optimized {
+    background: linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%) !important;
+    color: #333 !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    line-height: 1.6 !important;
+}
+
+.pdf-optimized * {
+    box-sizing: border-box !important;
+}
+
+.pdf-optimized .container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+}
+
+.pdf-optimized .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin: 0 -15px !important;
+}
+
+.pdf-optimized .col-lg-10 {
+    flex: 0 0 83.333333% !important;
+    max-width: 83.333333% !important;
+    padding: 0 15px !important;
+}
+
+.pdf-optimized .col-md-4 {
+    flex: 0 0 33.333333% !important;
+    max-width: 33.333333% !important;
+    padding: 0 15px !important;
+}
+
+.pdf-optimized .col-md-6 {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+    padding: 0 15px !important;
+}
+
+.pdf-optimized .mb-3 { margin-bottom: 1rem !important; }
+.pdf-optimized .mb-4 { margin-bottom: 1.5rem !important; }
+.pdf-optimized .mb-5 { margin-bottom: 3rem !important; }
+.pdf-optimized .py-5 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+.pdf-optimized .text-center { text-align: center !important; }
+.pdf-optimized .text-start { text-align: left !important; }
+.pdf-optimized .justify-content-center { justify-content: center !important; }
+
+.pdf-optimized .hero-section {
+    background: linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%) !important;
+    background-image: none !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+}
+
+.pdf-optimized .hero-section::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    background: radial-gradient(1200px 600px at 50% -300px, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 60%),
+                radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.15) 0%, rgba(255,182,193,0) 60%),
+                radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.12) 0%, rgba(255,218,185,0) 60%) !important;
+    z-index: 1 !important;
+}
+
+.pdf-optimized .invitation-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 20px !important;
+    padding: 3rem !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.pdf-optimized .gradient-text {
+    background: linear-gradient(135deg, #e11d48 0%, #f43f5e 50%, #fb7185 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    color: #e11d48 !important;
+    font-family: 'Alex Brush', cursive !important;
+}
+
+/* Masquer tous les boutons dans le PDF */
+.pdf-optimized .modern-button,
+.pdf-optimized .btn,
+.pdf-optimized button,
+.pdf-optimized a[href*="download"],
+.pdf-optimized a[href*="rsvp"],
+.pdf-optimized a[href*="map"],
+.pdf-optimized .cta-buttons,
+.pdf-optimized .action-buttons {
+    display: none !important;
+}
+
+/* Masquer les éléments flottants */
+.pdf-optimized .floating-elements,
+.pdf-optimized .floating-element {
+    display: none !important;
+}
+
+/* Styles d'impression */
+@media print {
+    body {
+        background: linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%) !important;
+        color: #333 !important;
+        font-family: 'Cormorant Garamond', serif !important;
+    }
+
+    .modern-button,
+    .btn,
+    button,
+    a[href*="download"],
+    a[href*="rsvp"],
+    a[href*="map"],
+    .cta-buttons,
+    .action-buttons,
+    .floating-elements,
+    .floating-element {
+        display: none !important;
+    }
+
+    .text-white {
+        color: #333 !important;
+    }
+
+    .text-white-50 {
+        color: #666 !important;
+    }
+
+    .hero-section,
+    .guestbook-section,
+    .drinks-section,
+    .schedule-section,
+    .gallery-section {
+        background: linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%) !important;
+        background-image: none !important;
+    }
+
+    .hero-section::before,
+    .guestbook-section::before,
+    .drinks-section::before {
+        display: none !important;
+    }
+
+    .gradient-text {
+        color: #e11d48 !important;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        -webkit-text-fill-color: unset !important;
+    }
+}

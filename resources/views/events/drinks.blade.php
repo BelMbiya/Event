@@ -1,5 +1,9 @@
 @extends('admin')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/events-drinks.css') }}">
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <!-- Page Heading -->
@@ -12,12 +16,12 @@
             <a href="{{ route('drink-choices.index', $event->id) }}" class="btn btn-info me-2">
                 <i class="fas fa-list-check"></i> Voir les Choix
             </a>
-            <a href="{{ route('event-drinks.export-pdf', $event->id) }}" class="btn btn-success me-2">
+            <button class="btn btn-success me-2" onclick="downloadPDF()">
                 <i class="fas fa-file-pdf"></i> Export PDF
-            </a>
-            <a href="{{ route('event-drinks.export-excel', $event->id) }}" class="btn btn-warning me-2">
+            </button>
+            <button class="btn btn-warning me-2" onclick="exportToExcel()">
                 <i class="fas fa-file-excel"></i> Export Excel
-            </a>
+            </button>
             <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
@@ -167,9 +171,6 @@
                                                 {{ $eventDrink->limit_per_guest ?? 'Illimitée' }}
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-warning" onclick="editDrink({{ $eventDrink->drink->id }}, {{ $eventDrink->limit_per_guest }}, {{ $eventDrink->price }})">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
                                                 <form action="{{ route('event-drinks.destroy', [$event->id, $eventDrink->drink->id]) }}" method="POST" style="display: inline;">
                                                     @csrf
                                                     @method('DELETE')
@@ -366,21 +367,7 @@
     </div>
 </div>
 
-<script>
-function editDrink(drinkId, quantity, price) {
-    document.getElementById('editDrinkForm').action = `/events/{{ $event->id }}/drinks/${drinkId}`;
-    document.getElementById('edit_quantity').value = quantity || '';
-    document.getElementById('edit_price_override').value = price || '';
-    $('#editDrinkModal').modal('show');
-}
-
-// Mise à jour automatique du prix par défaut
-document.getElementById('drink_id').addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const defaultPrice = selectedOption.getAttribute('data-price');
-    document.getElementById('price_override').placeholder = `Prix par défaut: ${defaultPrice} FC`;
-});
-</script>
+<script src="{{ asset('js/events-drinks.js') }}"></script>
 @endsection
 
 @include('events.drinks-modals')

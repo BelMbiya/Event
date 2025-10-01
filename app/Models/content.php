@@ -64,7 +64,6 @@ class Content extends Model
         'intro_1' => 'C\'est avec une immense joie que nous vous invitons à célébrer avec nous',
         'intro_2' => 'Nous avons le plaisir de vous inviter à partager ce moment spécial',
         'body_html' => '<p>C\'est avec une immense joie que nous vous invitons à célébrer avec nous ce moment si spécial de notre vie.</p>',
-        'hero_image_alt' => '',
         'guestbook_enabled' => true,
         'guestbook_title' => 'Livre d\'or',
         'guestbook_subtitle' => 'Laissez-nous un message',

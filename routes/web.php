@@ -62,128 +62,54 @@ Route::controller(EventSelectionController::class)->middleware('auth')->group(fu
 Route::controller(App\Http\Controllers\Invitation\InvitationController::class)
     ->middleware('auth')
     ->group(function () {
-        // 📋 AFFICHAGE DE LA LISTE DES INVITATIONS
-        // Route: GET /invitation
-        // Fonction: Affiche la liste de toutes les invitations avec filtres
-        // Vue: invitation.index
         Route::get('invitation', 'index')->name('invitation.index');
         
-        // 🎨 CRÉATION D'UNE NOUVELLE INVITATION
-        // Route: GET /invitation/create/{event_id}
-        // Fonction: Affiche le formulaire de création d'invitation pour un événement spécifique
-        // Vue: invitation.create-advanced
-        // Middleware: Empêche la création si l'événement a déjà une invitation
         Route::get('invitation/create/{event_id}', 'create')
             ->name('invitation.create')
             ->middleware('prevent.duplicate.invitation');
         
-        // 💾 SAUVEGARDE D'UNE NOUVELLE INVITATION
-        // Route: POST /invitation
-        // Fonction: Sauvegarde une nouvelle invitation avec son contenu
-        // Retour: JSON (AJAX) ou redirection
-        // Middleware: Empêche la création si l'événement a déjà une invitation
-        Route::post('invitation', 'store')->name('invitation.store')
-            ->middleware('prevent.duplicate.invitation');
+        Route::post('invitation', 'store')->name('invitation.store');
         
-        // 👁️ AFFICHAGE D'UNE INVITATION DYNAMIQUE
-        // Route: GET /invitation/{guest_id}
-        // Fonction: Affiche une invitation publique qui s'adapte selon l'invité
-        // Vue: invitation.invitation_paper.Invitation_3
-        Route::get('invitation/{guest_id}', 'showDynamic')
+        Route::get('invitation/{id}', 'showDynamic')
             ->name('invitation.show.dynamic');
         
-        // 👁️ AFFICHAGE D'UNE INVITATION (LEGACY - pour compatibilité)
-        // Route: GET /invitation/{unique_code}
-        // Fonction: Affiche une invitation publique via son code unique
-        // Vue: invitation.invitation_paper.Invitation_3
         Route::get('invitation/{unique_code}', 'show')
             ->name('invitation.show');
         
-        // ✏️ ÉDITION D'UNE INVITATION
-        // Route: GET /invitation/{id}/edit
-        // Fonction: Affiche le formulaire d'édition d'une invitation
-        // Vue: invitation.edit-advanced
-        Route::get('invitation/{id}/edit', 'edit')
+        Route::get('invitation/{id}/edit', 'update')
             ->name('invitation.edit');
-        
-        // 💾 MISE À JOUR D'UNE INVITATION
-        // Route: PUT/PATCH /invitation/{id}
-        // Fonction: Met à jour une invitation existante
-        // Retour: Redirection vers la liste
         Route::put('invitation/{id}', 'update')
             ->name('invitation.update');
         
-        // 🗑️ SUPPRESSION D'UNE INVITATION
-        // Route: DELETE /invitation/{id}
-        // Fonction: Supprime une invitation et son contenu associé
-        // Retour: Redirection vers la liste
         Route::delete('invitation/{id}', 'destroy')
             ->name('invitation.destroy');
         
-        // 🚀 CRÉATION AUTOMATIQUE POUR TOUS LES INVITÉS
-        // Route: POST /events/{event_id}/create-invitations-for-all-guests
-        // Fonction: Crée automatiquement des invitations pour tous les invités d'un événement
-        // Retour: JSON avec statistiques de création
-        // Middleware: Empêche la création si l'événement a déjà une invitation
         Route::post('events/{event_id}/create-invitations-for-all-guests', 'createInvitationsForAllGuests')
             ->name('invitation.create-for-all-guests')
             ->middleware('prevent.duplicate.invitation');
         
-        // 🎯 CRÉATION POUR INVITÉS SÉLECTIONNÉS
-        // Route: POST /events/{event_id}/create-invitations-for-selected-guests
-        // Fonction: Crée des invitations pour des invités spécifiquement sélectionnés
-        // Retour: JSON avec détails de création
-        // Middleware: Empêche la création si l'événement a déjà une invitation
         Route::post('events/{event_id}/create-invitations-for-selected-guests', 'createInvitationsForSelectedGuests')
             ->name('invitation.create-for-selected-guests')
             ->middleware('prevent.duplicate.invitation');
         
-        // 🔍 VÉRIFICATION DU STATUT DES INVITATIONS
-        // Route: GET /events/{event_id}/invitations-status
-        // Fonction: Vérifie si un événement a des invitations et leur statut
-        // Retour: JSON avec statut détaillé
         Route::get('events/{event_id}/invitations-status', 'checkEventInvitationsStatus')
             ->name('invitation.check-status');
         
-        // 📋 DUPLICATION D'UNE INVITATION
-        // Route: POST /invitation/{invitation_id}/duplicate
-        // Fonction: Duplique une invitation existante avec son contenu
-        // Retour: JSON avec ID de la nouvelle invitation
         Route::post('invitation/{invitation_id}/duplicate', 'duplicateInvitation')
             ->name('invitation.duplicate');
         
-        // 👀 PRÉVISUALISATION D'UNE INVITATION
-        // Route: GET /invitation/{invitation_id}/preview
-        // Fonction: Affiche une prévisualisation d'une invitation avant publication
-        // Vue: invitation.preview
         Route::get('invitation/{invitation_id}/preview', 'preview')
             ->name('invitation.preview');
         
-        // 📢 PUBLICATION D'UNE INVITATION
-        // Route: POST /invitation/{invitation_id}/publish
-        // Fonction: Publie une invitation (change le statut à 'published')
-        // Retour: JSON de confirmation
         Route::post('invitation/{invitation_id}/publish', 'publish')
             ->name('invitation.publish');
         
-        // 📦 ARCHIVAGE D'UNE INVITATION
-        // Route: POST /invitation/{invitation_id}/archive
-        // Fonction: Archive une invitation (change le statut à 'archived')
-        // Retour: JSON de confirmation
         Route::post('invitation/{invitation_id}/archive', 'archive')
             ->name('invitation.archive');
         
-        // 📊 STATISTIQUES DES INVITATIONS
-        // Route: GET /invitation/stats/{event_id?}
-        // Fonction: Retourne les statistiques des invitations (total, pending, sent, etc.)
-        // Retour: JSON avec statistiques
         Route::get('invitation/stats/{event_id?}', 'getStats')
             ->name('invitation.stats');
         
-        // 🔗 GÉNÉRATION DE LIENS DYNAMIQUES
-        // Route: GET /invitation/{event_id}/generate-links
-        // Fonction: Génère les liens d'invitation dynamiques pour tous les invités
-        // Retour: JSON avec tous les liens personnalisés
         Route::get('invitation/{event_id}/generate-links', 'generateDynamicLinks')
             ->name('invitation.generate-links');
     });
@@ -206,59 +132,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/{event_id}/drink-choices/download-pdf', [App\Http\Controllers\Guest\DrinkChoicesController::class, 'downloadPDF'])->name('drink-choices.download-pdf');
     Route::get('/events/{event_id}/drink-choices/export-excel', [App\Http\Controllers\Guest\DrinkChoicesController::class, 'exportExcel'])->name('drink-choices.export-excel');
 
-    // ========================================
-    // ROUTES POUR LA GESTION DU CONTENU D'INVITATION (ANCIEN SYSTÈME)
-    // ========================================
-    
-    // 🎨 CRÉATION DE CONTENU (ANCIEN SYSTÈME - COMPATIBILITÉ)
-    // Route: GET /edit-content/{invitation_id}
-    // Fonction: Affiche le formulaire de création de contenu pour une invitation
-    // Vue: invitation.content
-    // Note: Système legacy, utilise ContentController (fusionné)
     Route::get('/edit-content/{invitation_id}', [ContentController::class, 'create'])->name('content.create');
-    
-    // 💾 SAUVEGARDE DE CONTENU (ANCIEN SYSTÈME - COMPATIBILITÉ)
-    // Route: POST /edit-content
-    // Fonction: Sauvegarde le contenu d'une invitation
-    // Retour: Redirection vers la liste des invitations
-    // Note: Système legacy, utilise ContentController (fusionné)
     Route::post('/edit-content', [ContentController::class, 'store'])->name('content.store');
 
-    // ========================================
-    // ROUTES POUR LA GESTION DU CONTENU D'INVITATION (NOUVEAU SYSTÈME)
-    // ========================================
-    
-    // ✏️ ÉDITION DU CONTENU D'UNE INVITATION
-    // Route: GET /invitation/{invitation_id}/content/edit
-    // Fonction: Affiche le formulaire d'édition de contenu pour une invitation spécifique
-    // Vue: invitation.edit-content
-    // Note: Système moderne avec templates et fonctionnalités avancées
     Route::get('/invitation/{invitation_id}/content/edit', [App\Http\Controllers\Invitation\ContentController::class, 'edit'])->name('invitation.content.edit');
-    
-    // 💾 MISE À JOUR DU CONTENU D'UNE INVITATION
-    // Route: PUT /invitation/{invitation_id}/content
-    // Fonction: Met à jour le contenu d'une invitation avec validation complète
-    // Retour: JSON (AJAX) ou redirection vers l'invitation
-    // Note: Système moderne avec gestion des fichiers, thèmes, etc.
+
     Route::put('/invitation/{invitation_id}/content', [App\Http\Controllers\Invitation\ContentController::class, 'update'])->name('invitation.content.update');
-    
-    
-    // 📋 DUPLICATION DE CONTENU
-    // Route: POST /content/{content_id}/duplicate
-    // Fonction: Duplique un contenu d'invitation existant
-    // Retour: JSON avec ID de la nouvelle invitation créée
+
     Route::post('/content/{content_id}/duplicate', [App\Http\Controllers\Invitation\ContentController::class, 'duplicate'])->name('content.duplicate');
     
-    // 🎨 APPLICATION DE TEMPLATE
-    // Route: POST /content/{content_id}/apply-template
-    // Fonction: Applique un template prédéfini à un contenu
-    // Retour: JSON de confirmation
     Route::post('/content/{content_id}/apply-template', [App\Http\Controllers\Invitation\ContentController::class, 'applyTemplate'])->name('content.apply-template');
     
-    // 💾 SAUVEGARDE COMME BROUILLON
-    // Route: POST /invitation/{invitation_id}/content/save-draft
-    // Fonction: Sauvegarde le contenu comme brouillon sans validation complète
-    // Retour: JSON de confirmation
     Route::post('/invitation/{invitation_id}/content/save-draft', [App\Http\Controllers\Invitation\ContentController::class, 'saveDraft'])->name('content.save-draft');
 
     Route::get('/guest_book/event/{event_id}', [GuestBookController::class, 'index'])

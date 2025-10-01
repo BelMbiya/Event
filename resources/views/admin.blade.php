@@ -20,7 +20,11 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Common CSS -->
+    <link href="{{ asset('css/common.css') }}" rel="stylesheet">
+    <!-- Print Styles -->
+    <link href="{{ asset('css/print-styles.css') }}" rel="stylesheet">
 
 <!-- Bootstrap JS (important pour tabs, modals, etc.) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

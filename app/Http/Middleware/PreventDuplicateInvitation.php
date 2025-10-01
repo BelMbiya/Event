@@ -24,13 +24,13 @@ class PreventDuplicateInvitation
             $event = Event::with('invitations')->find($eventId);
             
             if (!$event) {
-                return redirect()->route('admin.dashboard')
+                return redirect()->route('dashboard')
                     ->with('error', 'Événement introuvable.');
             }
             
             // Vérifier si l'événement a déjà une invitation
             if ($event->invitations && $event->invitations->count() > 0) {
-                return redirect()->route('admin.dashboard')
+                return redirect()->route('dashboard')
                     ->with('warning', 'Cet événement a déjà une invitation. Vous ne pouvez pas en créer une nouvelle.');
             }
         }

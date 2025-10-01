@@ -1,0 +1,304 @@
+/* ============================================
+   CSS pour l'impression et les PDF
+   ============================================ */
+
+/* Styles d'impression de base */
+@media print {
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Masquer les éléments non nécessaires à l'impression */
+    .no-print,
+    .btn,
+    button,
+    .action-buttons,
+    .floating-elements,
+    .floating-element,
+    .navbar,
+    .sidebar,
+    .footer,
+    .modal,
+    .alert,
+    .toast,
+    .dropdown,
+    .tooltip,
+    .popover {
+        display: none !important;
+    }
+    
+    /* Styles pour les cartes */
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        margin-bottom: 1rem !important;
+    }
+    
+    .card-header {
+        background: #f8f9fa !important;
+        border-bottom: 1px solid #ddd !important;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    /* Styles pour les tableaux */
+    table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    table th,
+    table td {
+        border: 1px solid #ddd !important;
+        padding: 0.5rem !important;
+        text-align: left !important;
+        vertical-align: top !important;
+    }
+    
+    table th {
+        background: #f8f9fa !important;
+        font-weight: bold !important;
+    }
+    
+    /* Styles pour les titres */
+    h1, h2, h3, h4, h5, h6 {
+        color: black !important;
+        page-break-after: avoid !important;
+        margin-top: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    h1 { font-size: 18pt !important; }
+    h2 { font-size: 16pt !important; }
+    h3 { font-size: 14pt !important; }
+    h4 { font-size: 13pt !important; }
+    h5 { font-size: 12pt !important; }
+    h6 { font-size: 11pt !important; }
+    
+    /* Styles pour les paragraphes */
+    p {
+        margin-bottom: 0.5rem !important;
+        orphans: 3 !important;
+        widows: 3 !important;
+    }
+    
+    /* Styles pour les listes */
+    ul, ol {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    li {
+        margin-bottom: 0.25rem !important;
+    }
+    
+    /* Styles pour les images */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid !important;
+    }
+    
+    /* Styles pour les liens */
+    a {
+        color: black !important;
+        text-decoration: none !important;
+    }
+    
+    a[href]:after {
+        content: " (" attr(href) ")" !important;
+        font-size: 10pt !important;
+        color: #666 !important;
+    }
+    
+    /* Styles pour les formulaires */
+    .form-control,
+    .form-select {
+        border: 1px solid #ddd !important;
+        background: white !important;
+        padding: 0.25rem !important;
+    }
+    
+    /* Styles pour les badges */
+    .badge {
+        border: 1px solid #ddd !important;
+        background: #f8f9fa !important;
+        color: black !important;
+        padding: 0.25rem 0.5rem !important;
+        font-size: 10pt !important;
+    }
+    
+    /* Gestion des sauts de page */
+    .page-break-before {
+        page-break-before: always !important;
+    }
+    
+    .page-break-after {
+        page-break-after: always !important;
+    }
+    
+    .page-break-inside-avoid {
+        page-break-inside: avoid !important;
+    }
+    
+    /* Styles pour les invitations */
+    .invitation-card {
+        border: 2px solid #ddd !important;
+        background: white !important;
+        padding: 2rem !important;
+        margin: 1rem 0 !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .gradient-text {
+        color: black !important;
+        background: none !important;
+        -webkit-background-clip: unset !important;
+        -webkit-text-fill-color: unset !important;
+    }
+    
+    /* Styles pour les sections */
+    .section {
+        page-break-inside: avoid !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Styles pour les statistiques */
+    .stats-card {
+        border: 1px solid #ddd !important;
+        background: white !important;
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        break-inside: avoid !important;
+    }
+    
+    /* Styles pour les choix de boissons */
+    .drink-choice {
+        border: 1px solid #ddd !important;
+        padding: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+        background: white !important;
+    }
+    
+    .drink-choice.selected {
+        background: #f8f9fa !important;
+        border: 2px solid #333 !important;
+    }
+    
+    /* Styles pour les messages de livre d'or */
+    .guest-message {
+        border: 1px solid #ddd !important;
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        background: white !important;
+        page-break-inside: avoid !important;
+    }
+    
+    /* Styles pour les informations d'événement */
+    .event-info {
+        background: #f8f9fa !important;
+        border: 1px solid #ddd !important;
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Styles pour les détails d'invité */
+    .guest-details {
+        border: 1px solid #ddd !important;
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        background: white !important;
+    }
+    
+    /* Styles pour les en-têtes de page */
+    @page {
+        margin: 1in;
+        size: A4;
+    }
+    
+    /* Styles pour les pieds de page */
+    @page {
+        @bottom-center {
+            content: "Page " counter(page);
+            font-size: 10pt;
+            color: #666;
+        }
+    }
+}
+
+/* Styles spécifiques pour les PDF */
+.pdf-optimized {
+    background: white !important;
+    color: black !important;
+}
+
+.pdf-optimized * {
+    box-sizing: border-box !important;
+}
+
+.pdf-optimized .container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.pdf-optimized .row {
+    display: block !important;
+    margin: 0 !important;
+}
+
+.pdf-optimized .col-12,
+.pdf-optimized .col-md-6,
+.pdf-optimized .col-md-4,
+.pdf-optimized .col-lg-3 {
+    width: 100% !important;
+    float: none !important;
+    margin-bottom: 1rem !important;
+}
+
+.pdf-optimized .text-center {
+    text-align: center !important;
+}
+
+.pdf-optimized .text-left {
+    text-align: left !important;
+}
+
+.pdf-optimized .text-right {
+    text-align: right !important;
+}
+
+.pdf-optimized .mb-0 { margin-bottom: 0 !important; }
+.pdf-optimized .mb-1 { margin-bottom: 0.25rem !important; }
+.pdf-optimized .mb-2 { margin-bottom: 0.5rem !important; }
+.pdf-optimized .mb-3 { margin-bottom: 1rem !important; }
+.pdf-optimized .mb-4 { margin-bottom: 1.5rem !important; }
+.pdf-optimized .mb-5 { margin-bottom: 3rem !important; }
+
+.pdf-optimized .mt-0 { margin-top: 0 !important; }
+.pdf-optimized .mt-1 { margin-top: 0.25rem !important; }
+.pdf-optimized .mt-2 { margin-top: 0.5rem !important; }
+.pdf-optimized .mt-3 { margin-top: 1rem !important; }
+.pdf-optimized .mt-4 { margin-top: 1.5rem !important; }
+.pdf-optimized .mt-5 { margin-top: 3rem !important; }
+
+.pdf-optimized .p-0 { padding: 0 !important; }
+.pdf-optimized .p-1 { padding: 0.25rem !important; }
+.pdf-optimized .p-2 { padding: 0.5rem !important; }
+.pdf-optimized .p-3 { padding: 1rem !important; }
+.pdf-optimized .p-4 { padding: 1.5rem !important; }
+.pdf-optimized .p-5 { padding: 3rem !important; }

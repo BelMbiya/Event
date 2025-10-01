@@ -1,5 +1,9 @@
 @extends('admin')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/drink-choices.css') }}">
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <!-- Header avec titre et boutons -->
@@ -212,20 +216,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="btn-group" role="group">
-                                        <button class="btn btn-danger btn-sm" onclick="deleteGuestDrinkChoices({{ $guest->id }})" 
-                                                title="Supprimer les choix de boissons">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        <button class="btn btn-info btn-sm" onclick="viewGuestDetails({{ $guest->id }})" 
-                                                title="Voir détails">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-warning btn-sm" onclick="editDrinkChoices({{ $guest->id }})" 
-                                                title="Modifier les choix">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </div>
+                                    <!-- Actions supprimées selon la demande -->
                                 </td>
                             </tr>
                         @endforeach
@@ -273,111 +264,6 @@
 }
 </style>
 
-<script>
-// Données des invités pour JavaScript
-const guests = @json($guests);
-const event = @json($event);
-const invitations = @json($invitations ?? []);
 
-function filterTable() {
-    const statusFilter = document.getElementById('statusFilter').value;
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const drinkFilter = document.getElementById('drinkFilter').value;
-    
-    const rows = document.querySelectorAll('#guestsTable tbody tr');
-    
-    rows.forEach(row => {
-        const status = row.getAttribute('data-status');
-        const name = row.getAttribute('data-name');
-        const drinks = row.getAttribute('data-drinks');
-        
-        let showRow = true;
-        
-        // Filtre par statut
-        if (statusFilter && status !== statusFilter) {
-            showRow = false;
-        }
-        
-        // Filtre par recherche
-        if (searchInput && !name.includes(searchInput)) {
-            showRow = false;
-        }
-        
-        // Filtre par boisson
-        if (drinkFilter && !drinks.includes(drinkFilter)) {
-            showRow = false;
-        }
-        
-        row.style.display = showRow ? '' : 'none';
-    });
-}
-
-function clearFilters() {
-    document.getElementById('statusFilter').value = '';
-    document.getElementById('searchInput').value = '';
-    document.getElementById('drinkFilter').value = '';
-    filterTable();
-}
-
-function deleteGuestDrinkChoices(guestId) {
-    const guest = guests.find(g => g.id === guestId);
-    if (!guest) {
-        alert('Invité non trouvé.');
-        return;
-    }
-    
-    if (confirm(`Êtes-vous sûr de vouloir supprimer tous les choix de boissons de ${guest.first_name} ${guest.last_name} ?`)) {
-        // Envoyer une requête AJAX pour supprimer les choix
-        fetch(`/guests/${guestId}/drink-choices`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Choix de boissons supprimés avec succès !');
-                location.reload(); // Recharger la page pour mettre à jour l'affichage
-            } else {
-                alert('Erreur lors de la suppression : ' + (data.message || 'Erreur inconnue'));
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert('Erreur lors de la suppression des choix de boissons.');
-        });
-    }
-}
-
-function viewGuestDetails(guestId) {
-    // Implémenter la vue des détails de l'invité
-    console.log('Voir détails invité:', guestId);
-}
-
-function editDrinkChoices(guestId) {
-    // Implémenter l'édition des choix de boissons
-    console.log('Modifier choix boissons:', guestId);
-}
-
-function downloadPDF() {
-    window.open(`/events/{{ $event->id }}/drink-choices/download-pdf`, '_blank');
-}
-
-function exportToExcel() {
-    window.open(`/events/{{ $event->id }}/drink-choices/export-excel`, '_blank');
-}
-
-// Mettre à jour l'aperçu du message quand le message personnalisé change
-document.getElementById('customMessage').addEventListener('input', function() {
-    const phone = document.getElementById('recipientPhone').value;
-    if (phone) {
-        const guest = guests.find(g => g.phone === phone);
-        if (guest) {
-            generateMessagePreview(guest);
-        }
-    }
-});
-</script>
+<script src="{{ asset('js/drink-choices.js') }}"></script>
 @endsection

@@ -1,0 +1,304 @@
+/* ============================================
+   CSS pour la gestion des invités
+   ============================================ */
+
+/* Styles pour la page d'index des invités */
+.guests-index-section {
+    background: linear-gradient(to bottom, #fdf2f8, #ffffff, #fdf2f8);
+    padding: 3rem 0;
+    position: relative;
+    z-index: 10;
+}
+
+.guests-index-title {
+    font-family: 'Alex Brush', cursive;
+    font-size: 3rem;
+    color: #e11d48;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les tableaux */
+.guests-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.guests-table thead {
+    background: #fdf2f8;
+    color: #e11d48;
+    font-weight: 600;
+}
+
+.guests-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #fce7f3;
+}
+
+.guests-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+.guests-table tbody tr:hover {
+    background-color: #fdf2f8;
+    transition: background-color 0.2s ease;
+}
+
+/* Styles pour les badges de statut */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+}
+
+.status-badge.confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.status-badge.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.status-badge.declined {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Styles pour les boutons d'action */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.action-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn.view {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.action-btn.view:hover {
+    background-color: #2563eb;
+    color: white;
+}
+
+.action-btn.edit {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.action-btn.edit:hover {
+    background-color: #d97706;
+    color: white;
+}
+
+.action-btn.delete {
+    background-color: #ef4444;
+    color: white;
+}
+
+.action-btn.delete:hover {
+    background-color: #dc2626;
+    color: white;
+}
+
+/* Styles pour les alertes de succès */
+.success-alert {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    border: 1px solid #a7f3d0;
+}
+
+/* Styles pour les boutons principaux */
+.primary-button {
+    background: linear-gradient(135deg, #e11d48, #f43f5e);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.primary-button:hover {
+    background: linear-gradient(135deg, #be185d, #e11d48);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(225, 29, 72, 0.3);
+}
+
+.secondary-button {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.secondary-button:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+}
+
+/* Styles pour les icônes */
+.icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.icon-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* Styles pour les cartes d'invités */
+.guest-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+}
+
+.guest-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.guest-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+.guest-info h6 {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.guest-info p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .guests-index-title {
+        font-size: 2rem;
+    }
+    
+    .guests-table {
+        font-size: 0.875rem;
+    }
+    
+    .guests-table th,
+    .guests-table td {
+        padding: 0.75rem 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .guests-index-section {
+        padding: 2rem 0;
+    }
+    
+    .glass-effect {
+        padding: 1rem;
+    }
+    
+    .guests-table th,
+    .guests-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .guest-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+}

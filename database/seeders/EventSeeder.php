@@ -134,17 +134,19 @@ class EventSeeder extends Seeder
      */
     private function createBirthdayEvent($familyType, $friendType, $colleagueType)
     {
-        $event = Event::create([
-            'organizer_id' => 2,
-            'title' => 'Anniversaire de Marie - 30 ans',
-            'description' => 'Célébration du 30ème anniversaire de Marie avec famille et amis',
-            'event_date' => Carbon::now()->addDays(30)->setTime(19, 0, 0),
-            'location' => 'Restaurant Le Jardin, Kinshasa',
-            'google_maps_url' => 'https://maps.google.com/?q=Restaurant+Le+Jardin+Kinshasa',
-            'program' => 'Accueil des invités à 19h00, Cocktail d\'ouverture à 19h30, Dîner à 20h00, Coupure du gâteau à 21h30, Soirée dansante à 22h00',
-            'theme_color' => '#ff6b6b',
-            'event_type_id' => EventType::where('label', 'Anniversaire')->first()->id,
-        ]);
+        $event = Event::firstOrCreate(
+            ['title' => 'Anniversaire de Marie - 30 ans'],
+            [
+                'organizer_id' => 2,
+                'description' => 'Célébration du 30ème anniversaire de Marie avec famille et amis',
+                'event_date' => Carbon::now()->addDays(30)->setTime(19, 0, 0),
+                'location' => 'Restaurant Le Jardin, Kinshasa',
+                'google_maps_url' => 'https://maps.google.com/?q=Restaurant+Le+Jardin+Kinshasa',
+                'program' => 'Accueil des invités à 19h00, Cocktail d\'ouverture à 19h30, Dîner à 20h00, Coupure du gâteau à 21h30, Soirée dansante à 22h00',
+                'theme_color' => '#ff6b6b',
+                'event_type_id' => EventType::where('label', 'Anniversaire')->first()->id,
+            ]
+        );
 
         // Créer des tables pour l'anniversaire
         $this->createEventTables($event);
@@ -219,12 +221,18 @@ class EventSeeder extends Seeder
         ];
 
         foreach ($tables as $tableData) {
-            EventTable::create([
-                'event_id' => $event->id,
-                'name' => $tableData['name'],
-                'table_number' => $tableData['table_number'],
-                'capacity' => $tableData['capacity']
-            ]);
+            EventTable::firstOrCreate(
+                [
+                    'event_id' => $event->id,
+                    'table_number' => $tableData['table_number']
+                ],
+                [
+                    'event_id' => $event->id,
+                    'name' => $tableData['name'],
+                    'table_number' => $tableData['table_number'],
+                    'capacity' => $tableData['capacity']
+                ]
+            );
         }
     }
 
@@ -233,6 +241,12 @@ class EventSeeder extends Seeder
      */
     private function createBirthdayGuests($event, $familyType, $friendType, $colleagueType)
     {
+        // Vérifier si des invités existent déjà pour cet événement
+        if ($event->guests()->count() > 0) {
+            $this->command->warn("⚠️  Des invités existent déjà pour l'événement '{$event->title}'. Ignoré.");
+            return;
+        }
+        
         // Récupérer les tables créées pour cet événement
         $tables = $event->eventTables()->get();
         

@@ -55,6 +55,11 @@ class Event extends Model
         return $this->hasMany(Content::class);
     }
 
+    public function eventTables()
+    {
+        return $this->hasMany(EventTable::class);
+    }
+
     /**
      * ✅ NOUVEAU : Vérifier si l'événement a des invitations
      */

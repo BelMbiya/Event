@@ -58,7 +58,7 @@ class InvitationSeeder extends Seeder
             'guest_id' => null, // Invitation générale
             'unique_code' => $eventUuid,
             'status' => 'sent',
-            'invitation_url' => url('/invitation/dynamic'),
+            'invitation_url' => url("/invitation/dynamic/{$eventUuid}"),
             'sent_at' => now()->subDays(5),
             'created_at' => now(),
             'updated_at' => now()

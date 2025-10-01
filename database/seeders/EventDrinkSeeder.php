@@ -49,7 +49,13 @@ class EventDrinkSeeder extends Seeder
         ];
 
         foreach ($eventdrinks as $drink) {
-            EventDrink::create($drink);
+            EventDrink::firstOrCreate(
+                [
+                    'event_id' => $drink['event_id'],
+                    'drink_id' => $drink['drink_id']
+                ],
+                $drink
+            );
         }
     }
 }

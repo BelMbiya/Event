@@ -26,8 +26,8 @@ class DatabaseSeeder extends Seeder
             EventDrinkSeeder::class,
             GuestDrinkChoiceSeeder::class,
             InvitationContentSeeder::class,
-            ContentSeeder::class,
-            DrinkPricesSeeder::class, // Seeder pour les prix des boissons
+            //ContentSeeder::class,
+            //DrinkPricesSeeder::class, // Seeder pour les prix des boissons
         ]);
         // User::factory(10)->create();
 

@@ -233,7 +233,13 @@ class EventSeeder extends Seeder
      */
     private function createBirthdayGuests($event, $familyType, $friendType, $colleagueType)
     {
-        $tables = $event->eventTables;
+        // Récupérer les tables créées pour cet événement
+        $tables = $event->eventTables()->get();
+        
+        // Vérifier qu'il y a au moins 3 tables
+        if ($tables->count() < 3) {
+            throw new \Exception("Pas assez de tables créées pour l'événement. Attendu: 3, trouvé: {$tables->count()}");
+        }
         
         $guests = [
             // Famille
@@ -298,15 +304,21 @@ class EventSeeder extends Seeder
         $drinks = Drink::all();
         
         foreach ($drinks as $drink) {
-            EventDrink::create([
-                'event_id' => $event->id,
-                'drink_id' => $drink->id,
-                'price' => $drink->name === 'Coca-Cola' ? 500 : 
-                          ($drink->name === 'Jus d\'Orange' ? 800 : 
-                          ($drink->name === 'Champagne' ? 15000 : 300)),
-                'limit_per_guest' => 3,
-                'available' => true,
-            ]);
+            EventDrink::firstOrCreate(
+                [
+                    'event_id' => $event->id,
+                    'drink_id' => $drink->id
+                ],
+                [
+                    'event_id' => $event->id,
+                    'drink_id' => $drink->id,
+                    'price' => $drink->name === 'Coca-Cola' ? 500 : 
+                              ($drink->name === 'Jus d\'Orange' ? 800 : 
+                              ($drink->name === 'Champagne' ? 15000 : 300)),
+                    'limit_per_guest' => 3,
+                    'available' => true,
+                ]
+            );
         }
     }
 

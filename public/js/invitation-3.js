@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroCard = document.querySelector('.hero-section .invitation-card');
     const heroSection = document.querySelector('.hero-section');
     
-    // S'assurer que la carte est cachée au chargement
+    // S'assurer que la carte est visible au chargement
     if (heroCard) {
-        heroCard.style.opacity = '0';
+        heroCard.style.opacity = '1';
     }
     
     // Debug complet de l'image hero côté client
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Fonction pour forcer l'image par défaut
         function forceDefaultImage() {
-            const defaultImage = 'https://cdn0.mariages.net/article-real-wedding/678/3_2/1920/jpg/3928114.webp';
+            const defaultImage = '/img/couplelamika.jpeg';
             console.log('🔄 Forcing default image:', defaultImage);
             heroSection.style.backgroundImage = `url('${defaultImage}')`;
             heroSection.setAttribute('data-image-src', defaultImage);
@@ -92,21 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (heroCard && heroSection) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Afficher la carte avec fade in
-                    heroCard.classList.add('show');
-                } else {
-                    // Masquer la carte avec fade out
-                    heroCard.classList.remove('show');
-                }
-            });
-        }, {
-            threshold: 0.2 // Déclenche quand 20% de la section est visible
-        });
-        
-        observer.observe(heroSection);
+        // Animation d'apparition de la carte au chargement
+        setTimeout(() => {
+            heroCard.style.opacity = '1';
+            heroCard.style.transform = 'translateY(0)';
+        }, 100);
     }
     
     // Effet parallaxe pour la section hero

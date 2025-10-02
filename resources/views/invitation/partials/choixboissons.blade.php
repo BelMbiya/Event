@@ -34,14 +34,13 @@
                                     <i class="fas fa-check-circle me-2"></i>
                                     <strong>Vos choix ont été enregistrés !</strong>
                                 </div>
-                                <div class="d-flex flex-wrap justify-content-center">
+                                <div class="d-flex flex-wrap justify-content-center gap-2">
                                     @foreach ($eventDrinks as $drink)
                                         @php
                                             $isSelected = in_array($drink->id, $selectedDrinkIds);
                                         @endphp
                                         <div class="drink-option mb-2">
-                                            <span class="btn {{ $isSelected ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 py-2 drink-label disabled" 
-                                                  style="{{ $isSelected ? 'background-color: var(--color-primary) !important; border-color: var(--color-primary) !important; color: white !important;' : 'border-color: var(--color-secondary) !important; color: var(--color-secondary) !important;' }}">
+                                            <span class="btn {{ $isSelected ? 'btn-success' : 'btn-outline-secondary' }} rounded-pill px-4 py-2 drink-label disabled">
                                                 @if($isSelected)
                                                     <i class="fas fa-check me-2"></i>
                                                 @endif
@@ -60,7 +59,7 @@
                                 <input type="hidden" name="unique_code" value="{{ $unique_code }}">
 
                                 <div class="mb-4">
-                                    <div class="d-flex flex-wrap justify-content-center">
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
                                         @foreach ($eventDrinks as $drink)
                                             <div class="drink-option mb-2">
                                                 <!-- Checkbox masqué -->
@@ -73,8 +72,7 @@
 
                                                 <!-- Le label devient le bouton stylisé -->
                                                 <label class="btn btn-outline-primary rounded-pill px-4 py-2 drink-label" 
-                                                       for="drink{{ $drink->id }}"
-                                                       style="border-color: var(--color-primary) !important; color: var(--color-primary) !important;">
+                                                       for="drink{{ $drink->id }}">
                                                     {{ $drink->drink->name }}
                                                 </label>
                                             </div>

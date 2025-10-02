@@ -90,6 +90,9 @@
     border: 1px solid rgba(0,0,0,0.05);
     position: relative;
     overflow: hidden;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* Décorations de la carte */
@@ -167,7 +170,7 @@
     pointer-events: none;
 }
 
-/* Overlay contextuel pour les images de fond */
+/* Overlay contextuel pour les images de fond - réduit pour éviter les conflits */
 .hero-section[style*="background-image"]::before {
     content: '';
     position: absolute;
@@ -176,8 +179,8 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.2) 0%, rgba(255,182,193,0) 60%),
-        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.15) 0%, rgba(255,218,185,0) 60%),
+        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.08) 0%, rgba(255,182,193,0) 60%),
+        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.06) 0%, rgba(255,218,185,0) 60%),
         transparent;
     pointer-events: none;
     z-index: 1;
@@ -467,27 +470,29 @@
 
 /* Styles pour les boissons */
 .drink-label {
-    border-color: var(--color-primary) !important;
-    color: var(--color-primary) !important;
+    border-color: var(--color-primary, #e11d48) !important;
+    color: var(--color-primary, #e11d48) !important;
     background-color: transparent !important;
     transition: all 0.3s ease !important;
     font-weight: 500 !important;
     letter-spacing: 0.5px !important;
     margin: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .drink-label:hover {
-    background-color: var(--color-primary) !important;
+    background-color: var(--color-primary, #e11d48) !important;
     color: white !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb, 225, 29, 72), 0.3) !important;
 }
 
 .btn-check:checked + .drink-label {
-    background-color: var(--color-primary) !important;
-    border-color: var(--color-primary) !important;
+    background-color: var(--color-primary, #e11d48) !important;
+    border-color: var(--color-primary, #e11d48) !important;
     color: white !important;
-    box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4) !important;
+    box-shadow: 0 4px 15px rgba(var(--color-primary-rgb, 225, 29, 72), 0.4) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -497,9 +502,23 @@
     margin-right: 4px;
 }
 
+/* Styles pour les boutons de boissons sélectionnés (lecture seule) */
+.drink-label.btn-success {
+    background-color: var(--color-primary, #e11d48) !important;
+    border-color: var(--color-primary, #e11d48) !important;
+    color: white !important;
+}
+
+.drink-label.btn-outline-secondary {
+    border-color: var(--color-secondary, #f43f5e) !important;
+    color: var(--color-secondary, #f43f5e) !important;
+    background-color: transparent !important;
+}
+
 .drink-option {
-    margin: 0.5rem;
+    margin: 0.25rem;
     position: relative;
+    flex-shrink: 0;
 }
 
 .drink-option .btn-check {
@@ -511,8 +530,12 @@
 .drink-option .drink-label {
     cursor: pointer;
     user-select: none;
-    min-width: 120px;
+    min-width: auto;
+    width: auto;
+    padding: 8px 20px;
     text-align: center;
+    display: inline-block;
+    font-size: 0.9rem;
 }
 
 .drink-option .btn-check:checked + .drink-label {
@@ -596,6 +619,12 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .drink-option .drink-label {
+        font-size: 0.8rem;
+        padding: 6px 16px;
+        margin: 0.2rem;
+    }
+    
     .timeline::before {
         left: 30px;
     }

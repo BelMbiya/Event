@@ -866,7 +866,7 @@ class InvitationController extends Controller
         $unique_code = $event->id . '_' . $id;
 
         // Préparer les URLs d'images de fond
-        $heroImageUrl = $this->getImageUrl($content->hero_image_path, 'https://cdn0.mariages.net/article-real-wedding/678/3_2/1920/jpg/3928114.webp');
+        $heroImageUrl = $this->getImageUrl($content->hero_image_path, asset('img/couplelamika.jpeg'));
         $programBgUrl = $this->getImageUrl($content->program_background_image, 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80');
         $guestbookBgUrl = $this->getImageUrl($content->guestbook_background_image, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80');
         $drinksBgUrl = $this->getImageUrl($content->drinks_background_image, 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=1920&h=1080&fit=crop&crop=center&auto=format&q=80');

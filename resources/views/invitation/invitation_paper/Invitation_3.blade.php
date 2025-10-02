@@ -126,6 +126,19 @@
             background-color: var(--color-primary) !important;
             border-color: var(--color-primary) !important;
             color: white !important;
+            box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.4) !important;
+        }
+        
+        .drink-label.btn-success {
+            background-color: var(--color-primary) !important;
+            border-color: var(--color-primary) !important;
+            color: white !important;
+        }
+        
+        .drink-label.btn-outline-secondary {
+            border-color: var(--color-secondary) !important;
+            color: var(--color-secondary) !important;
+            background-color: transparent !important;
         }
         
         .btn-check:focus + .drink-label {

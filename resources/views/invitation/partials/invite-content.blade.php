@@ -3,13 +3,13 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
-                    <div class="invitation-card p-5" style="opacity: 1;">
+                    <div class="invitation-card p-5" style="opacity: 0.5!important;">
                         <!-- Petit texte décoratif -->
                         <p class="modern-font text-uppercase text-muted mb-4 text-center" style="letter-spacing: 0.3em; font-size: 0.9rem;">
                             @if($content->intro_2)
                                 {!! $content->intro_2 !!}
                             @else
-                                💌 Invitation 💌
+                                INVITATION
                             @endif
                         </p>
 
@@ -143,7 +143,7 @@
                                     @if($guest->rsvp_status)
                                     <p class="modern-font text-dark mb-2">
                                         <strong>Statut RSVP :</strong> 
-                                        <span class="badge badge-{{ $guest->rsvp_status == 'confirmed' ? 'success' : ($guest->rsvp_status == 'declined' ? 'danger' : 'warning') }}">
+                                        <span style="color: #000;" class="badge badge-{{ $guest->rsvp_status == 'confirmed' ? 'success' : ($guest->rsvp_status == 'declined' ? 'danger' : 'warning') }}">
                                             @switch($guest->rsvp_status)
                                                 @case('confirmed')
                                                     ✅ Confirmé
@@ -158,11 +158,6 @@
                                                     {{ $guest->rsvp_status }}
                                             @endswitch
                                         </span>
-                                    </p>
-                                    @endif
-                                    @if($guest->meal_choice)
-                                    <p class="modern-font text-dark mb-2">
-                                        <strong>Choix de repas :</strong> {{ $guest->meal_choice }}
                                     </p>
                                     @endif
                                     @if($guest->event_table_id)

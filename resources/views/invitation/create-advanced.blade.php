@@ -215,10 +215,11 @@ UTILISATION : Création complète d'invitations avec toutes les options
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Police des titres</label>
                         <select class="form-select" name="theme_heading_font">
-                            <option value="Alex Brush" {{ old('theme_heading_font', 'Alex Brush') == 'Alex Brush' ? 'selected' : '' }}>Alex Brush (Élégant)</option>
-                            <option value="Dancing Script" {{ old('theme_heading_font', 'Alex Brush') == 'Dancing Script' ? 'selected' : '' }}>Dancing Script (Romantique)</option>
-                            <option value="Great Vibes" {{ old('theme_heading_font', 'Alex Brush') == 'Great Vibes' ? 'selected' : '' }}>Great Vibes (Classique)</option>
-                            <option value="Montserrat" {{ old('theme_heading_font', 'Alex Brush') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Moderne)</option>
+                            <option value="Inter" {{ old('theme_heading_font', 'Inter') == 'Inter' ? 'selected' : '' }}>Inter (Moderne)</option>
+                            <option value="Alex Brush" {{ old('theme_heading_font', 'Inter') == 'Alex Brush' ? 'selected' : '' }}>Alex Brush (Élégant)</option>
+                            <option value="Dancing Script" {{ old('theme_heading_font', 'Inter') == 'Dancing Script' ? 'selected' : '' }}>Dancing Script (Romantique)</option>
+                            <option value="Great Vibes" {{ old('theme_heading_font', 'Inter') == 'Great Vibes' ? 'selected' : '' }}>Great Vibes (Classique)</option>
+                            <option value="Montserrat" {{ old('theme_heading_font', 'Inter') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Moderne)</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">

@@ -59,7 +59,7 @@ class ContentSeeder extends Seeder
                         'accent' => '#fb7185'
                     ],
                     'fonts' => [
-                        'headings' => 'Alex Brush',
+                        'headings' => 'Inter',
                         'body' => 'Cormorant Garamond'
                     ],
                     'decorations' => [

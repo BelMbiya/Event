@@ -57,11 +57,11 @@
 }
 
 .elegant-font {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .modern-font {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 .animate-fade-in {
@@ -179,8 +179,8 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.08) 0%, rgba(255,182,193,0) 60%),
-        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.06) 0%, rgba(255,218,185,0) 60%),
+        radial-gradient(800px 400px at 20% 20%, rgba(255,182,193,0.3) 0%, rgba(255,182,193,0) 60%),
+        radial-gradient(600px 300px at 80% 80%, rgba(255,218,185,0.2) 0%, rgba(255,218,185,0) 60%),
         transparent;
     pointer-events: none;
     z-index: 1;
@@ -431,7 +431,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     min-width: 80px;
     text-align: center;
     padding: 6px 12px;
@@ -468,79 +468,7 @@
     border-right-color: rgba(255,255,255,0.95);
 }
 
-/* Styles pour les boissons */
-.drink-label {
-    border-color: var(--color-primary, #e11d48) !important;
-    color: var(--color-primary, #e11d48) !important;
-    background-color: transparent !important;
-    transition: all 0.3s ease !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.5px !important;
-    margin: 0.5rem;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.drink-label:hover {
-    background-color: var(--color-primary, #e11d48) !important;
-    color: white !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb, 225, 29, 72), 0.3) !important;
-}
-
-.btn-check:checked + .drink-label {
-    background-color: var(--color-primary, #e11d48) !important;
-    border-color: var(--color-primary, #e11d48) !important;
-    color: white !important;
-    box-shadow: 0 4px 15px rgba(var(--color-primary-rgb, 225, 29, 72), 0.4) !important;
-    transform: translateY(-2px) !important;
-}
-
-.btn-check:checked + .drink-label::before {
-    content: '✓ ';
-    font-weight: bold;
-    margin-right: 4px;
-}
-
-/* Styles pour les boutons de boissons sélectionnés (lecture seule) */
-.drink-label.btn-success {
-    background-color: var(--color-primary, #e11d48) !important;
-    border-color: var(--color-primary, #e11d48) !important;
-    color: white !important;
-}
-
-.drink-label.btn-outline-secondary {
-    border-color: var(--color-secondary, #f43f5e) !important;
-    color: var(--color-secondary, #f43f5e) !important;
-    background-color: transparent !important;
-}
-
-.drink-option {
-    margin: 0.25rem;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.drink-option .btn-check {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.drink-option .drink-label {
-    cursor: pointer;
-    user-select: none;
-    min-width: auto;
-    width: auto;
-    padding: 8px 20px;
-    text-align: center;
-    display: inline-block;
-    font-size: 0.9rem;
-}
-
-.drink-option .btn-check:checked + .drink-label {
-    animation: pulse 0.6s ease-in-out;
-}
+/* Styles pour les boissons - Déplacés vers invitation-dynamic.css */
 
 /* Images et galerie */
 .image-frame {
@@ -619,11 +547,6 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .drink-option .drink-label {
-        font-size: 0.8rem;
-        padding: 6px 16px;
-        margin: 0.2rem;
-    }
     
     .timeline::before {
         left: 30px;
@@ -696,7 +619,7 @@
 .pdf-optimized {
     background: linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%) !important;
     color: #333 !important;
-    font-family: 'Cormorant Garamond', serif !important;
+    font-family: 'Inter', sans-serif !important;
     line-height: 1.6 !important;
 }
 
@@ -805,7 +728,7 @@
     body {
         background: linear-gradient(135deg, #ffe9ef 0%, #fff0f3 50%, #ffe9ef 100%) !important;
         color: #333 !important;
-        font-family: 'Cormorant Garamond', serif !important;
+        font-family: 'Inter', sans-serif !important;
     }
 
     .modern-button,
@@ -847,6 +770,7 @@
     .gradient-text {
         color: #e11d48 !important;
         background: none !important;
+        background-clip: unset !important;
         -webkit-background-clip: unset !important;
         -webkit-text-fill-color: unset !important;
     }

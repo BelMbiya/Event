@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
-                    <div class="invitation-card p-5" style="opacity: 0.5!important;">
+                    <div class="invitation-card p-5">
                         <!-- Petit texte décoratif -->
                         <p class="modern-font text-uppercase text-muted mb-4 text-center" style="letter-spacing: 0.3em; font-size: 0.9rem;">
                             @if($content->intro_2)

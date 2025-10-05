@@ -23,10 +23,6 @@ UTILISATION : Dashboard principal pour la gestion des invitations
             <i class="fas fa-download me-2"></i>
             Télécharger PDF
         </button>
-        <button class="btn btn-info me-2" onclick="showDynamicLinksModal()">
-            <i class="fas fa-link me-2"></i>
-            Liens Dynamiques
-        </button>
         <a href="{{ route("dashboard") }}" class="btn btn-primary">Créer une nouvelle invitation</a>
     </div>
 </div>
@@ -44,8 +40,8 @@ UTILISATION : Dashboard principal pour la gestion des invitations
                 <div class="col-md-8">
                     <div class="form-group">
                         <label for="search">Rechercher partout</label>
-                        <input type="text" name="search" id="search" class="form-control" 
-                               value="{{ request('search') }}" 
+                        <input type="text" name="search" id="search" class="form-control"
+                               value="{{ request('search') }}"
                                placeholder="Rechercher par nom d'invité, événement, statut, etc...">
                         <small class="form-text text-muted">
                             Recherche dans les noms d'invités, événements, statuts et contenus
@@ -70,8 +66,8 @@ UTILISATION : Dashboard principal pour la gestion des invitations
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> 
-                        Recherche : "<strong>{{ request('search') }}</strong>" - 
+                        <i class="fas fa-info-circle"></i>
+                        Recherche : "<strong>{{ request('search') }}</strong>" -
                         {{ $invitations->count() }} invitation(s) trouvée(s)
                     </div>
                 </div>
@@ -134,14 +130,14 @@ UTILISATION : Dashboard principal pour la gestion des invitations
                                                 <i class="fas fa-external-link-alt"></i> Voir
                                             </a>
                                         @else
-                                            <button class="btn btn-sm btn-outline-info" onclick="showDynamicLinksForEvent({{ $invitation->event_id }})">
-                                                <i class="fas fa-link"></i> Liens
-                                            </button>
+                                            <a href="{{ route('invitation.show.generic', $invitation->event->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt"></i> Voir
+                                            </a>
                                         @endif
                                     </td>
                                     <td>
                                         @if($invitation->guest && $invitation->guest->rsvp_status)
-                                            <span class="badge 
+                                            <span class="badge
                                                 @if($invitation->guest->rsvp_status == 'confirmed') badge-success
                                                 @elseif($invitation->guest->rsvp_status == 'declined') badge-danger
                                                 @elseif($invitation->guest->rsvp_status == 'pending') badge-warning
@@ -221,7 +217,7 @@ UTILISATION : Dashboard principal pour la gestion des invitations
                     <i class="fas fa-info-circle me-2"></i>
                     <strong>Invitations Dynamiques :</strong> Une seule invitation par événement qui s'adapte automatiquement selon chaque invité.
                 </div>
-                
+
                 <div id="dynamicLinksContent">
                     <div class="text-center">
                         <div class="spinner-border" role="status">

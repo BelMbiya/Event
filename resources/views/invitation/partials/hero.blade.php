@@ -1,5 +1,5 @@
     <!-- Hero Section -->
-    <section class="hero-section relative min-h-screen flex items-center justify-center" 
+    <section class="hero-section relative min-h-screen flex items-center justify-center"
              style="background-image: url('{{ $heroImageUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;"
              data-parallax="scroll" data-image-src="{{ $heroImageUrl }}">
         <!-- Overlay pour la lisibilité - opacité réduite -->
@@ -21,7 +21,7 @@
                         @if($guest)
                         <div class="guest-welcome mb-4">
                             <p class="elegant-font text-dark" style="font-size: 1.1rem; font-style: italic;">
-                                Cher(e) <strong>{{ $guest->first_name }} {{ $guest->last_name }}</strong>,
+                                Cher(e) <strong>{{ $guest->first_name }}</strong>,
                             </p>
                             <p class="modern-font text-muted" style="font-size: 0.95rem;">
                                 Nous avons le plaisir de vous inviter à partager ce moment spécial avec nous.

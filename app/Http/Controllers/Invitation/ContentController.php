@@ -277,11 +277,13 @@ class ContentController extends Controller
             $invitation = $originalContent->invitation;
             
             // Créer une nouvelle invitation
+            $uniqueCode = $this->generateUniqueCode();
             $newInvitation = Invitation::create([
                 'event_id' => $invitation->event_id,
                 'guest_id' => $invitation->guest_id,
-                'unique_code' => $this->generateUniqueCode(),
-                'status' => 'pending'
+                'unique_code' => $uniqueCode,
+                'status' => 'pending',
+                'invitation_url' => url("/invitation/{$uniqueCode}")
             ]);
             
             // Dupliquer le contenu

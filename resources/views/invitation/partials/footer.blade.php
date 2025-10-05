@@ -1,5 +1,5 @@
     <!-- Footer -->
-    <footer class="footer-section py-5" style="background-image: url('{{ $footerBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+    <footer class="footer-section py-5" style="background-image: url('{{ $footerBgUrl ?? "" }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
         <!-- Overlay pour la lisibilité -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 1;"></div>
         <div class="container text-center" style="position: relative; z-index: 2;">

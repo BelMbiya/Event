@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Drag & Drop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/invitation-create-advanced.css">
+    <style>
+        body { padding: 20px; }
+        .test-zone { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Drag & Drop</h1>
+        <p>Testez la fonctionnalité de drag and drop avec des images.</p>
+        
+        <div class="test-zone">
+            <label class="form-label">Test Zone 1 - Hero Image</label>
+            <div class="drag-drop-zone" data-target="hero_image_path">
+                <input type="file" class="form-control d-none" name="hero_image_path" accept="image/*" id="hero_image_input">
+                <div class="drag-drop-content">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                    <p class="mb-2">
+                        <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                        <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                    </p>
+                    <small class="text-muted">Image qui apparaît en arrière-plan de l'en-tête (max 2MB)</small>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="hero_image_path">
+                            <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                        </button>
+                    </div>
+                </div>
+                <div class="image-preview" id="hero_image_preview" style="display: none;">
+                    <img id="hero_image_preview_img" src="" alt="Aperçu" class="preview-image">
+                    <button type="button" class="btn btn-sm btn-danger remove-image" data-target="hero_image_path">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-zone">
+            <label class="form-label">Test Zone 2 - Programme Background</label>
+            <div class="drag-drop-zone" data-target="program_background_image">
+                <input type="file" class="form-control d-none" name="program_background_image" accept="image/*" id="program_background_input">
+                <div class="drag-drop-content">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                    <p class="mb-2">
+                        <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                        <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                    </p>
+                    <small class="text-muted">Image de fond pour la section programme (max 2MB)</small>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="program_background_image">
+                            <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                        </button>
+                    </div>
+                </div>
+                <div class="image-preview" id="program_background_preview" style="display: none;">
+                    <img id="program_background_preview_img" src="" alt="Aperçu" class="preview-image">
+                    <button type="button" class="btn btn-sm btn-danger remove-image" data-target="program_background_image">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info">
+            <h5>Instructions de test - Deux méthodes d'upload :</h5>
+            <ol>
+                <li><strong>Méthode 1 - Drag & Drop :</strong> Glissez une image sur une zone de drag & drop</li>
+                <li><strong>Méthode 2a - Clic sur zone :</strong> Cliquez n'importe où dans une zone de drag & drop</li>
+                <li><strong>Méthode 2b - Clic sur texte :</strong> Cliquez sur "Cliquez pour sélectionner"</li>
+                <li><strong>Méthode 2c - Bouton parcourir :</strong> Cliquez sur le bouton "Parcourir les fichiers"</li>
+                <li><strong>Test de suppression :</strong> Cliquez sur le bouton rouge (X) après avoir sélectionné une image</li>
+            </ol>
+            <p><strong>Ouvrez la console du navigateur (F12) pour voir les logs de débogage.</strong></p>
+            <p><strong>Les deux méthodes fonctionnent :</strong> Drag & drop ET upload par clic sont disponibles.</p>
+        </div>
+        
+        <div class="alert alert-warning">
+            <h5>Test de diagnostic :</h5>
+            <button type="button" class="btn btn-primary" onclick="testClickFunctionality()">Tester la fonctionnalité de clic</button>
+            <button type="button" class="btn btn-success" onclick="testClickUpload()">Tester l'upload par clic</button>
+            <button type="button" class="btn btn-secondary" onclick="debugZones()">Déboguer les zones</button>
+        </div>
+    </div>
+
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- JavaScript -->
+    <script src="js/invitation-create-advanced.js"></script>
+    
+    <!-- Fonctions de test -->
+    <script>
+        function testClickFunctionality() {
+            console.log('🧪 Test de la fonctionnalité de clic...');
+            
+            const zones = document.querySelectorAll('.drag-drop-zone');
+            console.log(`Zones trouvées: ${zones.length}`);
+            
+            zones.forEach((zone, index) => {
+                const target = zone.dataset.target;
+                const input = zone.querySelector('input[type="file"]');
+                const clickToUpload = zone.querySelector('.click-to-upload');
+                const fileSelectBtn = zone.querySelector('.file-select-btn');
+                
+                console.log(`Zone ${index + 1} (${target}):`);
+                console.log(`  - Input: ${input ? '✅' : '❌'}`);
+                console.log(`  - Texte cliquable: ${clickToUpload ? '✅' : '❌'}`);
+                console.log(`  - Bouton fichier: ${fileSelectBtn ? '✅' : '❌'}`);
+                
+                // Test du clic sur l'input
+                if (input) {
+                    try {
+                        input.click();
+                        console.log(`  ✅ Clic sur input réussi pour ${target}`);
+                    } catch (error) {
+                        console.error(`  ❌ Erreur lors du clic sur input pour ${target}:`, error);
+                    }
+                }
+            });
+        }
+        
+        function debugZones() {
+            console.log('🔍 Débogage des zones...');
+            if (typeof debugDragDropZones === 'function') {
+                debugDragDropZones();
+            } else {
+                console.error('❌ Fonction debugDragDropZones non trouvée');
+            }
+        }
+    </script>
+</body>
+</html>

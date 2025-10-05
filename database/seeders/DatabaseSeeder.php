@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             EventSeeder::class,
             GuestSeeder::class,
-            InvitationSeeder::class,
+            //InvitationSeeder::class,
             GuestBookSeeder::class,
             CongoleseDrinksSeeder::class, // Nouveau seeder pour les boissons congolaises
             EventDrinkSeeder::class,

@@ -24,7 +24,7 @@ class Invitation extends Model
         'sent_at',
         'opened_at',
         'event_id',
-        'guest_id', // nécessaire
+        'guest_id', // peut être null pour les invitations générales
     ];
 
     public function event()

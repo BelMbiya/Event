@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('guest_id')->nullable()->constrained('guests')->onDelete('cascade');
             $table->string('unique_code')->unique();   // token aléatoire
             $table->string('invitation_url')->unique();
-            $table->enum('status', ['pending','sent','opened','responded', 'called'])->default('pending');
+            $table->enum('status', ['pending','draft', 'sent','opened','responded', 'called'])->default('draft');
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('opened_at')->nullable();
             $table->timestamps();

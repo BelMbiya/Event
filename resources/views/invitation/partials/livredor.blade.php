@@ -1,6 +1,6 @@
     <!-- Section Livre d'Or -->
     @if($content->guestbook_enabled)
-    <section class="guestbook-section py-5" style="background-image: url('{{ $guestbookBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+    <section class="guestbook-section py-5" style="background-image: url('{{ $guestbookBgUrl ?? "" }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
         <!-- Overlay pour la lisibilité -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.2); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">
@@ -16,11 +16,14 @@
 
                         @php
                             // Vérifier si l'invité a déjà envoyé un message
-                            $hasExistingMessage = $guestBookMessages && $guestBookMessages->count() > 0;
+                            if (isset($guestBookMessages))
+                                {
+                                    $hasExistingMessage = $guestBookMessages && $guestBookMessages->count() > 0;
                             $existingMessage = $hasExistingMessage ? $guestBookMessages->first() : null;
+                                }
                         @endphp
 
-                        @if($hasExistingMessage)
+                        @if(isset($hasExistingMessage))
                             <!-- Affichage du message existant (lecture seule) -->
                             <div class="text-start bg-light rounded-3 p-4">
                                 <div class="alert alert-success mb-4">
@@ -51,7 +54,7 @@
                                         Écrire un message
                                     @endif
                                 </h3>
-                                <form action="{{ route('book.store.dynamic', $guest->id) }}" method="POST">
+                                <form action="{{ isset($guest->id) ? route('book.store.dynamic', $guest->id) : "#"}}" method="POST">
                                     @csrf
                                     <input type="hidden" name="guest_id" value="{{ $guest->id }}">
                                     <div class="mb-3">

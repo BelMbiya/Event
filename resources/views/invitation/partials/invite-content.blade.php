@@ -33,7 +33,7 @@
                                     entourés de ceux qui nous sont chers.
                                 </p>
                             @endif
-                            
+
                             <!-- Informations supplémentaires du contenu -->
                             @if($content->couple && $content->couple !== 'Notre Mariage')
                                 <div class="couple-details mt-4 p-3" style="background: rgba(255, 255, 255, 0.1); border-radius: 10px;">
@@ -85,7 +85,7 @@
                                         {{ \Carbon\Carbon::parse($event->event_date)->locale('fr')->translatedFormat('l d F Y') }}
                                     </p>
                                 @endif
-                                
+
                                 @if($content->timezone)
                                     <p class="modern-font text-muted small">
                                         Fuseau horaire: {{ $content->timezone }}
@@ -118,7 +118,7 @@
                         </div>
 
                         <!-- Informations spécifiques à l'invité -->
-                        @if($guest)
+                        @if(isset($guest))
                         <div class="guest-info-section mb-4 p-4" style="background: rgba(102, 126, 234, 0.1); border-radius: 15px; border: 1px solid rgba(102, 126, 234, 0.2);">
                             <h4 class="modern-font gradient-text mb-3 text-center">
                                 <i class="fas fa-user-circle me-2"></i>Vos Informations
@@ -140,9 +140,9 @@
                                     @endif
                                 </div>
                                 <div class="col-md-6">
-                                    @if($guest->rsvp_status)
+                                    @if(isset($guest->rsvp_status))
                                     <p class="modern-font text-dark mb-2">
-                                        <strong>Statut RSVP :</strong> 
+                                        <strong>Statut RSVP :</strong>
                                         <span style="color: #000;" class="badge badge-{{ $guest->rsvp_status == 'confirmed' ? 'success' : ($guest->rsvp_status == 'declined' ? 'danger' : 'warning') }}">
                                             @switch($guest->rsvp_status)
                                                 @case('confirmed')
@@ -160,7 +160,7 @@
                                         </span>
                                     </p>
                                     @endif
-                                    @if($guest->event_table_id)
+                                    @if(isset($guest->event_table_id))
                                     <p class="modern-font text-dark mb-2">
                                         <strong>Table :</strong> {{ $guest->eventTable->name ?? 'Table ' . $guest->event_table_id }}
                                     </p>
@@ -183,10 +183,10 @@
                                         }
                                     }
                                 @endphp
-                                
+
                                 <!-- Bouton Confirmer présence - toujours visible si invité -->
-                                @if($guest)
-                                <form action="{{ route('guests.rsvp', $guest->id) }}" method="POST" class="d-inline">
+                                @if(isset($guest))
+                                <form action="{{ isset($guest->id) ? route('guests.rsvp', $guest->id) : "#" }}" method="POST" class="d-inline">
                                     @csrf
                                     <button type="submit" class="modern-button">
                                         <i class="fas fa-check-circle me-2"></i>

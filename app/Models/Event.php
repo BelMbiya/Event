@@ -109,20 +109,38 @@ class Event extends Model
     }
 
     /**
+     * ✅ NOUVEAU : Vérifier si l'événement a une invitation générale
+     */
+    public function hasGeneralInvitation()
+    {
+        return $this->invitations()->whereNull('guest_id')->exists();
+    }
+
+    /**
+     * ✅ NOUVEAU : Obtenir l'invitation générale de l'événement
+     */
+    public function getGeneralInvitation()
+    {
+        return $this->invitations()->whereNull('guest_id')->first();
+    }
+
+    /**
      * ✅ NOUVEAU : Obtenir le statut des invitations de l'événement
      */
     public function getInvitationsStatus()
     {
         $invitationsCount = $this->invitationsCount();
         $guestsCount = $this->guestsCount();
+        $hasGeneralInvitation = $this->hasGeneralInvitation();
         
         if ($guestsCount === 0) {
             return [
                 'status' => 'no_guests',
                 'message' => 'Aucun invité ajouté à cet événement',
-                'invitations_count' => 0,
+                'invitations_count' => $invitationsCount,
                 'guests_count' => 0,
-                'can_create_invitations' => false
+                'has_general_invitation' => $hasGeneralInvitation,
+                'can_create_invitations' => true // Peut créer une invitation générale
             ];
         }
         
@@ -132,6 +150,7 @@ class Event extends Model
                 'message' => 'Aucune invitation créée pour cet événement',
                 'invitations_count' => 0,
                 'guests_count' => $guestsCount,
+                'has_general_invitation' => false,
                 'can_create_invitations' => true
             ];
         }
@@ -141,7 +160,8 @@ class Event extends Model
             'message' => "{$invitationsCount} invitation(s) créée(s) pour {$guestsCount} invité(s)",
             'invitations_count' => $invitationsCount,
             'guests_count' => $guestsCount,
-            'can_create_invitations' => $invitationsCount < $guestsCount
+            'has_general_invitation' => $hasGeneralInvitation,
+            'can_create_invitations' => $invitationsCount < $guestsCount || !$hasGeneralInvitation
         ];
     }
 }

@@ -50,16 +50,38 @@ class UserSeeder extends Seeder
             [
                 'first_name' => 'Claire',
                 'last_name' => 'Bernard',
-                'email' => 'DE ',
+                'email' => 'claire.bernard@example.com',
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
                 'phone' => '+243 567 890 123',
                 'role' => 'organizer',
             ],
+            // ✅ NOUVEAUX ORGANISATEURS : Marc et Papa Joseph
+            [
+                'first_name' => 'Marc',
+                'last_name' => 'Organisateur',
+                'email' => 'marc.organisateur@example.com',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 111 222 333',
+                'role' => 'organizer',
+            ],
+            [
+                'first_name' => 'Papa',
+                'last_name' => 'Joseph',
+                'email' => 'papa.joseph@example.com',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+                'phone' => '+243 444 555 666',
+                'role' => 'organizer',
+            ],
         ];
 
         foreach ($users as $userData) {
-            User::create($userData);
+            User::firstOrCreate(
+                ['email' => $userData['email']],
+                $userData
+            );
         }
     }
 }

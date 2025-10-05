@@ -4,11 +4,11 @@
  * ========================================
  * ROUTES WEB - DÉFINITION DES ROUTES DE L'APPLICATION
  * ========================================
- * 
+ *
  * Ce fichier définit toutes les routes de l'application web.
  * Il organise les routes par fonctionnalités : authentification, administration,
  * invitations, invités, boissons, et routes publiques.
- * 
+ *
  * STRUCTURE :
  * - Routes d'authentification (login/logout)
  * - Routes d'administration (tableaux de bord)
@@ -63,55 +63,69 @@ Route::controller(App\Http\Controllers\Invitation\InvitationController::class)
     ->middleware('auth')
     ->group(function () {
         Route::get('invitation', 'index')->name('invitation.index');
-        
+
         Route::get('invitation/create/{event_id}', 'create')
             ->name('invitation.create')
             ->middleware('prevent.duplicate.invitation');
-        
+
         Route::post('invitation', 'store')->name('invitation.store');
-        
+
         Route::get('invitation/{id}', 'showDynamic')
             ->name('invitation.show.dynamic');
-        
+
+        Route::get('invitation/general/{unique_code}', 'showGeneralInvitation')
+            ->name('invitation.show.general');
+
         Route::get('invitation/{unique_code}', 'show')
             ->name('invitation.show');
-        
+
+        // Route pour afficher l'invitation générale d'un événement
+        Route::get('invitation/event/{event_id}', 'showGeneric')
+            ->name('invitation.show.generic');
+
         Route::get('invitation/{id}/edit', 'update')
             ->name('invitation.edit');
         Route::put('invitation/{id}', 'update')
             ->name('invitation.update');
-        
+
         Route::delete('invitation/{id}', 'destroy')
             ->name('invitation.destroy');
-        
+
         Route::post('events/{event_id}/create-invitations-for-all-guests', 'createInvitationsForAllGuests')
             ->name('invitation.create-for-all-guests')
             ->middleware('prevent.duplicate.invitation');
-        
+
         Route::post('events/{event_id}/create-invitations-for-selected-guests', 'createInvitationsForSelectedGuests')
             ->name('invitation.create-for-selected-guests')
             ->middleware('prevent.duplicate.invitation');
-        
+
         Route::get('events/{event_id}/invitations-status', 'checkEventInvitationsStatus')
             ->name('invitation.check-status');
-        
+
         Route::post('invitation/{invitation_id}/duplicate', 'duplicateInvitation')
             ->name('invitation.duplicate');
-        
+
         Route::get('invitation/{invitation_id}/preview', 'preview')
             ->name('invitation.preview');
-        
+
         Route::post('invitation/{invitation_id}/publish', 'publish')
             ->name('invitation.publish');
-        
+
         Route::post('invitation/{invitation_id}/archive', 'archive')
             ->name('invitation.archive');
-        
+
         Route::get('invitation/stats/{event_id?}', 'getStats')
             ->name('invitation.stats');
-        
+
         Route::get('invitation/{event_id}/generate-links', 'generateDynamicLinks')
             ->name('invitation.generate-links');
+
+        // ✅ NOUVELLES ROUTES : Association automatique des invités aux invitations générales
+        Route::post('events/{event_id}/guests/{guest_id}/associate-invitation', 'associateGuestToGeneralInvitation')
+            ->name('invitation.associate-guest');
+
+        Route::post('events/{event_id}/associate-all-guests', 'associateAllGuestsToGeneralInvitation')
+            ->name('invitation.associate-all-guests');
     });
 Route::middleware('auth')->group(function () {
     Route::get('/invitation/{unique_code}/download', [InvitationController::class, 'downloadInvitation'])
@@ -140,23 +154,23 @@ Route::middleware('auth')->group(function () {
     Route::put('/invitation/{invitation_id}/content', [App\Http\Controllers\Invitation\ContentController::class, 'update'])->name('invitation.content.update');
 
     Route::post('/content/{content_id}/duplicate', [App\Http\Controllers\Invitation\ContentController::class, 'duplicate'])->name('content.duplicate');
-    
+
     Route::post('/content/{content_id}/apply-template', [App\Http\Controllers\Invitation\ContentController::class, 'applyTemplate'])->name('content.apply-template');
-    
+
     Route::post('/invitation/{invitation_id}/content/save-draft', [App\Http\Controllers\Invitation\ContentController::class, 'saveDraft'])->name('content.save-draft');
 
     Route::get('/guest_book/event/{event_id}', [GuestBookController::class, 'index'])
         ->name('book.index');
     Route::get('/guest_book/create', [GuestBookController::class, 'create'])->name('book.create');
-    
+
     // ✅ NOUVELLE ROUTE : Livre d'or avec logique dynamique
     Route::post('/guest_book/store/{guest_id}', [GuestBookController::class, 'store'])
         ->name('book.store.dynamic');
-    
+
     // ✅ ROUTE LEGACY : Livre d'or avec code unique (pour compatibilité)
     Route::post('/guest_book/store/{unique_code?}', [GuestBookController::class, 'store'])
         ->name('book.store');
-    
+
     Route::get('/guest_book/event/{event_id}/download-pdf', [GuestBookController::class, 'downloadPDF'])
         ->name('book.download-pdf');
 
@@ -194,7 +208,7 @@ Route::middleware('auth')->group(function () {
         ->name('event-drinks.bulk-assign');
     Route::post('events/{event_id}/drinks/duplicate', [EventDrinkController::class, 'duplicateFromEvent'])
         ->name('event-drinks.duplicate');
-    
+
     // Routes pour la gestion des boissons
     Route::get('drinks', [DrinkController::class, 'index'])->name('drinks.index');
     Route::post('drinks', [DrinkController::class, 'store'])->name('drinks.store');

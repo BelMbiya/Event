@@ -61,18 +61,18 @@ UTILISATION : Création complète d'invitations avec toutes les options
         <input type="hidden" name="event_id" value="{{ $event->id }}">
         
         <!-- Champs cachés pour les informations importantes de l'événement -->
-        <input type="hidden" name="couple" value="{{ $event->title }}">
-        <input type="hidden" name="event_datetime" value="{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d\TH:i') : '' }}">
-        <input type="hidden" name="timezone" value="Africa/Kinshasa">
-        <input type="hidden" name="guest_id" value="">
-        <input type="hidden" name="status" value="sent">
-        <input type="hidden" name="content_status" value="published">
-        <input type="hidden" name="venue_name" value="{{ $event->location }}">
-        <input type="hidden" name="venue_address_line1" value="{{ $event->address ?? '' }}">
-        <input type="hidden" name="venue_city" value="{{ $event->city ?? '' }}">
-        <input type="hidden" name="venue_region" value="{{ $event->region ?? '' }}">
-        <input type="hidden" name="venue_country" value="{{ $event->country ?? 'République Démocratique du Congo' }}">
-        <input type="hidden" name="google_maps_url" value="{{ $event->google_maps_url ?? '' }}">
+        <input type="hidden" name="couple" value="{{ old('couple', $event->title) }}">
+        <input type="hidden" name="event_datetime" value="{{ old('event_datetime', $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d\TH:i') : '') }}">
+        <input type="hidden" name="timezone" value="{{ old('timezone', 'Africa/Kinshasa') }}">
+        <input type="hidden" name="guest_id" value="{{ old('guest_id', '') }}">
+        <input type="hidden" name="status" value="{{ old('status', 'sent') }}">
+        <input type="hidden" name="content_status" value="{{ old('content_status', 'published') }}">
+        <input type="hidden" name="venue_name" value="{{ old('venue_name', $event->location) }}">
+        <input type="hidden" name="venue_address_line1" value="{{ old('venue_address_line1', $event->address ?? '') }}">
+        <input type="hidden" name="venue_city" value="{{ old('venue_city', $event->city ?? '') }}">
+        <input type="hidden" name="venue_region" value="{{ old('venue_region', $event->region ?? '') }}">
+        <input type="hidden" name="venue_country" value="{{ old('venue_country', $event->country ?? 'République Démocratique du Congo') }}">
+        <input type="hidden" name="google_maps_url" value="{{ old('google_maps_url', $event->google_maps_url ?? '') }}">
 
         <!-- Information sur les invités -->
         <div class="alert alert-info mb-4">
@@ -121,20 +121,35 @@ UTILISATION : Création complète d'invitations avec toutes les options
 
                 <div class="mb-3">
                     <label class="form-label">Message d'introduction (Hero)</label>
-                    <input type="text" class="form-control" name="intro_1" value="{{ old('intro_1', '💍 Le grand jour arrive 💍') }}" placeholder="💍 Le grand jour arrive 💍">
+                    <input type="text" class="form-control @error('intro_1') is-invalid @enderror" name="intro_1" value="{{ old('intro_1', '💍 Le grand jour arrive 💍') }}" placeholder="💍 Le grand jour arrive 💍">
                     <small class="form-text text-muted">Texte qui apparaît en haut de l'invitation</small>
+                    @error('intro_1')
+                        <div class="invalid-feedback">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Sous-titre de l'invitation</label>
-                    <input type="text" class="form-control" name="intro_2" value="{{ old('intro_2', '💌 Invitation 💌') }}" placeholder="💌 Invitation 💌">
+                    <input type="text" class="form-control @error('intro_2') is-invalid @enderror" name="intro_2" value="{{ old('intro_2', '💌 Invitation 💌') }}" placeholder="💌 Invitation 💌">
                     <small class="form-text text-muted">Texte qui apparaît avant le contenu principal</small>
+                    @error('intro_2')
+                        <div class="invalid-feedback">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Message Principal <span class="text-danger">*</span></label>
-                    <textarea class="form-control summernote" name="body_html" rows="6" placeholder="C'est avec une immense joie...">{{ old('body_html') }}</textarea>
+                    <textarea class="form-control summernote @error('body_html') is-invalid @enderror" name="body_html" rows="6" placeholder="C'est avec une immense joie...">{{ old('body_html') }}</textarea>
                     <small class="form-text text-muted">Le message principal de votre invitation</small>
+                    @error('body_html')
+                        <div class="invalid-feedback">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <h6 class="mt-4">📅 Programme de l'événement</h6>
@@ -142,7 +157,7 @@ UTILISATION : Création complète d'invitations avec toutes les options
                 
                 <div class="mb-3">
                     <label class="form-label">Programme détaillé</label>
-                    <textarea class="form-control summernote" name="program_html" rows="8" placeholder="Créez votre programme avec des heures, descriptions et formatage...">{{ old('program_html', '<div class="program-schedule">
+                    <textarea class="form-control summernote @error('program_html') is-invalid @enderror" name="program_html" rows="8" placeholder="Créez votre programme avec des heures, descriptions et formatage...">{{ old('program_html', '<div class="program-schedule">
     <div class="schedule-item">
         <div class="time">14:00</div>
         <div class="event">Cérémonie religieuse</div>
@@ -165,6 +180,11 @@ UTILISATION : Création complète d'invitations avec toutes les options
     </div>
 </div>') }}</textarea>
                     <small class="form-text text-muted">Utilisez l'éditeur pour créer un programme personnalisé avec formatage, couleurs et mise en page</small>
+                    @error('program_html')
+                        <div class="invalid-feedback">
+                            <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                        </div>
+                    @enderror
                 </div>
             </div>
 
@@ -176,18 +196,33 @@ UTILISATION : Création complète d'invitations avec toutes les options
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Couleur principale</label>
-                        <input type="color" class="form-control form-control-color" name="theme_primary_color" value="{{ old('theme_primary_color', '#e11d48') }}">
+                        <input type="color" class="form-control form-control-color @error('theme_primary_color') is-invalid @enderror" name="theme_primary_color" value="{{ old('theme_primary_color', '#e11d48') }}">
                         <small class="form-text text-muted">Couleur dominante de l'invitation</small>
+                        @error('theme_primary_color')
+                            <div class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Couleur secondaire</label>
-                        <input type="color" class="form-control form-control-color" name="theme_secondary_color" value="{{ old('theme_secondary_color', '#f43f5e') }}">
+                        <input type="color" class="form-control form-control-color @error('theme_secondary_color') is-invalid @enderror" name="theme_secondary_color" value="{{ old('theme_secondary_color', '#f43f5e') }}">
                         <small class="form-text text-muted">Couleur d'accent</small>
+                        @error('theme_secondary_color')
+                            <div class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Couleur d'accent</label>
-                        <input type="color" class="form-control form-control-color" name="theme_accent_color" value="{{ old('theme_accent_color', '#fb7185') }}">
+                        <input type="color" class="form-control form-control-color @error('theme_accent_color') is-invalid @enderror" name="theme_accent_color" value="{{ old('theme_accent_color', '#fb7185') }}">
                         <small class="form-text text-muted">Couleur pour les détails</small>
+                        @error('theme_accent_color')
+                            <div class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
 
@@ -295,8 +330,13 @@ UTILISATION : Création complète d'invitations avec toutes les options
                     <div class="col-md-6">
                          <h6>📖 Livre d'or</h6>
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" name="guestbook_enabled" value="1" {{ old('guestbook_enabled', true) ? 'checked' : '' }}>
+                            <input class="form-check-input @error('guestbook_enabled') is-invalid @enderror" type="checkbox" name="guestbook_enabled" value="1" {{ old('guestbook_enabled', true) ? 'checked' : '' }}>
                             <label class="form-check-label">Activer le livre d'or</label>
+                            @error('guestbook_enabled')
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                          <small class="text-muted">
                              <i class="fas fa-info-circle me-1"></i>
@@ -308,8 +348,13 @@ UTILISATION : Création complète d'invitations avec toutes les options
                     <div class="col-md-6">
                          <h6>🍷 Choix de boissons</h6>
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" name="drinks_enabled" value="1" {{ old('drinks_enabled', true) ? 'checked' : '' }}>
+                            <input class="form-check-input @error('drinks_enabled') is-invalid @enderror" type="checkbox" name="drinks_enabled" value="1" {{ old('drinks_enabled', true) ? 'checked' : '' }}>
                             <label class="form-check-label">Activer les choix de boissons</label>
+                            @error('drinks_enabled')
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                          <small class="text-muted">
                              <i class="fas fa-info-circle me-1"></i>
@@ -342,12 +387,20 @@ UTILISATION : Création complète d'invitations avec toutes les options
                     <!-- Image Hero (En-tête) -->
                     <div class="col-md-6 mb-4">
                         <label class="form-label">🖼️ Image de fond - En-tête (Hero)</label>
-                        <div class="drag-drop-zone" data-target="hero_image_path">
-                            <input type="file" class="form-control d-none" name="hero_image_path" accept="image/*" id="hero_image_input">
+                        <div class="drag-drop-zone @error('hero_image_path') is-invalid @enderror" data-target="hero_image_path">
+                            <input type="file" class="form-control d-none @error('hero_image_path') is-invalid @enderror" name="hero_image_path" accept="image/*" id="hero_image_input">
                             <div class="drag-drop-content">
                                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
-                                <small class="text-muted">Image qui apparaît en arrière-plan de l'en-tête</small>
+                                <p class="mb-2">
+                                    <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                                    <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                                </p>
+                                <small class="text-muted">Image qui apparaît en arrière-plan de l'en-tête (max 2MB)</small>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="hero_image_path">
+                                        <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                                    </button>
+                                </div>
                             </div>
                             <div class="image-preview" id="hero_image_preview" style="display: none;">
                                 <img id="hero_image_preview_img" src="" alt="Aperçu" class="preview-image">
@@ -356,17 +409,30 @@ UTILISATION : Création complète d'invitations avec toutes les options
                                 </button>
                             </div>
                         </div>
+                        @error('hero_image_path')
+                            <div class="invalid-feedback d-block">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
                     <!-- Image Programme -->
                     <div class="col-md-6 mb-4">
                         <label class="form-label">📅 Image de fond - Programme</label>
-                        <div class="drag-drop-zone" data-target="program_background_image">
-                            <input type="file" class="form-control d-none" name="program_background_image" accept="image/*" id="program_background_input">
+                        <div class="drag-drop-zone @error('program_background_image') is-invalid @enderror" data-target="program_background_image">
+                            <input type="file" class="form-control d-none @error('program_background_image') is-invalid @enderror" name="program_background_image" accept="image/*" id="program_background_input">
                             <div class="drag-drop-content">
                                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
-                                <small class="text-muted">Image de fond pour la section programme</small>
+                                <p class="mb-2">
+                                    <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                                    <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                                </p>
+                                <small class="text-muted">Image de fond pour la section programme (max 2MB)</small>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="program_background_image">
+                                        <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                                    </button>
+                                </div>
                             </div>
                             <div class="image-preview" id="program_background_preview" style="display: none;">
                                 <img id="program_background_preview_img" src="" alt="Aperçu" class="preview-image">
@@ -375,6 +441,11 @@ UTILISATION : Création complète d'invitations avec toutes les options
                                 </button>
                             </div>
                         </div>
+                        @error('program_background_image')
+                            <div class="invalid-feedback d-block">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
 
@@ -382,12 +453,20 @@ UTILISATION : Création complète d'invitations avec toutes les options
                     <!-- Image Livre d'or -->
                     <div class="col-md-6 mb-4">
                         <label class="form-label">📖 Image de fond - Livre d'or</label>
-                        <div class="drag-drop-zone" data-target="guestbook_background_image">
-                            <input type="file" class="form-control d-none" name="guestbook_background_image" accept="image/*" id="guestbook_background_input">
+                        <div class="drag-drop-zone @error('guestbook_background_image') is-invalid @enderror" data-target="guestbook_background_image">
+                            <input type="file" class="form-control d-none @error('guestbook_background_image') is-invalid @enderror" name="guestbook_background_image" accept="image/*" id="guestbook_background_input">
                             <div class="drag-drop-content">
                                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
-                                <small class="text-muted">Image de fond pour la section livre d'or</small>
+                                <p class="mb-2">
+                                    <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                                    <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                                </p>
+                                <small class="text-muted">Image de fond pour la section livre d'or (max 2MB)</small>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="guestbook_background_image">
+                                        <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                                    </button>
+                                </div>
                             </div>
                             <div class="image-preview" id="guestbook_background_preview" style="display: none;">
                                 <img id="guestbook_background_preview_img" src="" alt="Aperçu" class="preview-image">
@@ -396,17 +475,30 @@ UTILISATION : Création complète d'invitations avec toutes les options
                                 </button>
                             </div>
                         </div>
+                        @error('guestbook_background_image')
+                            <div class="invalid-feedback d-block">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
                     <!-- Image Choix de boissons -->
                     <div class="col-md-6 mb-4">
                         <label class="form-label">🍷 Image de fond - Choix de boissons</label>
-                        <div class="drag-drop-zone" data-target="drinks_background_image">
-                            <input type="file" class="form-control d-none" name="drinks_background_image" accept="image/*" id="drinks_background_input">
+                        <div class="drag-drop-zone @error('drinks_background_image') is-invalid @enderror" data-target="drinks_background_image">
+                            <input type="file" class="form-control d-none @error('drinks_background_image') is-invalid @enderror" name="drinks_background_image" accept="image/*" id="drinks_background_input">
                             <div class="drag-drop-content">
                                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
-                                <small class="text-muted">Image de fond pour la section choix de boissons</small>
+                                <p class="mb-2">
+                                    <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                                    <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                                </p>
+                                <small class="text-muted">Image de fond pour la section choix de boissons (max 2MB)</small>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="drinks_background_image">
+                                        <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                                    </button>
+                                </div>
                             </div>
                             <div class="image-preview" id="drinks_background_preview" style="display: none;">
                                 <img id="drinks_background_preview_img" src="" alt="Aperçu" class="preview-image">
@@ -415,6 +507,11 @@ UTILISATION : Création complète d'invitations avec toutes les options
                                 </button>
                             </div>
                         </div>
+                        @error('drinks_background_image')
+                            <div class="invalid-feedback d-block">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
 
@@ -434,12 +531,20 @@ UTILISATION : Création complète d'invitations avec toutes les options
                     <!-- Image Pied de page -->
                     <div class="col-md-6 mb-4">
                         <label class="form-label">🦶 Image de fond - Pied de page</label>
-                        <div class="drag-drop-zone" data-target="footer_background_image">
-                            <input type="file" class="form-control d-none" name="footer_background_image" accept="image/*" id="footer_background_input">
+                        <div class="drag-drop-zone @error('footer_background_image') is-invalid @enderror" data-target="footer_background_image">
+                            <input type="file" class="form-control d-none @error('footer_background_image') is-invalid @enderror" name="footer_background_image" accept="image/*" id="footer_background_input">
                             <div class="drag-drop-content">
                                 <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <p class="mb-2">Glissez-déposez votre image ici ou <span class="text-primary click-to-upload">cliquez pour sélectionner</span></p>
-                                <small class="text-muted">Image de fond pour le pied de page</small>
+                                <p class="mb-2">
+                                    <strong>Option 1 :</strong> Glissez-déposez votre image ici<br>
+                                    <strong>Option 2 :</strong> <span class="text-primary click-to-upload">Cliquez pour sélectionner</span>
+                                </p>
+                                <small class="text-muted">Image de fond pour le pied de page (max 2MB)</small>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-primary btn-sm file-select-btn" data-target="footer_background_image">
+                                        <i class="fas fa-folder-open me-2"></i>Parcourir les fichiers
+                                    </button>
+                                </div>
                             </div>
                             <div class="image-preview" id="footer_background_preview" style="display: none;">
                                 <img id="footer_background_preview_img" src="" alt="Aperçu" class="preview-image">
@@ -448,6 +553,11 @@ UTILISATION : Création complète d'invitations avec toutes les options
                                 </button>
                             </div>
                         </div>
+                        @error('footer_background_image')
+                            <div class="invalid-feedback d-block">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
                     <!-- Colonne vide pour équilibrer la dernière ligne -->
@@ -498,9 +608,9 @@ UTILISATION : Création complète d'invitations avec toutes les options
                 </div>
 
                 <!-- Champs cachés pour les valeurs par défaut -->
-                <input type="hidden" name="content_status" value="published">
-                <input type="hidden" name="meta_title" value="">
-                <input type="hidden" name="meta_description" value="">
+                <input type="hidden" name="content_status" value="{{ old('content_status', 'published') }}">
+                <input type="hidden" name="meta_title" value="{{ old('meta_title', '') }}">
+                <input type="hidden" name="meta_description" value="{{ old('meta_description', '') }}">
 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-success btn-lg">

@@ -13,24 +13,13 @@ use App\Models\Drink;
 use App\Models\EventDrink;
 use App\Models\Content;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
-/**
- * ========================================
- * EVENT SEEDER - CRÉATION D'ÉVÉNEMENTS COMPLETS
- * ========================================
- * 
- * Ce seeder crée des événements complets avec tous les éléments nécessaires :
- * - Types d'événements
- * - Événements avec invités
- * - Tables d'événements
- * - Boissons et choix
- * - Contenu personnalisé
- */
 class EventSeeder extends Seeder
 {
     public function run(): void
     {
-        // Créer des types d'événements s'ils n'existent pas
+        // Créer des types d'événements
         $eventTypes = [
             ['label' => 'Mariage'],
             ['label' => 'Anniversaire'],
@@ -53,46 +42,18 @@ class EventSeeder extends Seeder
         $this->createWeddingEvent($familyType, $friendType);
         $this->createBirthdayEvent($familyType, $friendType, $colleagueType);
         $this->createBaptismEvent($familyType);
+
+        // Créer les 5 événements de test sans invités
+        $this->createTestEventsWithoutGuests();
     }
 
-    /**
-     * Créer des boissons de base
-     */
     private function createBaseDrinks()
     {
         $drinks = [
-            [
-                'name' => 'Coca-Cola',
-                'type' => 'soft',
-                'alcoholic' => false,
-                'volume_ml' => 330,
-                'unit' => 'can',
-                'active' => true,
-            ],
-            [
-                'name' => 'Jus d\'Orange',
-                'type' => 'juice',
-                'alcoholic' => false,
-                'volume_ml' => 250,
-                'unit' => 'glass',
-                'active' => true,
-            ],
-            [
-                'name' => 'Champagne',
-                'type' => 'wine',
-                'alcoholic' => true,
-                'volume_ml' => 750,
-                'unit' => 'bottle',
-                'active' => true,
-            ],
-            [
-                'name' => 'Eau Minérale',
-                'type' => 'water',
-                'alcoholic' => false,
-                'volume_ml' => 500,
-                'unit' => 'bottle',
-                'active' => true,
-            ],
+            ['name' => 'Coca-Cola', 'type' => 'soft', 'alcoholic' => false, 'volume_ml' => 330, 'unit' => 'can', 'active' => true],
+            ['name' => 'Jus d\'Orange', 'type' => 'juice', 'alcoholic' => false, 'volume_ml' => 250, 'unit' => 'glass', 'active' => true],
+            ['name' => 'Champagne', 'type' => 'wine', 'alcoholic' => true, 'volume_ml' => 750, 'unit' => 'bottle', 'active' => true],
+            ['name' => 'Eau Minérale', 'type' => 'water', 'alcoholic' => false, 'volume_ml' => 500, 'unit' => 'bottle', 'active' => true],
         ];
 
         foreach ($drinks as $drinkData) {
@@ -100,9 +61,6 @@ class EventSeeder extends Seeder
         }
     }
 
-    /**
-     * Créer un événement de mariage
-     */
     private function createWeddingEvent($familyType, $friendType)
     {
         $event = Event::create([
@@ -122,16 +80,10 @@ class EventSeeder extends Seeder
             'event_type_id' => EventType::where('label', 'Mariage')->first()->id,
         ]);
 
-        // Créer des invités pour le mariage
         $this->createWeddingGuests($event, $familyType, $friendType);
-        
-        // Créer des boissons pour l'événement
         $this->createEventDrinks($event);
     }
 
-    /**
-     * Créer un événement d'anniversaire
-     */
     private function createBirthdayEvent($familyType, $friendType, $colleagueType)
     {
         $event = Event::firstOrCreate(
@@ -148,22 +100,12 @@ class EventSeeder extends Seeder
             ]
         );
 
-        // Créer des tables pour l'anniversaire
         $this->createEventTables($event);
-        
-        // Créer des invités pour l'anniversaire
         $this->createBirthdayGuests($event, $familyType, $friendType, $colleagueType);
-        
-        // Créer des boissons pour l'événement
         $this->createEventDrinks($event);
-        
-        // Créer du contenu pour l'événement
         $this->createEventContent($event);
     }
 
-    /**
-     * Créer un événement de baptême
-     */
     private function createBaptismEvent($familyType)
     {
         $event = Event::create([
@@ -171,20 +113,16 @@ class EventSeeder extends Seeder
             'title' => 'Baptême de Lucas',
             'description' => 'Cérémonie de baptême de Lucas Moreau',
             'event_date' => Carbon::now()->addMonth()->format('Y-m-d H:i:s'),
-            'location' => 'Église Notre-Dame, 789 Boulevard de la République, Kisangani',
+            'location' => 'Église Notre-Dame, Kisangani',
             'google_maps_url' => 'https://maps.google.com/?q=Kisangani',
             'program' => 'Cérémonie à 10h, réception à 12h',
             'theme_color' => '#45B7D1',
             'event_type_id' => EventType::where('label', 'Baptême')->first()->id,
         ]);
 
-        // Créer des invités pour le baptême
         $this->createBaptismGuests($event, $familyType);
     }
 
-    /**
-     * Créer des invités pour le mariage
-     */
     private function createWeddingGuests($event, $familyType, $friendType)
     {
         $guests = [
@@ -196,22 +134,10 @@ class EventSeeder extends Seeder
         ];
 
         foreach ($guests as $guestData) {
-            Guest::create([
-                'event_id' => $event->id,
-                'guest_type_id' => $guestData['guest_type_id'],
-                'first_name' => $guestData['first_name'],
-                'last_name' => $guestData['last_name'],
-                'email' => $guestData['email'],
-                'phone' => $guestData['phone'],
-                'rsvp_status' => $guestData['rsvp_status'],
-                'meal_choice' => $guestData['meal_choice'],
-            ]);
+            Guest::create(array_merge(['event_id' => $event->id], $guestData));
         }
     }
 
-    /**
-     * Créer des tables d'événement
-     */
     private function createEventTables($event)
     {
         $tables = [
@@ -222,51 +148,34 @@ class EventSeeder extends Seeder
 
         foreach ($tables as $tableData) {
             EventTable::firstOrCreate(
-                [
-                    'event_id' => $event->id,
-                    'table_number' => $tableData['table_number']
-                ],
-                [
-                    'event_id' => $event->id,
-                    'name' => $tableData['name'],
-                    'table_number' => $tableData['table_number'],
-                    'capacity' => $tableData['capacity']
-                ]
+                ['event_id' => $event->id, 'table_number' => $tableData['table_number']],
+                array_merge(['event_id' => $event->id], $tableData)
             );
         }
     }
 
-    /**
-     * Créer des invités pour l'anniversaire
-     */
     private function createBirthdayGuests($event, $familyType, $friendType, $colleagueType)
     {
-        // Vérifier si des invités existent déjà pour cet événement
         if ($event->guests()->count() > 0) {
-            $this->command->warn("⚠️  Des invités existent déjà pour l'événement '{$event->title}'. Ignoré.");
+            $this->command->warn("⚠️  Des invités existent déjà pour '{$event->title}'");
             return;
         }
-        
-        // Récupérer les tables créées pour cet événement
+
         $tables = $event->eventTables()->get();
-        
-        // Vérifier qu'il y a au moins 3 tables
+
         if ($tables->count() < 3) {
-            throw new \Exception("Pas assez de tables créées pour l'événement. Attendu: 3, trouvé: {$tables->count()}");
+            throw new \Exception("Pas assez de tables. Attendu: 3, trouvé: {$tables->count()}");
         }
-        
+
         $guests = [
-            // Famille
-            ['first_name' => 'Jean', 'last_name' => 'Mukendi', 'email' => 'jean.mukendi@email.com', 'phone' => '+243 123 456 789', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Végétarien', 'guest_type_id' => $familyType->id, 'table_id' => $tables[0]->id],
-            ['first_name' => 'Sophie', 'last_name' => 'Mukendi', 'email' => 'sophie.mukendi@email.com', 'phone' => '+243 123 456 790', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Standard', 'guest_type_id' => $familyType->id, 'table_id' => $tables[0]->id],
-            ['first_name' => 'Pierre', 'last_name' => 'Mukendi', 'email' => 'pierre.mukendi@email.com', 'phone' => '+243 123 456 791', 'rsvp_status' => 'pending', 'meal_choice' => null, 'guest_type_id' => $familyType->id, 'table_id' => $tables[0]->id],
-            // Amis
-            ['first_name' => 'Alice', 'last_name' => 'Kabila', 'email' => 'alice.kabila@email.com', 'phone' => '+243 123 456 792', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Standard', 'guest_type_id' => $friendType->id, 'table_id' => $tables[1]->id],
-            ['first_name' => 'David', 'last_name' => 'Tshisekedi', 'email' => 'david.tshisekedi@email.com', 'phone' => '+243 123 456 793', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Halal', 'guest_type_id' => $friendType->id, 'table_id' => $tables[1]->id],
-            ['first_name' => 'Grace', 'last_name' => 'Mobutu', 'email' => 'grace.mobutu@email.com', 'phone' => '+243 123 456 794', 'rsvp_status' => 'declined', 'meal_choice' => null, 'guest_type_id' => $friendType->id, 'table_id' => $tables[1]->id],
-            // Collègues
-            ['first_name' => 'Marc', 'last_name' => 'Lumumba', 'email' => 'marc.lumumba@email.com', 'phone' => '+243 123 456 795', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Standard', 'guest_type_id' => $colleagueType->id, 'table_id' => $tables[2]->id],
-            ['first_name' => 'Julie', 'last_name' => 'Kasavubu', 'email' => 'julie.kasavubu@email.com', 'phone' => '+243 123 456 796', 'rsvp_status' => 'pending', 'meal_choice' => null, 'guest_type_id' => $colleagueType->id, 'table_id' => $tables[2]->id],
+            ['first_name' => 'Jean', 'last_name' => 'Mukendi', 'email' => 'jean.mukendi@email.com', 'phone' => '+243123456789', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Végétarien', 'guest_type_id' => $familyType->id, 'table_id' => $tables[0]->id],
+            ['first_name' => 'Sophie', 'last_name' => 'Mukendi', 'email' => 'sophie.mukendi@email.com', 'phone' => '+243123456790', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Standard', 'guest_type_id' => $familyType->id, 'table_id' => $tables[0]->id],
+            ['first_name' => 'Pierre', 'last_name' => 'Mukendi', 'email' => 'pierre.mukendi@email.com', 'phone' => '+243123456791', 'rsvp_status' => 'pending', 'meal_choice' => null, 'guest_type_id' => $familyType->id, 'table_id' => $tables[0]->id],
+            ['first_name' => 'Alice', 'last_name' => 'Kabila', 'email' => 'alice.kabila@email.com', 'phone' => '+243123456792', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Standard', 'guest_type_id' => $friendType->id, 'table_id' => $tables[1]->id],
+            ['first_name' => 'David', 'last_name' => 'Tshisekedi', 'email' => 'david.tshisekedi@email.com', 'phone' => '+243123456793', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Halal', 'guest_type_id' => $friendType->id, 'table_id' => $tables[1]->id],
+            ['first_name' => 'Grace', 'last_name' => 'Mobutu', 'email' => 'grace.mobutu@email.com', 'phone' => '+243123456794', 'rsvp_status' => 'declined', 'meal_choice' => null, 'guest_type_id' => $friendType->id, 'table_id' => $tables[1]->id],
+            ['first_name' => 'Marc', 'last_name' => 'Lumumba', 'email' => 'marc.lumumba@email.com', 'phone' => '+243123456795', 'rsvp_status' => 'confirmed', 'meal_choice' => 'Standard', 'guest_type_id' => $colleagueType->id, 'table_id' => $tables[2]->id],
+            ['first_name' => 'Julie', 'last_name' => 'Kasavubu', 'email' => 'julie.kasavubu@email.com', 'phone' => '+243123456796', 'rsvp_status' => 'pending', 'meal_choice' => null, 'guest_type_id' => $colleagueType->id, 'table_id' => $tables[2]->id],
         ];
 
         foreach ($guests as $guestData) {
@@ -286,9 +195,6 @@ class EventSeeder extends Seeder
         }
     }
 
-    /**
-     * Créer des invités pour le baptême
-     */
     private function createBaptismGuests($event, $familyType)
     {
         $guests = [
@@ -297,38 +203,26 @@ class EventSeeder extends Seeder
         ];
 
         foreach ($guests as $guestData) {
-            Guest::create([
-                'event_id' => $event->id,
-                'guest_type_id' => $guestData['guest_type_id'],
-                'first_name' => $guestData['first_name'],
-                'last_name' => $guestData['last_name'],
-                'email' => $guestData['email'],
-                'phone' => $guestData['phone'],
-                'rsvp_status' => $guestData['rsvp_status'],
-                'meal_choice' => $guestData['meal_choice'],
-            ]);
+            Guest::create(array_merge(['event_id' => $event->id], $guestData));
         }
     }
 
-    /**
-     * Créer des boissons pour un événement
-     */
     private function createEventDrinks($event)
     {
         $drinks = Drink::all();
-        
+
         foreach ($drinks as $drink) {
             EventDrink::firstOrCreate(
-                [
-                    'event_id' => $event->id,
-                    'drink_id' => $drink->id
-                ],
+                ['event_id' => $event->id, 'drink_id' => $drink->id],
                 [
                     'event_id' => $event->id,
                     'drink_id' => $drink->id,
-                    'price' => $drink->name === 'Coca-Cola' ? 500 : 
-                              ($drink->name === 'Jus d\'Orange' ? 800 : 
-                              ($drink->name === 'Champagne' ? 15000 : 300)),
+                    'price' => match($drink->name) {
+                        'Coca-Cola' => 500,
+                        'Jus d\'Orange' => 800,
+                        'Champagne' => 15000,
+                        default => 300
+                    },
                     'limit_per_guest' => 3,
                     'available' => true,
                 ]
@@ -336,9 +230,6 @@ class EventSeeder extends Seeder
         }
     }
 
-    /**
-     * Créer du contenu pour un événement
-     */
     private function createEventContent($event)
     {
         Content::create([
@@ -352,33 +243,121 @@ class EventSeeder extends Seeder
             'venue_address_line2' => 'Quartier Gombe',
             'venue_city' => 'Kinshasa',
             'venue_region' => 'Kinshasa',
-            'venue_country' => 'République Démocratique du Congo',
+            'venue_country' => 'RDC',
             'google_maps_url' => 'https://maps.google.com/?q=Restaurant+Le+Jardin+Kinshasa',
             'intro_1' => '🎉 Célébration spéciale 🎉',
             'intro_2' => '💫 Anniversaire de Marie 💫',
-            'body_html' => '<p>C\'est avec une immense joie que nous vous invitons à célébrer le <strong>30ème anniversaire de Marie</strong> !</p><p>Rejoignez-nous pour une soirée inoubliable remplie de joie, de rires et de bons moments partagés.</p><p>Votre présence rendra cette célébration encore plus spéciale !</p>',
-            'schedule' => json_encode([
-                '19:00' => 'Accueil des invités',
-                '19:30' => 'Cocktail d\'ouverture',
-                '20:00' => 'Dîner',
-                '21:30' => 'Coupure du gâteau',
-                '22:00' => 'Soirée dansante',
-                '00:00' => 'Fin de la soirée'
-            ]),
-            'cta' => json_encode([
-                'rsvp' => ['enabled' => true, 'label' => 'Confirmer ma présence 🎉'],
-                'map' => ['enabled' => true, 'label' => 'Voir sur la carte 📍'],
-                'download' => ['enabled' => true, 'label' => 'Télécharger l\'invitation 📄']
-            ]),
+            'body_html' => '<p>Célébrons ensemble le 30ème anniversaire de Marie !</p>',
             'guestbook_enabled' => true,
-            'guestbook_title' => 'Livre d\'Or de Marie',
-            'guestbook_subtitle' => 'Laissez un message pour Marie',
+            'guestbook_title' => 'Livre d\'Or',
+            'guestbook_subtitle' => 'Laissez un message',
             'drinks_enabled' => true,
-            'drinks' => json_encode([1, 2, 3, 4]),
             'meta_title' => 'Anniversaire de Marie - 30 ans',
-            'meta_description' => 'Célébration du 30ème anniversaire de Marie avec famille et amis',
+            'meta_description' => 'Célébration du 30ème anniversaire',
             'status' => 'published',
             'published_at' => Carbon::now(),
         ]);
+    }
+
+    private function createTestEventsWithoutGuests()
+    {
+        $weddingType = EventType::where('label', 'Mariage')->first();
+        $anniversaryType = EventType::where('label', 'Anniversaire')->first();
+        $baptismType = EventType::where('label', 'Baptême')->first();
+
+        $organizers = User::where('role', 'organizer')->get();
+
+        if ($organizers->count() < 2) {
+            $organizer1 = User::firstOrCreate(
+                ['email' => 'marc.organisateur@example.com'],
+                [
+                    'first_name' => 'Marc',
+                    'last_name' => 'Organisateur',
+                    'password' => Hash::make('password123'),
+                    'email_verified_at' => now(),
+                    'phone' => '+243111222333',
+                    'role' => 'organizer',
+                ]
+            );
+
+            $organizer2 = User::firstOrCreate(
+                ['email' => 'papa.joseph@example.com'],
+                [
+                    'first_name' => 'Papa',
+                    'last_name' => 'Joseph',
+                    'password' => Hash::make('password123'),
+                    'email_verified_at' => now(),
+                    'phone' => '+243444555666',
+                    'role' => 'organizer',
+                ]
+            );
+
+            $organizers = collect([$organizer1, $organizer2]);
+        }
+
+        $events = [
+            [
+                'title' => 'Mariage de Sarah & Marc',
+                'description' => 'Cérémonie de mariage romantique',
+                'event_date' => Carbon::now()->addDays(30),
+                'location' => 'Jardin Botanique de Kinshasa',
+                'google_maps_url' => 'https://maps.google.com/?q=Jardin+Botanique+Kinshasa',
+                'event_type_id' => $weddingType->id,
+                'organizer_id' => $organizers[0]->id,
+            ],
+            [
+                'title' => 'Anniversaire de Mariage - 25 ans',
+                'description' => 'Célébration des 25 ans',
+                'event_date' => Carbon::now()->addDays(45),
+                'location' => 'Hôtel Memling',
+                'google_maps_url' => 'https://maps.google.com/?q=Hotel+Memling+Kinshasa',
+                'event_type_id' => $anniversaryType->id,
+                'organizer_id' => $organizers[1]->id,
+            ],
+            [
+                'title' => 'Baptême de Marie',
+                'description' => 'Cérémonie de baptême',
+                'event_date' => Carbon::now()->addDays(60),
+                'location' => 'Église Saint-Pierre',
+                'google_maps_url' => 'https://maps.google.com/?q=Eglise+Saint-Pierre+Kinshasa',
+                'event_type_id' => $baptismType->id,
+                'organizer_id' => $organizers[0]->id,
+            ],
+            [
+                'title' => 'Fête de Retraite - Papa Joseph',
+                'description' => 'Célébration de retraite',
+                'event_date' => Carbon::now()->addDays(75),
+                'location' => 'Centre Culturel Boboto',
+                'google_maps_url' => 'https://maps.google.com/?q=Centre+Culturel+Boboto+Kinshasa',
+                'event_type_id' => $anniversaryType->id,
+                'organizer_id' => $organizers[1]->id,
+            ],
+            [
+                'title' => 'Graduation - Promotion 2024',
+                'description' => 'Remise de diplômes',
+                'event_date' => Carbon::now()->addDays(90),
+                'location' => 'Université de Kinshasa',
+                'google_maps_url' => 'https://maps.google.com/?q=Universite+de+Kinshasa',
+                'event_type_id' => $anniversaryType->id,
+                'organizer_id' => $organizers[0]->id,
+            ],
+        ];
+
+        foreach ($events as $eventData) {
+            Event::firstOrCreate(
+                ['title' => $eventData['title']],
+                [
+                    'organizer_id' => $eventData['organizer_id'],
+                    'event_type_id' => $eventData['event_type_id'],
+                    'description' => $eventData['description'],
+                    'event_date' => $eventData['event_date'],
+                    'location' => $eventData['location'],
+                    'google_maps_url' => $eventData['google_maps_url'],
+                    'theme_color' => '#e11d48',
+                ]
+            );
+        }
+
+        $this->command->info("✅ 5 événements de test créés sans invités");
     }
 }

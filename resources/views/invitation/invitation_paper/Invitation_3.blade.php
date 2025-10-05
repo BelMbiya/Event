@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $content->couple ?? $content->meta_title ?? 'Notre Mariage' }} - Invitation Électronique</title>
-    
+
     <!-- Métadonnées SEO personnalisables -->
     <meta name="description" content="{{ $content->meta_description ?? 'Invitation électronique pour notre mariage' }}">
     <meta name="keywords" content="mariage, invitation, {{ $content->couple ?? 'couple' }}, {{ $content->venue_city ?? 'Kinshasa' }}">
-    
+
     <!-- Open Graph -->
     <meta property="og:title" content="{{ $content->couple ?? $content->meta_title ?? 'Notre Mariage' }}">
     <meta property="og:description" content="{{ $content->meta_description ?? 'Invitation électronique pour notre mariage' }}">
@@ -18,7 +18,7 @@
     @if($content->og_image)
     <meta property="og:image" content="{{ asset('storage/' . $content->og_image) }}">
     @endif
-    
+
     <!-- Ajout de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,19 +38,19 @@
             --color-primary: {{ $themeColors['primary'] ?? '#e11d48' }};
             --color-secondary: {{ $themeColors['secondary'] ?? '#f43f5e' }};
             --color-accent: {{ $themeColors['accent'] ?? '#fb7185' }};
-            
+
             /* Variables RGB pour les effets de focus */
             --color-primary-rgb: {{ hexdec(substr($themeColors['primary'] ?? '#e11d48', 1, 2)) }}, {{ hexdec(substr($themeColors['primary'] ?? '#e11d48', 3, 2)) }}, {{ hexdec(substr($themeColors['primary'] ?? '#e11d48', 5, 2)) }};
             --color-secondary-rgb: {{ hexdec(substr($themeColors['secondary'] ?? '#f43f5e', 1, 2)) }}, {{ hexdec(substr($themeColors['secondary'] ?? '#f43f5e', 3, 2)) }}, {{ hexdec(substr($themeColors['secondary'] ?? '#f43f5e', 5, 2)) }};
         }
-        
+
         /* Décorations conditionnelles */
         @if($themeDecorations['floral'] ?? false)
         .floral-decoration::before {
             content: "🌸";
         }
         @endif
-        
+
         @if($themeDecorations['overlay'] ?? false)
         .hero-section::after {
             content: "";
@@ -63,7 +63,7 @@
             z-index: 1;
         }
         @endif
-        
+
         @if($themeDecorations['parallax'] ?? false)
         .hero-section {
             background-attachment: fixed;
@@ -106,7 +106,7 @@
 
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script src="{{ asset('js/invitation-3.js') }}"></script>
 </body>
 </html>

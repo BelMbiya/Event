@@ -38,7 +38,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
         @csrf
         @method('PUT')
         <input type="hidden" name="event_id" value="{{ $event->id }}">
-        
+
         <!-- Champs cachés pour les informations importantes de l'événement -->
         <input type="hidden" name="couple" value="{{ $event->title }}">
         <input type="hidden" name="event_datetime" value="{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d\TH:i') : '' }}">
@@ -54,18 +54,18 @@ UTILISATION : Modification complète d'invitations avec toutes les options
         <input type="hidden" name="slug" value="{{ Str::slug($event->title) }}">
         <input type="hidden" name="unique_code" value="{{ $invitation->unique_code }}">
         <input type="hidden" name="invitation_id" value="{{ $invitation->id }}">
-        
+
         <!-- Champs manquants avec valeurs par défaut -->
         <input type="hidden" name="venue_address_line2" value="{{ $content->venue_address_line2 ?? '' }}">
         <input type="hidden" name="venue_region" value="{{ $content->venue_region ?? '' }}">
         <input type="hidden" name="google_maps_url" value="{{ $content->google_maps_url ?? '' }}">
         <input type="hidden" name="venue_lat" value="{{ $content->venue_lat ?? '' }}">
         <input type="hidden" name="venue_lng" value="{{ $content->venue_lng ?? '' }}">
-        
+
         <!-- Champs de contenu avec valeurs par défaut -->
         <input type="hidden" name="intro_2" value="💌 Invitation 💌">
         <input type="hidden" name="hero_image_alt" value="{{ $content->hero_image_alt ?? '' }}">
-        
+
         <!-- Champs de fonctionnalités avec valeurs par défaut -->
         <input type="hidden" name="guestbook_title" value="{{ $content->guestbook_title ?? 'Livre d\'or' }}">
         <input type="hidden" name="guestbook_subtitle" value="{{ $content->guestbook_subtitle ?? 'Laissez-nous un message' }}">
@@ -74,7 +74,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
         <input type="hidden" name="cta_rsvp_label" value="{{ $content->cta_rsvp_label ?? 'Répondre à l\'invitation' }}">
         <input type="hidden" name="cta_map_label" value="{{ $content->cta_map_label ?? 'Voir sur la carte' }}">
         <input type="hidden" name="cta_download_label" value="{{ $content->cta_download_label ?? 'Télécharger l\'invitation' }}">
-        
+
         <!-- Champs de thème avec valeurs par défaut -->
         @php
             // Extraire les couleurs du thème JSON
@@ -82,22 +82,22 @@ UTILISATION : Modification complète d'invitations avec toutes les options
             $colors = $theme['colors'] ?? [];
             $fonts = $theme['fonts'] ?? [];
             $decorations = $theme['decorations'] ?? [];
-            
+
             $primaryColor = $colors['primary'] ?? '#e11d48';
             $secondaryColor = $colors['secondary'] ?? '#f43f5e';
             $accentColor = $colors['accent'] ?? '#fb7185';
             $headingFont = $fonts['headings'] ?? 'Playfair Display';
             $bodyFont = $fonts['body'] ?? 'Inter';
         @endphp
-        
+
         <!-- Les couleurs sont maintenant gérées par les champs visibles dans l'onglet Design & Thème -->
         <input type="hidden" name="theme_heading_font" value="{{ $headingFont }}">
         <input type="hidden" name="theme_body_font" value="{{ $bodyFont }}">
-        
+
         <!-- Champs meta avec valeurs par défaut -->
         <input type="hidden" name="meta_title" value="{{ $content->meta_title ?? $event->title . ' - Invitation' }}">
         <input type="hidden" name="meta_description" value="{{ $content->meta_description ?? 'Invitation pour l\'événement de ' . $event->title }}">
-        
+
         <!-- Champs de planning dynamiques avec valeurs par défaut -->
         @for($i = 0; $i < 5; $i++)
             <input type="hidden" name="schedule_time_{{ $i }}" value="{{ $content->{'schedule_time_' . $i} ?? '' }}">
@@ -258,7 +258,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                                 @endif
                             </div>
                             <div class="image-preview" id="hero_image_preview" style="{{ $content && $content->hero_image_path ? 'display: block;' : 'display: none;' }}">
-                                <img id="hero_image_preview_img" src="{{ $content && $content->hero_image_path ? asset('storage/' . $content->hero_image_path) : '' }}" alt="Aperçu" class="preview-image">
+                                <img id="hero_image_preview_img" src="{{ $content->hero_image_path ? asset('img/invitations/hero/'.$content->hero_image_path) : '' }}" alt="Aperçu" class="preview-image">
                                 <button type="button" class="btn btn-sm btn-danger remove-image" data-target="hero_image_path">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -282,7 +282,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                                 @endif
                             </div>
                             <div class="image-preview" id="program_background_preview" style="{{ $content && $content->program_background_image ? 'display: block;' : 'display: none;' }}">
-                                <img id="program_background_preview_img" src="{{ $content && $content->program_background_image ? asset('storage/' . $content->program_background_image) : '' }}" alt="Aperçu" class="preview-image">
+                                <img id="program_background_preview_img" src="{{ $content->program_background_image ? asset('img/invitations/sections/' . $content->program_background_image) : '' }}" alt="Aperçu" class="preview-image">
                                 <button type="button" class="btn btn-sm btn-danger remove-image" data-target="program_background_image">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -308,7 +308,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                                 @endif
                             </div>
                             <div class="image-preview" id="guestbook_background_preview" style="{{ $content && $content->guestbook_background_image ? 'display: block;' : 'display: none;' }}">
-                                <img id="guestbook_background_preview_img" src="{{ $content && $content->guestbook_background_image ? asset('storage/' . $content->guestbook_background_image) : '' }}" alt="Aperçu" class="preview-image">
+                                <img id="guestbook_background_preview_img" src="{{ $content->guestbook_background_image ? asset('img/invitations/sections/' . $content->guestbook_background_image) : '' }}" alt="Aperçu" class="preview-image">
                                 <button type="button" class="btn btn-sm btn-danger remove-image" data-target="guestbook_background_image">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -332,7 +332,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                                 @endif
                             </div>
                             <div class="image-preview" id="drinks_background_preview" style="{{ $content && $content->drinks_background_image ? 'display: block;' : 'display: none;' }}">
-                                <img id="drinks_background_preview_img" src="{{ $content && $content->drinks_background_image ? asset('storage/' . $content->drinks_background_image) : '' }}" alt="Aperçu" class="preview-image">
+                                <img id="drinks_background_preview_img" src="{{ $content->drinks_background_image ? asset('img/invitations/sections/' . $content->drinks_background_image) : '' }}" alt="Aperçu" class="preview-image">
                                 <button type="button" class="btn btn-sm btn-danger remove-image" data-target="drinks_background_image">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -358,7 +358,7 @@ UTILISATION : Modification complète d'invitations avec toutes les options
                                 @endif
                             </div>
                             <div class="image-preview" id="footer_background_preview" style="{{ $content && $content->footer_background_image ? 'display: block;' : 'display: none;' }}">
-                                <img id="footer_background_preview_img" src="{{ $content && $content->footer_background_image ? asset('storage/' . $content->footer_background_image) : '' }}" alt="Aperçu" class="preview-image">
+                                <img id="footer_background_preview_img" src="{{ $content->footer_background_image ? asset('img/invitations/sections/' . $content->footer_background_image) : '' }}" alt="Aperçu" class="preview-image">
                                 <button type="button" class="btn btn-sm btn-danger remove-image" data-target="footer_background_image">
                                     <i class="fas fa-times"></i>
                                 </button>

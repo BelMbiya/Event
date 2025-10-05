@@ -1,6 +1,6 @@
     <!-- Section Préférences de Boissons -->
     @if($content->drinks_enabled && $eventDrinks && $eventDrinks->count() > 0)
-    <section class="drinks-section py-5" style="background-image: url('{{ $drinksBgUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+    <section class="drinks-section py-5" style="background-image: url('{{ asset('img/invitations/sections/'.$content->drinks_background_image) }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
         <!-- Overlay sombre léger pour la lisibilité -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">
@@ -20,7 +20,7 @@
                         <h4 class="romantic-font gradient-text mb-4" style="font-size: 2.5rem;">
                             {{ $drinksData['title'] ?? 'Choisissez vos boissons' }}
                         </h4>
-                        
+
                         @php
                             // Vérifier si l'invité a déjà fait ses choix
                             $hasExistingChoices = $guestDrinkChoices && $guestDrinkChoices->count() > 0;
@@ -63,15 +63,15 @@
                                         @foreach ($eventDrinks as $drink)
                                             <div class="drink-option mb-2">
                                                 <!-- Checkbox masqué -->
-                                                <input type="checkbox" 
-                                                       class="btn-check" 
-                                                       name="drinks[]" 
-                                                       value="{{ $drink->id }}" 
-                                                       id="drink{{ $drink->id }}" 
+                                                <input type="checkbox"
+                                                       class="btn-check"
+                                                       name="drinks[]"
+                                                       value="{{ $drink->id }}"
+                                                       id="drink{{ $drink->id }}"
                                                        autocomplete="off">
 
                                                 <!-- Le label devient le bouton stylisé -->
-                                                <label class="btn btn-outline-primary rounded-pill px-4 py-2 drink-label" 
+                                                <label class="btn btn-outline-primary rounded-pill px-4 py-2 drink-label"
                                                        for="drink{{ $drink->id }}">
                                                     {{ $drink->drink->name }}
                                                 </label>

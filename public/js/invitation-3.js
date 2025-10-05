@@ -13,12 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Animation d'apparition de la carte de contenu hero au défilement
     const heroCard = document.querySelector('.hero-section .invitation-card');
     const heroSection = document.querySelector('.hero-section');
-    
+
     // S'assurer que la carte est visible au chargement
     if (heroCard) {
         heroCard.style.opacity = '1';
     }
-    
+
     // Debug complet de l'image hero côté client
     if (heroSection) {
         console.log('=== DEBUG IMAGE HERO CLIENT ===');
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Hero background style:', currentBg);
         console.log('Hero background computed:', computedBg);
         console.log('Hero section element:', heroSection);
-        
+
         // Fonction pour tester si une image se charge
         function testImageLoad(url) {
             return new Promise((resolve) => {
@@ -44,15 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = url;
             });
         }
-        
-        // Fonction pour forcer l'image par défaut
-        function forceDefaultImage() {
-            const defaultImage = '/img/couplelamika.jpeg';
-            console.log('🔄 Forcing default image:', defaultImage);
-            heroSection.style.backgroundImage = `url('${defaultImage}')`;
-            heroSection.setAttribute('data-image-src', defaultImage);
-        }
-        
+
+
         // Tester l'image actuelle
         if (currentBg && currentBg !== 'none') {
             const urlMatch = currentBg.match(/url\(['"]?(.*?)['"]?\)/);
@@ -75,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('❌ No background image set, forcing default');
             forceDefaultImage();
         }
-        
+
         // Vérifier aussi l'attribut data-image-src
         const dataImageSrc = heroSection.getAttribute('data-image-src');
         if (dataImageSrc) {
@@ -87,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         console.log('=== FIN DEBUG IMAGE HERO CLIENT ===');
     }
-    
+
     if (heroCard && heroSection) {
         // Animation d'apparition de la carte au chargement
         setTimeout(() => {
@@ -98,32 +91,32 @@ document.addEventListener('DOMContentLoaded', () => {
             heroCard.style.transform = 'translateY(0)';
         }, 100);
     }
-    
+
     // Effet parallaxe pour la section hero
     if (heroSection) {
         let ticking = false;
-        
+
         function updateParallax() {
             const scrolled = window.pageYOffset;
             const rate = scrolled * -0.5;
-            
+
             if (scrolled < window.innerHeight) {
                 heroSection.style.transform = `translateY(${rate}px)`;
             }
-            
+
             ticking = false;
         }
-        
+
         function requestTick() {
             if (!ticking) {
                 requestAnimationFrame(updateParallax);
                 ticking = true;
             }
         }
-        
+
         window.addEventListener('scroll', requestTick);
     }
-    
+
     // Animation des sections
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {

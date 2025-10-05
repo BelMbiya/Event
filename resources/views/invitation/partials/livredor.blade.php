@@ -1,6 +1,6 @@
     <!-- Section Livre d'Or -->
     @if($content->guestbook_enabled)
-    <section class="guestbook-section py-5" style="background-image: url('{{ $guestbookBgUrl ?? "" }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+    <section class="guestbook-section py-5" style="background-image: url('{{ asset('img/invitations/sections/'.$content->guestbook_background_image) }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
         <!-- Overlay pour la lisibilité -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.2); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">

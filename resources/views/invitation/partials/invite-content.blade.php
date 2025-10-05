@@ -1,6 +1,8 @@
     <!-- Section Invitation -->
-    <section id="invitation-content" class="invitation-section py-5">
-        <div class="container">
+    <section id="invitation-content" class="invitation-section py-5" style="background-image: url('{{ asset('img/invitations/sections/'.$content->program_background_image) }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;">
+        <!-- Overlay pour la lisibilité -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.1); z-index: 1;"></div>
+        <div class="container" style="position: relative; z-index: 2;">
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <div class="invitation-card p-5">

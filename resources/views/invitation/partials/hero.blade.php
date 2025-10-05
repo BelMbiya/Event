@@ -1,7 +1,7 @@
     <!-- Hero Section -->
     <section class="hero-section relative min-h-screen flex items-center justify-center"
-             style="background-image: url('{{ $heroImageUrl }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;"
-             data-parallax="scroll" data-image-src="{{ $heroImageUrl }}">
+             style="background-image: url('{{ asset('img/invitations/hero/'.$content->hero_image_path) }}'); background-size: cover; background-position: center; background-attachment: fixed; position: relative;"
+             data-parallax="scroll">
         <!-- Overlay pour la lisibilité - opacité réduite -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.05); z-index: 1;"></div>
         <div class="container" style="position: relative; z-index: 2;">

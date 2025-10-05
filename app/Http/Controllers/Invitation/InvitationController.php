@@ -75,6 +75,7 @@ class InvitationController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'event_id' => 'required|exists:events,id',
             'couple' => 'required|string|max:255',
@@ -104,8 +105,8 @@ class InvitationController extends Controller
             );
 
             // Upload des fichiers
-            $heroPath = $request->file('hero_image_path')?->store('invitations/hero', 'public');
-            $programBgPath = $request->file('program_background_image')?->store('invitations/sections', 'public');
+            $heroPath = $request->file('hero_image_path')?->store('img/invitations/hero', 'public');
+            $programBgPath = $request->file('program_background_image')?->store('img/invitations/sections', 'public');
 
             // Chercher ou créer le contenu
             $content = Content::firstOrNew(['invitation_id' => $invitation->id]);
@@ -140,7 +141,7 @@ class InvitationController extends Controller
             DB::commit();
 
             return redirect()->route('invitation.index')
-                ->with('success', "✅ Invitation créée/mise à jour avec succès pour {$event->title}");
+                ->with('success', "Invitation créée/mise à jour avec succès pour {$event->title}");
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -180,10 +181,6 @@ class InvitationController extends Controller
         // Code unique pour les formulaires (event + guest)
         $unique_code = "{$event_id}_{$guest_id}";
 
-        // Préparer les URLs d'images
-        $heroImageUrl = $this->getImageUrl($content->hero_image_path, asset('img/img1.webp'));
-        $programBgUrl = $this->getImageUrl($content->program_background_image);
-
         // Extraire le thème
         $theme = json_decode($content->theme ?? '{}', true);
         $themeColors = $theme['colors'] ?? [
@@ -213,8 +210,6 @@ class InvitationController extends Controller
             'guestDrinkChoices',
             'guestBookMessages',
             'unique_code',
-            'heroImageUrl',
-            'programBgUrl',
             'themeColors',
             'themeFonts',
             'themeDecorations'
@@ -230,6 +225,7 @@ class InvitationController extends Controller
         $event = Event::with(['eventType', 'eventDrinks.drink'])->findOrFail($event_id);
         $invitation = Invitation::where('event_id', $event_id)->firstOrFail();
         $content = $invitation->content;
+        $guestDrinkChoices = $guest->drinkChoices ?? collect();
 
         // Si pas de contenu, créer un contenu par défaut
         if (!$content) {
@@ -249,8 +245,6 @@ class InvitationController extends Controller
         $eventDrinks = EventDrink::with('drink')->where('event_id', $event_id)->get();
         $unique_code = "general_{$event_id}";
 
-        $heroImageUrl = $this->getImageUrl($content->hero_image_path, asset('img/img1.webp'));
-
         $theme = json_decode($content->theme ?? '{}', true);
         $themeColors = $theme['colors'] ?? ['primary' => '#e11d48', 'secondary' => '#f43f5e', 'accent' => '#fb7185'];
         $themeFonts = $theme['fonts'] ?? ['headings' => 'Playfair Display', 'body' => 'Inter'];
@@ -262,8 +256,8 @@ class InvitationController extends Controller
             'content',
             'event',
             'eventDrinks',
+            'guestDrinkChoices',
             'unique_code',
-            'heroImageUrl',
             'themeColors',
             'themeFonts',
             'themeDecorations'
@@ -685,7 +679,8 @@ class InvitationController extends Controller
             return asset($publicPath);
         }
 
-        return asset($publicPath);
+        // Si le fichier n'existe pas, retourner le fallback
+        return $defaultUrl;
     }
 
     /**
